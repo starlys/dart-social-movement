@@ -1,0 +1,250 @@
+/* base styles */
+
+body, #page, #footer, table {font-size:12px;}
+body {color:black;background-color:silver;font-family:Segoe UI,Verdana,Arial,sans-serif;margin:0;}
+*:focus {outline:none;}
+a, a:link {color:#0ab;text-decoration:none;}
+a:hover {text-decoration:underline;}
+h1 {font-size: 1.3em;}
+h2 /*standard header*/ {font-size: 1.1em;color:#008;margin-top:2px;margin-bottom:2px;}
+h3 /*tiny header*/ {font-size: 1.0em;color:black;margin-top:2px;margin-bottom:2px;font-weight:bold;}
+input, select {color:#333;background-color:white;}
+
+/* for elements with static IDs */
+
+#page {}
+#header {position:relative;height:48px;max-width:1200px;color:white;border-radius:5px;margin-left:8px;background:black url(../images/logo.png);background-repeat:no-repeat;}
+#title {font-size:1.4em;font-weight:bold;display:inline-block;position:absolute;top:2px;left:250px;}
+#subtitle {font-size:1.2em;display:inline-block;position:relative;top:26px;left:250px;}
+#hello {position:absolute;display:inline-block;right:12px;top:20px;}
+#middle {}
+#left {float:left;height:100%;}
+#main1 {float:left;height:100%;overflow-y:scroll;}
+#main2 {}
+#footer {clear:both;font-size:0.9em;}
+#button-mystuff, #button-menu, #button-next {border:solid 1px gray;}
+#button-refresh, #refresh-working {float:right;display:none;font-size:0.9em;}
+#scrollspace /*height set in code*/{}
+
+/* main menu and mystuff */
+
+.menu /*background for menu and connected controls*/ {background-color:#dee;}
+.menupop1 {display:none;border:solid 1px gray;position:absolute;left:0px;bottom:25px;width:360px;padding:8px;}
+.memupop2 {margin:4px;overflow-y:scrol;}
+.menupop2 h1 {font-size:1.1em;}
+.menupop2 .button {display:block;}
+#popupconnector /*sliver of color that visually connects tab to popup*/ {position:absolute;display:none;height:7px;border-left:solid 1px gray;border-right:solid 1px gray;}
+#menu2 h2 {border-top:solid 3px #aaf;padding:3px;font-size:1.4em;margin-top:9px;}
+#menu2 button, #menu2 div {color:#567;font-weight:normal;margin-left:6px;border:none;background-color:transparent;}
+#menu2 button {max-width:90%;text-align:left;}
+#menu2 button:hover {text-decoration:underline;}
+#menu2 img {vertical-align: top;}
+#mystuff2 h2 {border-top:solid 3px #aaf;padding:3px;font-size:1.4em;margin-top:9px;}
+#mystuff2 div {padding:3px;}
+#mystuff2 img {vertical-align: top;}
+
+/* small screen fixes */
+
+@media (max-width:750px) {
+  #subtitle{font-size:0.8em;}
+}
+@media (max-width:650px) {
+  #subtitle{display:none;}
+}
+
+/* general purpose classes */
+
+.explain {color:blue;}
+.button-bar {min-height:16px;margin-top:8px;}
+.button /*button in button bar*/ {margin:4px;border-radius:5px;border:solid 1px gray;background-color:#eee;}
+.linkbutton /*button appearing as link*/ {border:none;font-weight:bold;background-color:transparent;}
+.linkbutton:hover {text-decoration: underline;}
+.pending /*red number showing in button with pending status*/ {color:red;background-color:#fdd;}
+span.text-expander /*the "more" expander label*/ {cursor:pointer;text-decoration:underline;margin-left:4px; margin-right:4px;}
+.dialog-backdrop {background-color:black;opacity:0.3;position:absolute;top:0;left:0;width:100%;height:100%}
+.dialog-frame {overflow-y:scroll;background-color:white;position:absolute;bottom:0;padding:16px;border-top:solid 3px black;}
+table.formtable input {margin:3px;}
+table.datatable th {background-color:#ddd;}
+table.datatable td {border:solid gray 1px;padding:2px;}
+table.cardtable th {text-align:right;padding-right:4px;vertical-align:top;}
+.error {color:red;}
+.instruct /*instructions, hints*/ {color:#00a; font-size:0.9em;}
+.subform-group /*grouping boxes inside forms*/ {border:solid #88c 1px;margin:5px;padding:5px;}
+.scroll-list /*div with max height to list an unlimited number of links inside a pane*/ {overflow-y:scroll;border:solid 1px gray;padding:4px;}
+.space1 /*div with top/bottom spacing*/ {margin-top:2px;margin-bottom:2px;}
+
+/* outlines */
+
+.outline-node /*includes node and all child nodes*/ {display:block;margin:4px;}
+.outline-text {cursor:pointer;}
+.outline-text.selected {background-color:#ecc;}
+.outline-icon {display:inline-block;cursor:pointer;width:10px;height:12px;margin-right:4px;}
+.outline-icon-branch {background:url(../images/outline-icon-branch.png)}
+.outline-icon-leaf {background:url(../images/outline-icon-leaf.png)}
+.outline-childbox {margin-left:12px;}
+
+/* pane common classes */
+
+.pane-border {border:solid gray 1px;margin:8px;}
+.pane {background-color:white;}
+.pane-header {margin-right: 8px;font-size:1.2em;color:green;border-bottom:solid 1px gray;background-color:#dfe;padding:4px;}
+.pane-header img {margin-right:4px;}
+.pane-subheader {font-weight:normal;margin-left:12px;padding:6px;display:inline-block;font-size:1.0em;}
+.pane-body {margin:6px;}
+.pane-menubar {min-height:22px;}
+button.pane-close, button.pane-reopen, button.pane-min{height:18px;width:18px;border:none;background:transparent;float:right;border-radius:5px;margin-right:4px;}
+button.pane-close {background-image:url(../images/pane-close.png);}
+button.pane-reopen {background-image:url(../images/pane-reopen.png);}
+button.pane-min {background-image:url(../images/pane-minimize.png);}
+
+/* conv pane */
+
+.post {margin:2px;margin-left:12px;border:solid gray 1px;padding:4px;position:relative;min-height:52px;}
+.post .read-dot {position:absolute;left:-14px;top:8px;cursor:pointer;}
+.post .avatar {float:left;width:50px;height:50px;margin-right:5px;}
+.post .avatar img {width:50px;height:50px;}
+.post a.nick {color:#00a; font-size:0.9em;padding-right:4px;}
+.post span.ago {color:#0a0; font-size:0.9em;padding-right:4px;}
+.post-expand-wrap {width:100%;position:relative;}
+.post-expand {position:absolute;right:4px;bottom:-7px;width:20px;height:20px;cursor:pointer;}
+.post-image {display:block;max-width:500px;}
+
+/* doc pane */
+
+.doc .content {max-height: 600px; overflow-y: scroll; border:solid 1px gray; padding:3px;}
+
+/* user & user search pane */
+
+.user .associations {max-height: 350px; overflow-y: scroll; border:solid 1px gray; padding:3px;}
+.users .avatar img {width:50px;height:50px;vertical-align: middle;margin:5px}
+
+/* event & event search pane */
+
+.event .avatar img {width:50px;height:50px;vertical-align: middle;margin:5px}
+
+/* project member pane */
+
+.project-members td.avatar img {width:50px;height:50px;margin-right:5px;}
+
+/* themes (also listed in main_controller) */
+
+.theme-small, .theme-small table {font-size: 0.9em !important;}
+.theme-large, .theme-large table {font-size: 1.1em !important;}
+.theme-fancy, .theme-fancy table {font-family: "Times";font-size: 1.2em !important;}
+/*DARK: white on black (high contrast)*/
+.theme-dark .pane, .theme-dark table {color:white !important; background-color:black;}
+.theme-dark a {color:#fca !important;}
+/*MUTED: black/gray on light gray (low contrast)*/
+.theme-muted .pane, .theme-muted table {color:#333 !important;background-color:#ccc;}
+/*PRINCESS: red and green on light pink panes; purple outside of panes*/
+.theme-princess {background-color:#ddf;}
+.theme-princess .pane, .theme-princess table {color:#a88 !important;background-color:#fef;}
+/*FOREST: green and brown on light green panes; dark green outside of panes*/
+.theme-forest {background-color:#080;}
+.theme-forest .pane, .theme-forest table, {color:green !important;background-color:#dec;}
+
+/* jGrowl overrides */
+.jGrowl.bottom-left {
+    left: 150px;
+    bottom: 30px;
+}
+
+/* markdown editor (copied from the demo page) */
+.wmd-panel
+{
+	margin-left: 25%;
+	margin-right: 25%;
+	width: 50%;
+	min-width: 500px;
+}
+.wmd-button-bar
+{
+	width: 100%;
+	background-color: Silver;
+}
+
+.wmd-input
+{
+	height: 300px;
+	width: 100%;
+	background-color: Gainsboro;
+	border: 1px solid DarkGray;
+}
+.wmd-preview
+{
+	background-color: #c0e0ff;
+}
+.wmd-button-row
+{
+	position: relative;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	margin-top: 10px;
+	padding: 0px;
+	height: 20px;
+}
+.wmd-spacer
+{
+	width: 1px;
+	height: 20px;
+	margin-left: 14px;
+
+	position: absolute;
+	background-color: Silver;
+	display: inline-block;
+	list-style: none;
+}
+.wmd-button {
+    width: 20px;
+    height: 20px;
+    padding-left: 2px;
+    padding-right: 3px;
+    position: absolute;
+    display: inline-block;
+    list-style: none;
+    cursor: pointer;
+}
+.wmd-button > span {
+    background-image: url(../images/wmd-buttons.png);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+.wmd-spacer1
+{
+    left: 50px;
+}
+.wmd-spacer2
+{
+    left: 175px;
+}
+.wmd-spacer3
+{
+    left: 300px;
+}
+.wmd-prompt-background
+{
+	background-color: Black;
+}
+.wmd-prompt-dialog
+{
+	border: 1px solid #999999;
+	background-color: #F5F5F5;
+}
+.wmd-prompt-dialog > div {
+	font-size: 0.8em;
+	font-family: arial, helvetica, sans-serif;
+}
+.wmd-prompt-dialog > form > input[type="text"] {
+	border: 1px solid #999999;
+	color: black;
+}
+.wmd-prompt-dialog > form > input[type="button"]{
+	border: 1px solid #888888;
+	font-family: trebuchet MS, helvetica, sans-serif;
+	font-size: 0.8em;
+	font-weight: bold;
+}

@@ -1,0 +1,47 @@
+dev: "Y" #Y or N = developer mode (affects which config entries are used)
+homeUrl: "http://www.autistic.zone"
+linkbackUrl: "https://www.autistic.zone"
+domain: "www.autistic.zone" #domain name for SSL binding
+siteName: "Autistic Zone"
+amazonS3: #credentials for S3
+  id: "AKIAJF2MTQCJ3F3CTFEQ"
+  key: "0vRJzp1HMBBFkSvv3RzM53O+Lbk6USgpmk5u216Q"
+  endpoint: "https://s3-us-west-2.amazonaws.com"
+amazonS3Avatar: #images defined in xuser.avatar_no
+  bucket: "autisticzoneavatar"
+  url: "http://autisticzoneavatar.s3-website-us-west-2.amazonaws.com/" #root of public url for graphics in the bucket, with final /
+amazonS3Post: #images defined in conv_post
+  bucket: "autisticzonepost"
+  url: "http://autisticzonepost.s3-website-us-west-2.amazonaws.com/" #root of public url for graphics in the bucket, with final /
+smtp:
+  host: "email-smtp.us-west-2.amazonaws.com"
+  port: 587 #465, 25, 587, 2587
+  user: "AKIAJNSQORIZOAZYKCCA"
+  password: "Am4vHsX3LbxbtyrPz7CMLNR7Koo53L2WRrXa9F5C0syq"
+  from: "star@divergentlabs.org" #amazon SES only works with preverified senders
+database:
+  connection: "postgres://postgres:hopkins3b@autistic.zone:5432/autzone"
+  connection_dev: "postgres://star:@localhost:5432/autzone"
+deletion: #constants determining when to delete records
+  conv_days: 365 #days after which convs are deleted counting from the date they are closed
+site_admin: #constants determining assignment of site admins
+  min: 5 #at least this many admins
+  max: 250 #at most this many admins
+  percent: 25 #between min/max, the percent of user base that is an admin
+spam: #constants determining spam/throttle behavior
+  reaction_weight_days: 90 #days at which reactions to posts no longer matter for spam_count (weight of reaction declines linearly)
+  restrict1_score: 7 #spam_count needed to achieve restriction level 1
+  restrict2_score: 14 #spam_count needed to achieve restriction level 2
+  restrict3_score: 21 #spam_count needed to achieve restriction level 3
+  restrict1_rest_days: 1 #number of days between posts required at restriction level 1
+  restrict1_chars: 1000 #max number of chars allowed at restriction level 1
+  restrict2_rest_days: 3 #number of days between posts required at restriction level 2
+  restrict2_chars: 500 #max number of chars allowed at restriction level 2
+  restrict3_rest_days: 14 #number of days between posts required at restriction level 3
+  restrict3_chars: 250 #max number of chars allowed at restriction level 3
+operation: #other operational logic
+  root_doc_vote_min: 10 #min number of people required to pass a root doc or system proposal
+  root_doc_vote_days: 14 #days to keep a root doc or system proposal open
+  conv_inactive_days: 15 #days after which a conv is considered inactive
+  conv_old_days: 180 #days after which a conv is considered old and is closed (not to be confused with deletion.conv_days)
+  conv_too_big: 5000 #char count over which a conv is considered too big and is closed

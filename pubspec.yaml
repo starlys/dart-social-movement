@@ -1,0 +1,20 @@
+name: autzone
+description: Civil rights social platform
+dependencies:
+  browser: any
+  dart_config: any #http://pub.darglang.org/packages/dart_config
+  postgresql: "^0.3.3" #http://pub.darglang.org/packages/postgresql
+  intl: any #http://pub.darglang.org/packages/intl
+  #memcached_client:
+  #memcache: "^0.2.0"
+  rpc: "^0.5.6" #http://pub.darglang.org/packages/rpc
+  route: any
+  #exportable: any #http://pub.darglang.org/packages/exportable
+  timezone: any #"^0.4.3" #http://pub.darglang.org/packages/timezone
+  mailer: any #http://pub.darglang.org/packages/mailer
+  diff_match_patch: any #http://pub.darglang.org/packages/diff_match_patch
+  image: any #http://pub.darglang.org/packages/image
+  amazon_s3: any #http://pub.darglang.org/packages/amazon_s3
+  http: any #http://pub.darglang.org/packages/http
+transformers:
+homepage: http://www.divergentlabs.org

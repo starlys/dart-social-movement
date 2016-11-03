@@ -1,11 +1,14 @@
+# TEMPLATE - INCOMPLETE! To use this: (1) copy it to config.yaml, (2) add the credentials for amazon
+# and the database where it has the word USER_HERE and PASSWORD_HERE below, (3) remove this comment
+
 dev: "Y" #Y or N = developer mode (affects which config entries are used)
 homeUrl: "http://www.autistic.zone"
 linkbackUrl: "https://www.autistic.zone"
 domain: "www.autistic.zone" #domain name for SSL binding
 siteName: "Autistic Zone"
 amazonS3: #credentials for S3
-  id: "AKIAJF2MTQCJ3F3CTFEQ"
-  key: "0vRJzp1HMBBFkSvv3RzM53O+Lbk6USgpmk5u216Q"
+  id: "USER_HERE"
+  key: "PASSWORD_HERE"
   endpoint: "https://s3-us-west-2.amazonaws.com"
 amazonS3Avatar: #images defined in xuser.avatar_no
   bucket: "autisticzoneavatar"
@@ -16,11 +19,11 @@ amazonS3Post: #images defined in conv_post
 smtp:
   host: "email-smtp.us-west-2.amazonaws.com"
   port: 587 #465, 25, 587, 2587
-  user: "AKIAJNSQORIZOAZYKCCA"
-  password: "Am4vHsX3LbxbtyrPz7CMLNR7Koo53L2WRrXa9F5C0syq"
+  user: "USER_HERE"
+  password: "PASSWORD_HERE"
   from: "star@divergentlabs.org" #amazon SES only works with preverified senders
 database:
-  connection: "postgres://postgres:hopkins3b@autistic.zone:5432/autzone"
+  connection: "postgres://postgres:PASSWORD_HERE@autistic.zone:5432/autzone"
   connection_dev: "postgres://star:@localhost:5432/autzone"
 deletion: #constants determining when to delete records
   conv_days: 365 #days after which convs are deleted counting from the date they are closed

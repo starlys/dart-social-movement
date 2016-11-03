@@ -7,3 +7,5 @@ client/packages/*
 *alive*.txt
 *finished.txt
 *starting.txt
+
+config/config.yaml

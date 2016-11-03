@@ -1,6 +1,6 @@
 # dart-social-movement
 
-## WWat it is
+## What it is
 
 'dart-social-movement' is the social media platform that powers autistic.zone and can be used to host any social media platform around justice or rights cause. While it has many features like facebook (conversations, groups, image posts, likes, events), it is organized around a communally edited outline of projects and communally edited resources, plus root documents describing the movement's agenda.
 

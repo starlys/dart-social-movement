@@ -1,5 +1,0 @@
-2016-10-19 08-41-47:ProjectUserQuery, Exception: Only members can query users in private projects
-2016-10-19 09-18-39:EventSave, type 'DateTime' is not a subtype of type 'TZDateTime' of 'other' where
-  DateTime is from dart:core
-  TZDateTime is from package:timezone/src/date_time.dart
-

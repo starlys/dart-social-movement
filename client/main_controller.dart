@@ -77,8 +77,8 @@ class MainController {
     //then show some helpful information
     try {
       if (Globals.nick == null && Globals.panes.length == 0) {
-        await PaneFactory.create(new PaneKey('doc/s=PUB'));
-        await PaneFactory.create(new PaneKey('resourcetree'));
+        await PaneFactory.create(new PaneKey('doc/s=PUB'), doScroll: false);
+        await PaneFactory.create(new PaneKey('resourcetree'), doScroll: false);
       }
     } catch (ex) {} //can't abort startapp if this fails
 

@@ -22267,7 +22267,7 @@
     BasePane_buildSkeletonHtml2_closure0: {
       "^": "Closure:1;$this",
       call$1: [function(e) {
-        A.PaneFactory_create(this.$this.paneKey);
+        A.PaneFactory_create(this.$this.paneKey, true);
       }, null, null, 2, 0, null, 0, [], "call"]
     },
     BasePane_buildSkeletonHtml2_closure1: {
@@ -22432,7 +22432,7 @@
               case 4:
                 // returning from await.
                 if ($async$result.get$isOK())
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
               case 1:
                 // return
                 return P._asyncHelper($async$returnValue, 0, $async$completer, null);
@@ -22462,7 +22462,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -22491,7 +22491,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -22549,7 +22549,7 @@
               case 5:
                 // returning from await.
                 if ($async$result.get$isOK())
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
               case 1:
                 // return
                 return P._asyncHelper($async$returnValue, 0, $async$completer, null);
@@ -22618,7 +22618,7 @@
               case 6:
                 // returning from await.
                 if ($async$result.get$isOK())
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
               case 1:
                 // return
                 return P._asyncHelper($async$returnValue, 0, $async$completer, null);
@@ -23728,7 +23728,7 @@
               case 3:
                 // returning from await.
                 if ($async$result.get$isOK())
-                  A.PaneFactory_create(t2.paneKey);
+                  A.PaneFactory_create(t2.paneKey, true);
               case 1:
                 // return
                 return P._asyncHelper($async$returnValue, 0, $async$completer, null);
@@ -24373,7 +24373,7 @@
                 t1 = $async$self._edit_markdown_dialog$_dtext;
                 J.set$value$x(edElement, t1 == null ? "" : t1);
                 $async$self.frame.appendChild(edElement);
-                J.insertAdjacentHtml$4$treeSanitizer$validator$x($async$self.frame, "beforeend", '<div class="explain">This site uses <a target="_blank" href="https://gist.github.com/budparr/9257428">Markdown</a> for editing.</div>', null, null);
+                J.insertAdjacentHtml$4$treeSanitizer$validator$x($async$self.frame, "beforeend", '<div class="explain">This site uses <a target="_blank" href="https://gist.github.com/budparr/9257428">Markdown</a> for editing.</div>', C.C__TrustedHtmlTreeSanitizer, null);
                 bar = M.ButtonBarBuilder$($async$self.frame, null);
                 bar.addButton$2("OK", new L.EditMarkdownDialog_build_closure($async$self, edElement));
                 bar.addButton$2("Cancel", new L.EditMarkdownDialog_build_closure0($async$self));
@@ -24830,7 +24830,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create(t1.paneKey);
+                  A.PaneFactory_create(t1.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -24911,7 +24911,7 @@
                   $async$goto = 1;
                   break;
                 }
-                A.PaneFactory_create(t1.paneKey);
+                A.PaneFactory_create(t1.paneKey, true);
                 A.PaneFactory_createFromString("conv/" + H.S(convId));
               case 1:
                 // return
@@ -25945,6 +25945,7 @@
                 form = O.FormBuilder$($async$self.frame, "Recover Password");
                 nickInput = form.addInput$4("Nickname", 400, 40, $async$self._nick);
                 J.set$disabled$x(nickInput, true);
+                form.addExplanation$2(nickInput, "An email has been sent to you. Leave this open, but go check your email and note the code given in the email. Then copy the code below.");
                 codeInput = form.addInput$3("Recovery code from email", 200, 10);
                 pw1Input = form.addInput$3("New password", 200, 40);
                 pw2Input = form.addInput$3("Repeat password", 200, 40);
@@ -26014,7 +26015,7 @@
                   break;
                 }
                 t1 = {life: 5000};
-                self.jQuery.jGrowl("Account recovered.", t1);
+                self.jQuery.jGrowl("Account recovered. Please log in again.", t1);
                 $async$self.$this.hide$1(false);
               case 1:
                 // return
@@ -26166,11 +26167,11 @@
             case 18:
               // then
               $async$goto = 20;
-              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$("doc/s=PUB")), $async$MainController_startApp, $async$completer);
+              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$("doc/s=PUB"), false), $async$MainController_startApp, $async$completer);
             case 20:
               // returning from await.
               $async$goto = 21;
-              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$("resourcetree")), $async$MainController_startApp, $async$completer);
+              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$("resourcetree"), false), $async$MainController_startApp, $async$completer);
             case 21:
               // returning from await.
             case 19:
@@ -26377,7 +26378,7 @@
                 break;
               }
               $async$goto = 3;
-              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$(paneKey)), $async$MainController_processUrl, $async$completer);
+              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$(paneKey), true), $async$MainController_processUrl, $async$completer);
             case 3:
               // returning from await.
             case 1:
@@ -27213,7 +27214,7 @@
             case 0:
               // Function start
               $async$goto = 3;
-              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$(pkfull)), $async$PaneFactory_createFromString, $async$completer);
+              return P._asyncHelper(A.PaneFactory_create(Z.PaneKey$(pkfull), true), $async$PaneFactory_createFromString, $async$completer);
             case 3:
               // returning from await.
               $async$returnValue = $async$result;
@@ -27230,7 +27231,7 @@
       });
       return P._asyncHelper(null, $async$PaneFactory_createFromString, $async$completer, null);
     },
-    PaneFactory_create: function(pk) {
+    PaneFactory_create: function(pk, doScroll) {
       var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$returnValue, $async$handler = 2, $async$currentError, main1, t1, t2, t3, isReopeningLastPane, existingSamePane, numExpanded, t4, _i, p, t5, paneType, t6, item;
       var $async$PaneFactory_create = P._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1) {
@@ -27443,7 +27444,7 @@
                 T.PushQueueHandler__removeNotifyItem(item, true);
               } else
                 T.PushQueueHandler__removeItem(item, true);
-              if (!isReopeningLastPane) {
+              if (doScroll && !isReopeningLastPane) {
                 t3 = new L.ElementAnimation(P.LinkedHashMap__makeEmpty(), P.LinkedHashMap__makeEmpty(), P.LinkedHashMap__makeEmpty(), P.LinkedHashMap__makeEmpty(), main1, false, 500, null, null, 0, false, false, C.Easing_9, P.StreamController_StreamController$broadcast(null, null, false, null), P.StreamController_StreamController$broadcast(null, null, false, null));
                 t3.toProperties = P.LinkedHashMap__makeLiteral(["scrollTop", t1 - t2 + 100 + 30]);
                 t3.run$0(0);
@@ -27514,7 +27515,7 @@
       call$1: function(p2) {
         var t1 = $.$get$Globals_panes();
         if (J.$eq$((t1 && C.JSArray_methods).get$last(t1), p2))
-          L.MainController_changeUrlFragment(p2.paneKey);
+          L.MainController_changeUrlFragment(p2.paneKey._key);
       }
     }
   }], ["", "../client/root/pane_key.dart",, Z, {
@@ -28316,7 +28317,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -28344,7 +28345,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -28404,7 +28405,7 @@
                   $async$goto = 1;
                   break;
                 }
-                A.PaneFactory_create($async$self.paneKey);
+                A.PaneFactory_create($async$self.paneKey, true);
                 A.PaneFactory_createFromString("conv/" + H.S(convId));
               case 1:
                 // return
@@ -28451,7 +28452,7 @@
                   t1 = {life: 5000};
                   self.jQuery.jGrowl("Document created. Press Edit to start entering content.", t1);
                   A.PaneFactory_createFromString("doc/" + H.S(resp.get$newId()));
-                  A.PaneFactory_create($async$self.paneKey);
+                  A.PaneFactory_create($async$self.paneKey, true);
                 }
               case 1:
                 // return
@@ -28763,7 +28764,7 @@
               case 3:
                 // returning from await.
                 if ($async$result === true) {
-                  A.PaneFactory_create(t1.paneKey);
+                  A.PaneFactory_create(t1.paneKey, true);
                   F.Messages_criticalMessage("Your new project will be reviewed by admins then posted later.");
                 }
               case 1:
@@ -29976,7 +29977,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create(t1.paneKey);
+                  A.PaneFactory_create(t1.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -30040,7 +30041,7 @@
                 return P._asyncHelper(L.RpcLib_command("ResourceTriage", t1), $async$call$1, $async$completer);
               case 2:
                 // returning from await.
-                A.PaneFactory_create(t2.paneKey);
+                A.PaneFactory_create(t2.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -30210,7 +30211,7 @@
         return P._asyncHelper(null, $async$init$1, $async$completer, null);
       },
       insertDetails$2: function(detailBox, catId) {
-        var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$handler = 1, $async$currentError, $async$self = this, t1, re, t2, pdiv, t3, t4, e, $async$temp1;
+        var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$handler = 1, $async$currentError, $async$self = this, t1, re, t2, pdiv, t3, e, t4, $async$temp1;
         var $async$insertDetails$2 = P._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
           if ($async$errorCode === 1) {
             $async$currentError = $async$result;
@@ -30237,8 +30238,15 @@
                   t2 = document;
                   pdiv = t2.createElement("div");
                   t2 = J.getInterceptor$x(re);
-                  if (t2.get$url(re) != null && J.$gt$n(J.get$length$asx(t2.get$url(re)), 0))
-                    J.insertAdjacentHtml$4$treeSanitizer$validator$x(pdiv, "beforeend", '<a target="_blank" href="' + H.S(t2.get$url(re)) + '"><img src="images/ext_link.png"/></a> ', null, null);
+                  if (t2.get$url(re) != null && J.$gt$n(J.get$length$asx(t2.get$url(re)), 0)) {
+                    t3 = document;
+                    e = t3.createElement("a");
+                    t3 = J.getInterceptor$x(e);
+                    t3.set$target(e, "_blank");
+                    t3.set$href(e, t2.get$url(re));
+                    e.appendChild(W.ImageElement_ImageElement(null, "images/ext_link.png", null));
+                    pdiv.appendChild(e);
+                  }
                   t3 = t2.get$title(re);
                   t2 = "resource/" + H.S(t2.get$id(re));
                   t4 = document;
@@ -32051,7 +32059,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create(t1.paneKey);
+                  A.PaneFactory_create(t1.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -32082,7 +32090,7 @@
               case 2:
                 // returning from await.
                 if ($async$result === true)
-                  A.PaneFactory_create($async$self.$this.paneKey);
+                  A.PaneFactory_create($async$self.$this.paneKey, true);
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:

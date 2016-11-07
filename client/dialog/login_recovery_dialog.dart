@@ -19,6 +19,7 @@ class LoginRecoveryDialog extends DialogBox {
     FormBuilder form = new FormBuilder(frame, 'Recover Password');
     InputElement nickInput = form.addInput('Nickname', typicalControlWidth(), 40, _nick ?? '');
     if (_nick != null) nickInput.disabled = true;
+    form.addExplanation(nickInput, 'An email has been sent to you. Leave this open, but go check your email and note the code given in the email. Then copy the code below.');
     InputElement codeInput = form.addInput('Recovery code from email', 200, 10);
     InputElement pw1Input = form.addInput('New password', 200, 40);
     InputElement pw2Input = form.addInput('Repeat password', 200, 40);
@@ -43,7 +44,7 @@ class LoginRecoveryDialog extends DialogBox {
       if (!response.isOK) {form.showError(response.errorMessage); return;}
 
       //success
-      Messages.timed('Account recovered.');
+      Messages.timed('Account recovered. Please log in again.');
       hide(false);
     });
     bar.addButton('Cancel', (e) {

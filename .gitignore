@@ -3,9 +3,13 @@
 client/.pub/*
 packages/*
 client/packages/*
+
 *active*.txt
 *alive*.txt
 *finished.txt
 *starting.txt
+api20*.txt
+worker20*.txt
+sendmail20*.txt
 
 config/config.yaml

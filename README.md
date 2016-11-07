@@ -12,14 +12,26 @@ Go ahead and take a look at [Autistic.zone](http://www.autistic.zone)
 
 ## The team
 
-The project leader and developer is Star Ford <starluciaford@gmail.com>. Requirements and testing were done by a team at [Divergent Labs Rhizome Program](http://www.divergentlabs.org/rhizome)
+The project leader and developer is Star Ford <star@divergentlabs.org>. Requirements and testing were done by a team at [Divergent Labs Rhizome Program](http://www.divergentlabs.org/rhizome)
 
 ## The tools
 
 Client side, it is a single page app written in Dart.
 
-Server side, it is also in Dart, and uses a PostgreSQL database server. Images use Amazon blobs for storage.
+Server side, it is also in Dart, and uses a PostgreSQL database server. Images are stored on Amazon blobs.
 
 ## Contributing
 
 The documentation is not currently on github. Contact Star to get started.
+
+## License
+
+    /* dart-social-movement - social media platform
+     * Copyright (C) 2016 Divergent Labs, Inc - star@divergentlabs.org
+     * This program is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, version 3 or later.
+     * You should have received a copy of the GNU General Public License
+     * along with this program.  If not, see <http://www.gnu.org/licenses/>
+     * or LICENSE.txt file.
+     */

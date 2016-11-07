@@ -28,7 +28,7 @@ class EditMarkdownDialog extends DialogBox {
       ..style.height = HtmlLib.asPx((dialogHeight() * 0.6).round())
       ..value = _dtext ?? '';
     frame.append(edElement);
-    frame.appendHtml('<div class="explain">This site uses <a target="_blank" href="https://gist.github.com/budparr/9257428">Markdown</a> for editing.</div>');
+    frame.appendHtml('<div class="explain">This site uses <a target="_blank" href="https://gist.github.com/budparr/9257428">Markdown</a> for editing.</div>', treeSanitizer: NodeTreeSanitizer.trusted);
 
     //close/cancel buttons
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);

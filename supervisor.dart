@@ -3,7 +3,7 @@ import 'dart:async';
 
 //when mail should be sent
 DateTime _nextMailUtc = utcNow();
-Duration _mailInterval = new Duration(minutes:10);
+Duration _mailInterval = new Duration(minutes:2);
 
 ///This is the supervisor script that should be started when the system boots.
 /// It cooperates with the 'autzone' shell script to start/stop the services
@@ -106,7 +106,7 @@ Future timerTick() async {
     //if it's time to send mail, run that process
     if (utcNow().isAfter(_nextMailUtc)) {
       await writeDebugTaskFile(true, 'sendmail');
-      log("supervisor: starting sendmail");
+      //log("supervisor: starting sendmail");
       Process.start('dart', [rootPath() + '/sendmail.dart'], workingDirectory: rootPath(), mode: ProcessStartMode.DETACHED);
       _nextMailUtc = utcNow().add(_mailInterval);
       await writeDebugTaskFile(false, 'sendmail');

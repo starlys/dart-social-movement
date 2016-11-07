@@ -1,4 +1,4 @@
-//import 'worker/mail_lib.dart';
+import 'worker/mail_lib.dart';
 import 'dart:async';
 import 'dart:io';
 import 'worker/globals.dart';
@@ -10,11 +10,11 @@ main() async {
   await Globals.config.init();
 
   //send mail
-  //String err = await MailLib.send(Globals.config, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
-  //print(err);
+  String err = await MailLib.send(Globals.config, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
+  print(err);
 
   //test infinite loop for mem leak
-  pulse();
+  //pulse();
 
   Globals.config.stopWatching();
 }

@@ -38,7 +38,7 @@ class PaneFactory {
 
   //create a pane from a pane key, add to globals,
   // show on screen and initialize
-  static Future<BasePane> create(PaneKey pk) async {
+  static Future<BasePane> create(PaneKey pk, {bool doScroll: true}) async {
     //record activity
     Globals.lastActivityUtc = WLib.utcNow();
     MainController.doOnUserAction();
@@ -119,7 +119,7 @@ class PaneFactory {
     PushQueueHandler.notifyPaneOpened(p);
 
     //scroll to new pane
-    if (!isReopeningLastPane) {
+    if (doScroll && !isReopeningLastPane) {
       new ElementAnimation(main1)
         ..properties = {'scrollTop': priorScrollHeight + 30}
         ..run();

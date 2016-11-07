@@ -34,8 +34,12 @@ class ResourceTreePane extends BaseTreePane {
     detailBox.append(new HeadingElement.h3() ..text = 'Resources in this category');
     for (ResourceItem re in _resources.items) {
       DivElement pdiv = new DivElement();
-      if (re.url != null && re.url.length > 0)
-        pdiv.appendHtml('<a target="_blank" href="${re.url}"><img src="images/ext_link.png"/></a> ');
+      if (re.url != null && re.url.length > 0) {
+        var link = new AnchorElement() ..target = '_blank' ..href = re.url;
+        link.append(new ImageElement(src: 'images/ext_link.png'));
+        pdiv.append(link);
+        //fails: pdiv.appendHtml('<a target="_blank" href="${re.url}"><img src="images/ext_link.png"/></a> ');
+      }
       HtmlLib.appendLinkToPane(pdiv, re.title, 'resource/${re.id}', asDiv: false);
       detailBox.append(pdiv);
       //idea to put description here, but not sure if a good idea: HtmlLib.insertCollapsed1(pdiv, re.description);

@@ -365,11 +365,14 @@ class ConvPane extends BasePane {
     if (!_isJoined) {
       paneMenuBar.addButton('Join', (e) async {
         if (!Messages.checkLoggedIn()) return;
-        APIResponseBase response = await RpcLib.command('ConvUserSave', new ConvUserSaveRequest()
+        ConvUserSaveResponse response = await RpcLib.convUserSave(new ConvUserSaveRequest()
           ..convId = _convId ..status = 'J');
-        if (response.isOK) {
+        if (response.base.isOK) {
           recreatePane(); //reload whole pane now that we've joined
         }
+        if (response.action == 'J') Messages.timed('Joined!');
+        if (response.action == 'R') Messages.timed('A join request was sent to the project leadership for their approval.');
+        if (response.action == 'X') Messages.timed('You are not allowed to join this private project.');
       });
     }
 

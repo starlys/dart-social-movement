@@ -531,7 +531,7 @@
     if (!init.globalFunctions)
       init.globalFunctions = map();
     if (!init.interceptedNames)
-      init.interceptedNames = {set$$delete: 1, set$_html$_selector: 1, set$accept: 1, set$active: 1, set$body: 1, set$borderTopWidth: 1, set$bottom: 1, set$checked: 1, set$children: 1, set$className: 1, set$code: 1, set$colSpan: 1, set$ctrlKey: 1, set$description: 1, set$disabled: 1, set$display: 1, set$duration: 1, set$error: 1, set$errorCode: 1, set$files: 1, set$height: 1, set$hostname: 1, set$href: 1, set$id: 1, set$innerHtml: 1, set$isCollapsed: 1, set$items: 1, set$kind: 1, set$lastChild: 1, set$left: 1, set$length: 1, set$location: 1, set$max: 1, set$maxHeight: 1, set$maxLength: 1, set$min: 1, set$mode: 1, set$multiple: 1, set$name: 1, set$newValue: 1, set$next: 1, set$nodeType: 1, set$open: 1, set$options: 1, set$overflowY: 1, set$ownerDocument: 1, set$parent: 1, set$parentNode: 1, set$password: 1, set$placeholder: 1, set$port: 1, set$previousElementSibling: 1, set$previousNode: 1, set$protocol: 1, set$readOnly: 1, set$reason: 1, set$responseText: 1, set$result: 1, set$rows: 1, set$selected: 1, set$selectedIndex: 1, set$src: 1, set$start: 1, set$startTime: 1, set$status: 1, set$style: 1, set$tagName: 1, set$target: 1, set$text: 1, set$timeout: 1, set$title: 1, set$top: 1, set$type: 1, set$url: 1, set$value: 1, set$valueAsNumber: 1, set$visible: 1, set$width: 1, get$$delete: 1, get$active: 1, get$attributes: 1, get$body: 1, get$checked: 1, get$children: 1, get$classes: 1, get$clear: 1, get$code: 1, get$ctrlKey: 1, get$currentTarget: 1, get$dataset: 1, get$description: 1, get$display: 1, get$duration: 1, get$end: 1, get$error: 1, get$errorCode: 1, get$files: 1, get$first: 1, get$hashCode: 1, get$height: 1, get$host: 1, get$hostname: 1, get$id: 1, get$isCollapsed: 1, get$isEmpty: 1, get$isNegative: 1, get$isNotEmpty: 1, get$items: 1, get$iterator: 1, get$keyCode: 1, get$keys: 1, get$kind: 1, get$last: 1, get$lastChild: 1, get$left: 1, get$length: 1, get$location: 1, get$mode: 1, get$name: 1, get$newValue: 1, get$next: 1, get$nodeType: 1, get$nodes: 1, get$offsetHeight: 1, get$onBlocked: 1, get$onChange: 1, get$onClick: 1, get$onKeyDown: 1, get$onUpgradeNeeded: 1, get$open: 1, get$options: 1, get$ownerDocument: 1, get$parent: 1, get$parentNode: 1, get$password: 1, get$path: 1, get$port: 1, get$previousElementSibling: 1, get$previousNode: 1, get$protocol: 1, get$query: 1, get$reason: 1, get$responseText: 1, get$result: 1, get$runtimeType: 1, get$selected: 1, get$selectedIndex: 1, get$single: 1, get$start: 1, get$startTime: 1, get$status: 1, get$stream: 1, get$style: 1, get$tagName: 1, get$target: 1, get$text: 1, get$timeout: 1, get$title: 1, get$top: 1, get$type: 1, get$url: 1, get$value: 1, get$valueAsNumber: 1, get$values: 1, get$visible: 1, get$width: 1, $add: 1, $and: 1, $div: 1, $eq: 1, $ge: 1, $gt: 1, $index: 1, $indexSet: 1, $le: 1, $lt: 1, $mod: 1, $mul: 1, $negate: 1, $shl: 1, $shr: 1, $sub: 1, $tdiv: 1, $xor: 1, __isolate_helper$_add$1: 1, _add$1: 1, _addEventListener$3: 1, _async$_add$1: 1, _browserPropertyName$1: 1, _checkPosition$3: 1, _clear$0: 1, _clearChildren$0: 1, _collection$_remove$1: 1, _defaultSplit$1: 1, _ensureRequestAnimationFrame$0: 1, _get$1: 1, _getPropertyValueHelper$1: 1, _indexed_db$_add$1: 1, _indexed_db$_add$2: 1, _insertAdjacentNode$2: 1, _invalidPosition$3: 1, _remove$2: 1, _removeChild$1: 1, _removeEventListener$3: 1, _removeWhere$2: 1, _replaceChild$2: 1, _requestAnimationFrame$1: 1, _setRangeFast$4: 1, _shlPositive$1: 1, _shrOtherPositive$1: 1, _shrReceiverPositive$1: 1, _tdivFast$1: 1, _tdivSlow$1: 1, add$1: 1, add$2: 1, add$4$childrenCollapsed: 1, addAll$1: 1, addCell$0: 1, addEventListener$3: 1, addRow$0: 1, allMatches$1: 1, allMatches$2: 1, any$1: 1, append$1: 1, appendHtml$1: 1, appendHtml$3$treeSanitizer$validator: 1, appendHtml$4$NodeTreeSanitizer$treeSanitizer$validator: 1, appendText$1: 1, cancel$0: 1, cancel$1: 1, checkGrowable$1: 1, checkMutable$1: 1, children$0: 1, children$1: 1, clear$0: 1, clone$0: 1, clone$1: 1, clone$2: 1, close$0: 1, codeUnitAt$1: 1, collapse$0: 1, collapse$1: 1, complete$0: 1, complete$1: 1, contains$1: 1, contains$2: 1, containsKey$1: 1, createFragment$2$treeSanitizer: 1, createFragment$3$treeSanitizer$validator: 1, defaultValue$1: 1, delete$0: 1, delete$1: 1, elementAt$1: 1, endsWith$1: 1, fillRange$3: 1, find$1: 1, firstWhere$2$orElse: 1, floor$0: 1, focus$0: 1, fold$2: 1, forEach$1: 1, forEach$2: 1, getBoundingClientRect$0: 1, getComputedStyle$0: 1, getComputedStyle$1: 1, getPropertyValue$1: 1, getRange$2: 1, indexOf$1: 1, indexOf$2: 1, insertAdjacentElement$2: 1, insertAdjacentHtml$4$treeSanitizer$validator: 1, join$1: 1, lastChild$0: 1, load$0: 1, map$1: 1, matchAsPrefix$2: 1, matches$1: 1, matchesWithAncestors$1: 1, modify$1: 1, next$0: 1, next$1: 1, noSuchMethod$1: 1, open$0: 1, open$1: 1, open$2: 1, open$3: 1, open$3$async: 1, open$4$onBlocked$onUpgradeNeeded$version: 1, open$5$async$password$user: 1, padLeft$2: 1, parent$0: 1, parent$1: 1, parentNode$0: 1, pause$0: 1, pause$1: 1, preventDefault$0: 1, previousNode$0: 1, putIfAbsent$2: 1, querySelector$1: 1, querySelectorAll$1: 1, remainder$1: 1, remove$0: 1, remove$1: 1, removeEventListener$3: 1, removeRange$2: 1, removeWhere$1: 1, replaceAll$2: 1, replaceRange$3: 1, replaceWith$1: 1, result$0: 1, resume$0: 1, round$0: 1, run$0: 1, run$1: 1, scrollIntoView$0: 1, scrollIntoView$1: 1, send$1: 1, send$2: 1, setInnerHtml$1: 1, setInnerHtml$2$treeSanitizer: 1, setInnerHtml$3$treeSanitizer$validator: 1, setProperty$3: 1, setRange$3: 1, setRange$4: 1, show$0: 1, singleWhere$1: 1, skip$1: 1, split$1: 1, startsWith$1: 1, startsWith$2: 1, stopPropagation$0: 1, sublist$1: 1, sublist$2: 1, substring$1: 1, substring$2: 1, take$1: 1, text$0: 1, timeout$1: 1, timeout$2$onTimeout: 1, toInt$0: 1, toList$0: 1, toList$1$growable: 1, toLowerCase$0: 1, toString$0: 1, toUpperCase$0: 1, trim$0: 1, where$1: 1};
+      init.interceptedNames = {set$$delete: 1, set$_html$_selector: 1, set$accept: 1, set$action: 1, set$active: 1, set$body: 1, set$borderTopWidth: 1, set$bottom: 1, set$checked: 1, set$children: 1, set$className: 1, set$code: 1, set$colSpan: 1, set$ctrlKey: 1, set$description: 1, set$disabled: 1, set$display: 1, set$duration: 1, set$error: 1, set$errorCode: 1, set$files: 1, set$height: 1, set$hostname: 1, set$href: 1, set$id: 1, set$innerHtml: 1, set$isCollapsed: 1, set$items: 1, set$kind: 1, set$lastChild: 1, set$left: 1, set$length: 1, set$location: 1, set$max: 1, set$maxHeight: 1, set$maxLength: 1, set$min: 1, set$mode: 1, set$multiple: 1, set$name: 1, set$newValue: 1, set$next: 1, set$nodeType: 1, set$open: 1, set$options: 1, set$overflowY: 1, set$ownerDocument: 1, set$parent: 1, set$parentNode: 1, set$password: 1, set$placeholder: 1, set$port: 1, set$previousElementSibling: 1, set$previousNode: 1, set$protocol: 1, set$readOnly: 1, set$reason: 1, set$responseText: 1, set$result: 1, set$rows: 1, set$selected: 1, set$selectedIndex: 1, set$src: 1, set$start: 1, set$startTime: 1, set$status: 1, set$style: 1, set$tagName: 1, set$target: 1, set$text: 1, set$timeout: 1, set$title: 1, set$top: 1, set$type: 1, set$url: 1, set$value: 1, set$valueAsNumber: 1, set$visible: 1, set$width: 1, get$$delete: 1, get$action: 1, get$active: 1, get$attributes: 1, get$body: 1, get$checked: 1, get$children: 1, get$classes: 1, get$clear: 1, get$code: 1, get$ctrlKey: 1, get$currentTarget: 1, get$dataset: 1, get$description: 1, get$display: 1, get$duration: 1, get$end: 1, get$error: 1, get$errorCode: 1, get$files: 1, get$first: 1, get$hashCode: 1, get$height: 1, get$host: 1, get$hostname: 1, get$id: 1, get$isCollapsed: 1, get$isEmpty: 1, get$isNegative: 1, get$isNotEmpty: 1, get$items: 1, get$iterator: 1, get$keyCode: 1, get$keys: 1, get$kind: 1, get$last: 1, get$lastChild: 1, get$left: 1, get$length: 1, get$location: 1, get$mode: 1, get$name: 1, get$newValue: 1, get$next: 1, get$nodeType: 1, get$nodes: 1, get$offsetHeight: 1, get$onBlocked: 1, get$onChange: 1, get$onClick: 1, get$onKeyDown: 1, get$onUpgradeNeeded: 1, get$open: 1, get$options: 1, get$ownerDocument: 1, get$parent: 1, get$parentNode: 1, get$password: 1, get$path: 1, get$port: 1, get$previousElementSibling: 1, get$previousNode: 1, get$protocol: 1, get$query: 1, get$reason: 1, get$responseText: 1, get$result: 1, get$runtimeType: 1, get$selected: 1, get$selectedIndex: 1, get$single: 1, get$start: 1, get$startTime: 1, get$status: 1, get$stream: 1, get$style: 1, get$tagName: 1, get$target: 1, get$text: 1, get$timeout: 1, get$title: 1, get$top: 1, get$type: 1, get$url: 1, get$value: 1, get$valueAsNumber: 1, get$values: 1, get$visible: 1, get$width: 1, $add: 1, $and: 1, $div: 1, $eq: 1, $ge: 1, $gt: 1, $index: 1, $indexSet: 1, $le: 1, $lt: 1, $mod: 1, $mul: 1, $negate: 1, $shl: 1, $shr: 1, $sub: 1, $tdiv: 1, $xor: 1, __isolate_helper$_add$1: 1, _add$1: 1, _addEventListener$3: 1, _async$_add$1: 1, _browserPropertyName$1: 1, _checkPosition$3: 1, _clear$0: 1, _clearChildren$0: 1, _collection$_remove$1: 1, _defaultSplit$1: 1, _ensureRequestAnimationFrame$0: 1, _get$1: 1, _getPropertyValueHelper$1: 1, _indexed_db$_add$1: 1, _indexed_db$_add$2: 1, _insertAdjacentNode$2: 1, _invalidPosition$3: 1, _remove$2: 1, _removeChild$1: 1, _removeEventListener$3: 1, _removeWhere$2: 1, _replaceChild$2: 1, _requestAnimationFrame$1: 1, _setRangeFast$4: 1, _shlPositive$1: 1, _shrOtherPositive$1: 1, _shrReceiverPositive$1: 1, _tdivFast$1: 1, _tdivSlow$1: 1, add$1: 1, add$2: 1, add$4$childrenCollapsed: 1, addAll$1: 1, addCell$0: 1, addEventListener$3: 1, addRow$0: 1, allMatches$1: 1, allMatches$2: 1, any$1: 1, append$1: 1, appendHtml$1: 1, appendHtml$3$treeSanitizer$validator: 1, appendHtml$4$NodeTreeSanitizer$treeSanitizer$validator: 1, appendText$1: 1, cancel$0: 1, cancel$1: 1, checkGrowable$1: 1, checkMutable$1: 1, children$0: 1, children$1: 1, clear$0: 1, clone$0: 1, clone$1: 1, clone$2: 1, close$0: 1, codeUnitAt$1: 1, collapse$0: 1, collapse$1: 1, complete$0: 1, complete$1: 1, contains$1: 1, contains$2: 1, containsKey$1: 1, createFragment$2$treeSanitizer: 1, createFragment$3$treeSanitizer$validator: 1, defaultValue$1: 1, delete$0: 1, delete$1: 1, elementAt$1: 1, endsWith$1: 1, fillRange$3: 1, find$1: 1, firstWhere$2$orElse: 1, floor$0: 1, focus$0: 1, fold$2: 1, forEach$1: 1, forEach$2: 1, getBoundingClientRect$0: 1, getComputedStyle$0: 1, getComputedStyle$1: 1, getPropertyValue$1: 1, getRange$2: 1, indexOf$1: 1, indexOf$2: 1, insertAdjacentElement$2: 1, insertAdjacentHtml$4$treeSanitizer$validator: 1, join$1: 1, lastChild$0: 1, load$0: 1, map$1: 1, matchAsPrefix$2: 1, matches$1: 1, matchesWithAncestors$1: 1, modify$1: 1, next$0: 1, next$1: 1, noSuchMethod$1: 1, open$0: 1, open$1: 1, open$2: 1, open$3: 1, open$3$async: 1, open$4$onBlocked$onUpgradeNeeded$version: 1, open$5$async$password$user: 1, padLeft$2: 1, parent$0: 1, parent$1: 1, parentNode$0: 1, pause$0: 1, pause$1: 1, preventDefault$0: 1, previousNode$0: 1, putIfAbsent$2: 1, querySelector$1: 1, querySelectorAll$1: 1, remainder$1: 1, remove$0: 1, remove$1: 1, removeEventListener$3: 1, removeRange$2: 1, removeWhere$1: 1, replaceAll$2: 1, replaceRange$3: 1, replaceWith$1: 1, result$0: 1, resume$0: 1, round$0: 1, run$0: 1, run$1: 1, scrollIntoView$0: 1, scrollIntoView$1: 1, send$1: 1, send$2: 1, setInnerHtml$1: 1, setInnerHtml$2$treeSanitizer: 1, setInnerHtml$3$treeSanitizer$validator: 1, setProperty$3: 1, setRange$3: 1, setRange$4: 1, show$0: 1, singleWhere$1: 1, skip$1: 1, split$1: 1, startsWith$1: 1, startsWith$2: 1, stopPropagation$0: 1, sublist$1: 1, sublist$2: 1, substring$1: 1, substring$2: 1, take$1: 1, text$0: 1, timeout$1: 1, timeout$2$onTimeout: 1, toInt$0: 1, toList$0: 1, toList$1$growable: 1, toLowerCase$0: 1, toString$0: 1, toUpperCase$0: 1, trim$0: 1, where$1: 1};
     var libraries = init.libraries;
     var mangledNames = init.mangledNames;
     var mangledGlobalNames = init.mangledGlobalNames;
@@ -16216,7 +16216,7 @@
       "%": "FormData"
     },
     FormElement: {
-      "^": "HtmlElement;length=,name%,target%",
+      "^": "HtmlElement;action=,length=,name%,target%",
       "%": "HTMLFormElement"
     },
     Gamepad: {
@@ -23704,7 +23704,7 @@
     ConvPane__buildMainButtonBar_closure: {
       "^": "Closure:6;$this",
       call$1: function(e) {
-        var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$returnValue, $async$handler = 2, $async$currentError, $async$self = this, t1, t2;
+        var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$returnValue, $async$handler = 2, $async$currentError, $async$self = this, t1, t2, response;
         var $async$call$1 = P._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
           if ($async$errorCode === 1) {
             $async$currentError = $async$result;
@@ -23724,11 +23724,25 @@
                 t1.convId = t2._conv_pane$_convId;
                 t1.status = "J";
                 $async$goto = 3;
-                return P._asyncHelper(L.RpcLib_command("ConvUserSave", t1), $async$call$1, $async$completer);
+                return P._asyncHelper(L.RpcLib_convUserSave(t1), $async$call$1, $async$completer);
               case 3:
                 // returning from await.
-                if ($async$result.get$isOK())
+                response = $async$result;
+                if (response.get$base().get$isOK())
                   A.PaneFactory_create(t2.paneKey, true);
+                t1 = J.getInterceptor$x(response);
+                if (t1.get$action(response) === "J") {
+                  t2 = {life: 5000};
+                  self.jQuery.jGrowl("Joined!", t2);
+                }
+                if (t1.get$action(response) === "R") {
+                  t2 = {life: 5000};
+                  self.jQuery.jGrowl("A join request was sent to the project leadership for their approval.", t2);
+                }
+                if (t1.get$action(response) === "X") {
+                  t1 = {life: 5000};
+                  self.jQuery.jGrowl("You are not allowed to join this private project.", t1);
+                }
               case 1:
                 // return
                 return P._asyncHelper($async$returnValue, 0, $async$completer, null);
@@ -27701,7 +27715,7 @@
     ProjectDialog_build_closure0: {
       "^": "Closure:6;$this,titleInput,descrInput,privacyInput,radioFixed",
       call$1: function(e) {
-        var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$handler = 1, $async$currentError, $async$self = this, leadershipCode, req, t1;
+        var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$handler = 1, $async$currentError, $async$self = this, leadershipCode, req, t1, t2;
         var $async$call$1 = P._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
           if ($async$errorCode === 1) {
             $async$currentError = $async$result;
@@ -27712,19 +27726,26 @@
               case 0:
                 // Function start
                 leadershipCode = J.get$checked$x($async$self.radioFixed) === true ? "F" : "D";
-                req = new X.ProjectSaveRequest(null, null, null, null, null, null, null, null);
+                req = new X.ProjectSaveRequest(null, null, null, null, null, null, null);
+                t1 = $async$self.$this;
+                t2 = t1._project_dialog$_projectId;
+                req.projectId = t2;
                 req.title = J.trim$0$s(J.get$value$x($async$self.titleInput));
                 req.description = J.trim$0$s(J.get$value$x($async$self.descrInput));
                 req.privacy = J.get$value$x($async$self.privacyInput);
                 req.leadership = leadershipCode;
-                t1 = $async$self.$this;
                 req.categoryId = t1._categoryId;
                 $async$goto = 2;
                 return P._asyncHelper(L.RpcLib_command("ProjectSave", req), $async$call$1, $async$completer);
               case 2:
                 // returning from await.
-                if ($async$result.get$isOK())
+                if ($async$result.get$isOK()) {
                   t1.hide$1(true);
+                  if (J.$eq$(t2, 0)) {
+                    t1 = {life: 5000};
+                    self.jQuery.jGrowl("Project will be reviewed for spam, then posted later.", t1);
+                  }
+                }
                 // implicit return
                 return P._asyncHelper(null, 0, $async$completer, null);
               case 1:
@@ -30880,6 +30901,40 @@
       });
       return P._asyncHelper(null, $async$RpcLib_convGet, $async$completer, null);
     },
+    RpcLib_convUserSave: function(req) {
+      var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$returnValue, $async$handler = 2, $async$currentError, t1, ret, $async$temp1;
+      var $async$RpcLib_convUserSave = P._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        if ($async$errorCode === 1) {
+          $async$currentError = $async$result;
+          $async$goto = $async$handler;
+        }
+        while (true)
+          switch ($async$goto) {
+            case 0:
+              // Function start
+              t1 = new X.APIResponseBase(null, null, "Y", null);
+              ret = new X.ConvUserSaveResponse(t1, null);
+              $async$temp1 = X;
+              $async$goto = 3;
+              return P._asyncHelper(L.RpcLib_rpcAsMap("ConvUserSave", req), $async$RpcLib_convUserSave, $async$completer);
+            case 3:
+              // returning from await.
+              $async$temp1.APIDeserializer_deserialize($async$result, ret, t1);
+              F.Messages_showAPIError(ret.base);
+              $async$returnValue = ret;
+              // goto return
+              $async$goto = 1;
+              break;
+            case 1:
+              // return
+              return P._asyncHelper($async$returnValue, 0, $async$completer, null);
+            case 2:
+              // rethrow
+              return P._asyncHelper($async$currentError, 1, $async$completer);
+          }
+      });
+      return P._asyncHelper(null, $async$RpcLib_convUserSave, $async$completer, null);
+    },
     RpcLib_docQuery: function(req) {
       var $async$goto = 0, $async$completer = new P.Completer_Completer$sync(), $async$returnValue, $async$handler = 2, $async$currentError, raw, t1, ret, c;
       var $async$RpcLib_docQuery = P._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
@@ -32598,6 +32653,9 @@
       }
     },
     "+ConvUserSaveRequest": [3],
+    ConvUserSaveResponse: {
+      "^": "Object;base@,action>"
+    },
     DocQueryRequest: {
       "^": "Object;base@-5,mode*-0",
       static: {
@@ -32824,10 +32882,10 @@
     },
     "+ProjectDocItem": [3],
     ProjectSaveRequest: {
-      "^": "Object;base@-5,projectId@-2,kind*-0,leadership@-0,privacy@-0,title*-0,description*-0,categoryId@-2",
+      "^": "Object;base@-5,projectId@-2,leadership@-0,privacy@-0,title*-0,description*-0,categoryId@-2",
       static: {
         ProjectSaveRequest$: [function() {
-          return new X.ProjectSaveRequest(null, null, null, null, null, null, null, null);
+          return new X.ProjectSaveRequest(null, null, null, null, null, null, null);
         }, null, null, 0, 0, 187, "new ProjectSaveRequest"]
       }
     },

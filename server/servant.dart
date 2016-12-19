@@ -198,7 +198,8 @@ class Servant {
     return r;
   }
 
-  //get conv and post detail
+  ///get conv and post detail;
+  /// if conv was recommended/invited, can have side effect of changing staus
   @ApiMethod(method: 'POST', path: 'ConvGet')
   Future<ConvGetResponse> convGet(ConvGetRequest args) async {
     ConvGetResponse r = new ConvGetResponse();
@@ -209,12 +210,25 @@ class Servant {
     if (!r.base.isOK) return r;
 
     await Database.safely('ConvGet', r.base, (db) async {
+      //function to load joinRow
+      Row joinRow = null;
+      Future loadJoinRow() async {
+        List<Row> joinRows = await db.query('select status,"like",bookmarked,read_position from conv_xuser where conv_id=${args.convId} and xuser_id=${ai.id}').toList();
+        joinRow = joinRows.length > 0 ? joinRows[0] : null;
+      };
+
       //get conv record and conv_xuser record if any
       Row convRow = await MiscLib.querySingleChecked(db, 'select project_id,event_id,title,open,from_conv_id,open,post_max_size,xuser_daily_max,last_activity,delete_time from conv where id=${args.convId}', 'Conversation does not exist');
       int projectId = convRow.project_id; //null ok
       int eventId = convRow.event_id; //null ok
-      List<Row> joinRows = await db.query('select status,"like",bookmarked,read_position from conv_xuser where conv_id=${args.convId} and xuser_id=${ai.id}').toList();
-      Row joinRow = joinRows.length > 0 ? joinRows[0] : null;
+      await loadJoinRow();
+
+      //if was invited, treat opening the conv as an implicit acceptance of the
+      // invite
+      if (joinRow != null && joinRow.status == 'I') {
+        db.execute('update conv_xuser set status=\'J\' where conv_id=${args.convId} and xuser_id=${ai.id}');
+        await loadJoinRow();
+      }
 
       //figure read position, and whether it is at the beginning or not
       DateTime earliestTime = WLib.utc1970();
@@ -222,7 +236,9 @@ class Servant {
       bool anySkipped = false; //true if un unread mode, the returned list of posts omits those already read
       if (joinRow != null) {
         readPosition = joinRow.read_position;
-        if (readPosition.isAfter(earliestTime)) anySkipped = true;
+        if (readPosition.isAfter(earliestTime) && args.mode == 'U') anySkipped = true;
+        //This is not a valid test because the read position could be on the 2nd
+        // post; wait to solve this problem until we have post sequence numbers
       }
 
       //look in project or event to determine if user is manager/owner
@@ -282,7 +298,7 @@ class Servant {
         r.like = joinRow.like;
         r.bookmarked = joinRow.bookmarked;
       }
-      if (postPermissions != null) {
+      if (postPermissions != null && r.isJoined == 'Y') {
         r.replyAllowed = postPermissions.allowedNow ? 'Y' : 'N';
         r.replyAllowedDesc = postPermissions.explanation;
         r.replyMaxLength = postPermissions.charLimit;
@@ -307,11 +323,18 @@ class Servant {
           ConvLib.setCollapseMode(p, postRow, isManager);
         }
       }
+
+      //if conv was recommended, then opening the conv is an implicit "quit"
+      // because if the user does nothing else, it should not be recommended
+      // again
+      if (joinRow != null && joinRow.status == 'R') {
+        db.execute('update conv_xuser set status=\'Q\' where conv_id=${args.convId} and xuser_id=${ai.id}');
+      }
     });
     return r;
   }
 
-  //get conv rules (for editing)
+  ///get conv rules (for editing)
   @ApiMethod(method: 'POST', path: 'ConvGetRules')
   Future<ConvGetRulesResponse> convGetRules(ConvGetRulesRequest args) async {
     ConvGetRulesResponse r = new ConvGetRulesResponse();
@@ -472,7 +495,7 @@ class Servant {
     return r;
   }
 
-  //save a new post, or censor or delete  post
+  ///save a new post, or censor or delete  post
   @ApiMethod(method: 'POST', path: 'ConvPostSave')
   Future<APIResponseBase> convPostSave(ConvPostSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
@@ -612,20 +635,20 @@ class Servant {
 
   ///join, quit, or update likes for a conv
   @ApiMethod(method: 'POST', path: 'ConvUserSave')
-  Future<APIResponseBase> convUserSave(ConvUserSaveRequest args) async {
-    APIResponseBase r = new APIResponseBase();
+  Future<ConvUserSaveResponse> convUserSave(ConvUserSaveRequest args) async {
+    ConvUserSaveResponse r = new ConvUserSaveResponse();
 
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
-    Authenticator.ensureLoggedIn(ai, r);
-    if (!r.isOK) return r;
+    Authenticator.ensureLoggedIn(ai, r.base);
+    if (!r.base.isOK) return r;
 
     //what is being attempted?
     bool isQuitting = args.status == 'Q';
     bool isUpdatingPrefs = args.like != null || args.bookmarked != null;
     bool isJoining = args.status == 'J';
 
-    await Database.safely('ConvUserSave', r, (db) async {
+    await Database.safely('ConvUserSave', r.base, (db) async {
       //if quitting or updating prefs, do that only
       if (isQuitting || (isUpdatingPrefs && !isJoining)) {
         QueryClauseBuilder builder = new QueryClauseBuilder();
@@ -652,9 +675,13 @@ class Servant {
         //join or request joining based on permissions
         if (permissions.mayJoin) {
           await ConvLib.join(db, ai.id, args.convId, permissions);
+          r.action = 'J';
         } else if (permissions.mayRequest) {
           await ConvLib.writeConvUser(db, args.convId, ai.id, 'A', 'N');
-          await ProposalLib.proposeJoinConv(db, ai.id, permissions.projectId, args.convId);
+          await ProposalLib.proposeJoinConv(db, ai.id, ai.nick, permissions.projectId, args.convId);
+          r.action = 'R';
+        } else {
+          r.action = 'X';
         }
       }
     });
@@ -1205,8 +1232,8 @@ class Servant {
 
     await Database.safely('ProjectSave', r, (db) async {
       //new project
-      if (args.projectId == null) {
-        await ProposalLib.proposeNewProject(db, ai.id, args.kind, args.leadership, args.privacy,
+      if (args.projectId == 0) {
+        await ProposalLib.proposeNewProject(db, ai.id, args.leadership, args.privacy,
           args.title, args.description, args.categoryId);
       }
 
@@ -1217,21 +1244,21 @@ class Servant {
           throw new Exception('Only managers can update projects');
 
         //cannot change democratic projects to fixed
-        if (args.privacy == 'F') {
-          String oldPrivacy = await MiscLib.queryScalar(db, 'select privacy from project where id=${args.projectId}');
-          if (oldPrivacy == 'D') throw new Exception('Cannot change a democratic project to fixed leadership.');
+        if (args.leadership == 'F') {
+          String oldleadership = await MiscLib.queryScalar(db, 'select leadership from project where id=${args.projectId}');
+          if (oldleadership == 'D') throw new Exception('Cannot change a democratic project to fixed leadership.');
         }
 
         //save changes
-        await db.execute('update project set kind=@k,leadership=@l,privacy=@p,category_id=${args.categoryId},title=@t,description=@d'
+        await db.execute('update project set leadership=@l,privacy=@p,category_id=${args.categoryId},title=@t,description=@d'
           ' where id=${args.projectId}',
-          {'k': args.kind, 'l':args.leadership, 'p':args.privacy, 't':args.title, 'd':args.description});
+          {'l':args.leadership, 'p':args.privacy, 't':args.title, 'd':args.description});
       }
     });
     return r;
   }
 
-  //get info about users in a project
+  ///get info about users in a project
   @ApiMethod(method: 'POST', path: 'ProjectUserQuery')
   Future<ProjectUserQueryResponse> projectUserQuery(ProjectUserQueryRequest args) async {
     final int pageSize = 100;
@@ -1276,6 +1303,7 @@ class Servant {
       //loop results
       r.users = new List<ProjectUserItem>();
       await for (Row row in db.query(sql, params)) {
+        if (row.kind == 'N') continue; //as if never joined
         ProjectUserItem u = new ProjectUserItem()
           ..userId = row.xuser_id
           ..kind = row.kind
@@ -1330,7 +1358,7 @@ class Servant {
       //if quitting, leave all convs in project
       if (args.kind == 'N') {
         checkAllowed(isManager || editingSelf);
-        await db.execute('update conv_xuser set status=\'N\' where (select project_id from conv where id=conv_xuser.conv_id)=${args.projectId}');
+        await db.execute('update conv_xuser set status=\'Q\' where (select project_id from conv where id=conv_xuser.conv_id)=${args.projectId}');
         await writeRole('N');
       }
 
@@ -1565,7 +1593,7 @@ class Servant {
 
     await Database.safely('ProposalUserSave', r, (db) async {
       //check eligibility
-      Row proposalRow = await MiscLib.querySingleChecked(db, 'select project_id,eligible from proposal where id=${args.proposalId}', 'Proposal does not exist');
+      Row proposalRow = await MiscLib.querySingleChecked(db, 'select kind,created_by,project_id,eligible from proposal where id=${args.proposalId}', 'Proposal does not exist');
       bool canVote = await ProposalLib.isEligibleToVote(db, ai.id, ai.isSiteAdmin, proposalRow);
       if (!canVote) throw new Exception('You are not eligible to vote on this proposal');
 
@@ -1649,6 +1677,7 @@ class Servant {
         //load proposals user is eligible to vote on but has not voted on
         DateTime now = WLib.utcNow();
         List<Row> proposalRows = await db.query('select id,kind,eligible,title,project_id,'
+          'created_by,'
           '(select vote from proposal_xuser where proposal_id=proposal.id and xuser_id=${ai.id}) as vote'
           ' from proposal where active=\'Y\' and timeout>@now',
           {'now': now}).toList();

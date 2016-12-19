@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'dart:async';
+import '../messages.dart';
 import '../lib/dialog_box.dart';
 import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
@@ -9,7 +10,7 @@ import '../twotier/wtypes.dart';
 
 ///dialog for creating a project or changing its settings; returns true if saved, else false
 class ProjectDialog extends DialogBox {
-  int _projectId, _categoryId;
+  int _projectId, _categoryId; //0 if new
   ProjectGetResponse project;
 
   ///pass 0 for new project
@@ -52,6 +53,7 @@ class ProjectDialog extends DialogBox {
     bar.addButton('Save', (e) async {
       String leadershipCode = radioFixed.checked ? 'F' : 'D';
       ProjectSaveRequest req = new ProjectSaveRequest()
+        ..projectId = _projectId
         ..title = trimInput(titleInput)
         ..description = trimTextArea(descrInput)
         ..privacy = privacyInput.value
@@ -61,6 +63,7 @@ class ProjectDialog extends DialogBox {
       APIResponseBase response = await RpcLib.command('ProjectSave', req);
       if (response.isOK) {
         hide(true);
+        if (_projectId == 0) Messages.timed('Project will be reviewed for spam, then posted later.');
       }
     });
 

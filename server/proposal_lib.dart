@@ -53,9 +53,10 @@ class ProposalLib {
   static Future<int> _writeNew(Connection db, int createdBy, String recordDescription,
     String summary, String tableName, String keyPrefix, Map<String, dynamic> colValues) async {
     String proposalTitle = 'Determine if a new ${recordDescription} is legitimate';
+    //require 1 to pass, 3 to fail
     int proposalId = await _writeProposal(db, 'NEW', 'A', proposalTitle, summary,
-      null, 2, 4, _spamOptions(),
-      7, 'F', createdBy);
+      null, 1, 3, _spamOptions(),
+      3, 'F', createdBy);
 
     //write table_name, col_values, key_prefix
     await db.execute('update proposal set table_name=@t, col_values=@v, key_prefix=@kp where id=${proposalId}',
@@ -73,11 +74,12 @@ class ProposalLib {
   }
 
   ///write proposal of kind JOIN (note caller must handle writing conv_xuser record)
-  static Future proposeJoinConv(Connection db, int userId, int projectId, int convId) async {
-    //write proposal requiring 1 pass vote or 99 fail votes to reject;
-    //timeout in a month; fail if no votes after a month
-    int proposalId = await _writeProposal(db, 'JOIN', 'L', 'Request to join project', '', '', 1,
-      99, _yesNoOptions(), 30, '1', userId);
+  static Future proposeJoinConv(Connection db, int userId, String nick, int projectId, int convId) async {
+    //write proposal requiring 1 pass vote or 9 fail votes to reject;
+    //timeout in a month; fail if no votes after timeout
+    int proposalId = await _writeProposal(db, 'JOIN', 'L', 'Request to join project',
+      'User ${nick} would like to join the project.', '', 1,
+      9, _yesNoOptions(), 30, 'F', userId);
     await db.execute('update proposal set project_id=${projectId} where id=${proposalId}');
   }
 
@@ -116,7 +118,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a new project
-  static Future proposeNewProject(Connection db, int userId, String kind, String leadership,
+  static Future proposeNewProject(Connection db, int userId, String leadership,
     String privacy, String title, String description, int categoryId) async {
     var colValues = {
       'kind': 'P',
@@ -149,7 +151,9 @@ class ProposalLib {
       'important_count': 0
     };
     String summary = 'New resource proposed: ${title}; Description: ${description}';
-    await _writeNew(db, userId, 'resource', summary, 'resource', 'resource', colValues);
+    int proposalId = await _writeNew(db, userId, 'resource', summary, 'resource', 'resource', colValues);
+    String sumHtml = 'Preview resource here: <a target="_blank" href="${url}">${url}</a>';
+    await db.execute('update proposal set summary_html=@sum where id=${proposalId}', {'sum': sumHtml});
   }
 
   ///write proposal of kind NEW for a new event
@@ -204,13 +208,19 @@ class ProposalLib {
   }
 
   //determine if a user is eligible to vote on a project; may load a db record
-  /// to determine this. proposalRow must contain eligible and project_id columns
+  /// to determine this. proposalRow must contain created_by, eligible and project_id columns
   /// at least.
   static Future<bool> isEligibleToVote(Connection db, int userId, bool isSiteAdmin,
     Row proposalRow) async {
     String eligibleCode = proposalRow.eligible;
     if (eligibleCode == 'E') return true; //everyone
-    else if (eligibleCode == 'A') return isSiteAdmin;
+    else if (eligibleCode == 'A') {
+      //is only for site admins; for spam control don't allow user to pass their
+      // own new thing
+      if (!isSiteAdmin) return false;
+      if (proposalRow.kind == 'NEW' && proposalRow.created_by == userId) return false;
+      return true;
+    }
     else {
       //is based on project, so load user's membership in project
       int projectId = proposalRow.project_id;
@@ -229,8 +239,16 @@ class ProposalLib {
   ///cast a vote; caller is responsible for calling isEligibleToVote first;
   /// optionNo can be null to un-vote
   static Future vote(Connection db, int proposalId, int userId, int optionNo) async {
+    //check proposal exists
+    Row proposalRow = await MiscLib.querySingle(db, 'select timeout,active,timeout_action,pass_target,fail_target from proposal where id=${proposalId}');
+    if (proposalRow == null) {
+      //for spam control just ignore it (there's a high chance it won't exist in that case)
+      return;
+      //was: throw new Exception('Proposal does not exist');
+      //note we have no way to know if the proposal was for spam or not
+    }
+
     //error if proposal is no longer active
-    Row proposalRow = await MiscLib.querySingleChecked(db, 'select timeout,active,timeout_action,pass_target,fail_target from proposal where id=${proposalId}', 'Proposal does not exist');
     DateTime timeout = proposalRow.timeout;
     if (proposalRow.active != 'Y' || timeout.isBefore(WLib.utcNow())) throw new Exception('This proposal has closed; vote not recorded.');
 

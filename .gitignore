@@ -11,5 +11,7 @@ client/packages/*
 api20*.txt
 worker20*.txt
 sendmail20*.txt
+worker_finis*.txt
+worker_start*.txt
 
 config/config.yaml

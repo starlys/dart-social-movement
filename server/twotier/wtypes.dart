@@ -336,6 +336,11 @@ class ConvUserSaveRequest {
   String bookmarked; //null indicates no change
 }
 
+class ConvUserSaveResponse  {
+  APIResponseBase base = new APIResponseBase();
+  String action; //flag set when join was requested: 'J'=joined, 'R'=request sent, 'X'=disallowed
+}
+
 class DocQueryRequest {
   APIRequestBase base;
   String mode; //kind of documents to look for: R=root (that's the only value supported for now)
@@ -523,8 +528,8 @@ class ProjectDocItem {
 
 class ProjectSaveRequest {
   APIRequestBase base;
-  int projectId; //null if new
-  String kind, leadership, privacy,title,description;
+  int projectId; //0 if new
+  String leadership, privacy,title,description;
   int categoryId;
 }
 

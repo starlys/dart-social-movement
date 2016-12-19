@@ -260,6 +260,13 @@ class RpcLib {
     Messages.showAPIError(ret.base);
     return ret;
   }
+  static Future<ConvUserSaveResponse> convUserSave(ConvUserSaveRequest req) async {
+    Map raw = await rpcAsMap('ConvUserSave', req);
+    ConvUserSaveResponse ret = new ConvUserSaveResponse();
+    APIDeserializer.deserialize(raw, ret, ret.base);
+    Messages.showAPIError(ret.base);
+    return ret;
+  }
   static Future<DocQueryResponse> docQuery(DocQueryRequest req) async {
     Map raw = await rpcAsMap('DocQuery', req);
     DocQueryResponse ret = new DocQueryResponse();

@@ -63,6 +63,7 @@ class Permissions{
 
   ///get info about posting permissions for a user+conv, based on throttling
   /// and the rules of the conv.
+  /// Does NOT check if user is joined to the conv.
   /// convRow must contain the posting rules fields, and open.
   static Future<RestrictionInfo> getConvPostPermissions(Config cfg, Connection db, int userId,
     int convId, Row convRow) async {

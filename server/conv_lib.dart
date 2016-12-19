@@ -124,7 +124,7 @@ class ConvLib {
 
   //load conv_post rows. Returns rows matching each of the given bool flags,
   // eliminating duplicates. First:first post; betweenTimes:between time1 and time2,
-  // but not including posts *at* those time; afterTime2:including and later
+  // but not including posts *at* those times; afterTime2:including and later
   // than time2; all:all posts.
   // ConvId and userId must be set; projectId can be null.
   // Output cols are
@@ -158,7 +158,7 @@ class ConvLib {
         List<Row> rows = await db.query('${sql1} where ${convIdWhere} and conv_post.created_at>@t1 and conv_post.created_at<@t2',
           {'t1':time1, 't2':time2}).toList();
         //postgres driver bug? the first one might equal created_at even though sql says "after"
-        if (rows.length > 0 && !time1.isAfter(rows[0].created_at))
+        while (rows.length > 0 && time1.isAfter(rows[0].created_at))
           rows.removeAt(0);
         combined.addAll(rows);
       }

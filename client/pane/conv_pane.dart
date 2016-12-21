@@ -1,6 +1,8 @@
 import 'dart:html';
 import 'dart:async';
 import 'base_pane.dart';
+import '../pane_factory.dart';
+import '../push_queue_handler.dart';
 import '../root/globals.dart';
 import '../twotier/wtypes.dart';
 import '../twotier/wlib.dart';
@@ -10,6 +12,10 @@ import '../root/pane_key.dart';
 import '../lib/html_lib.dart';
 import '../dialog/image_upload_dialog.dart';
 import '../lib/card_builder.dart';
+import '../lib/button_bar_builder.dart';
+import '../lib/string_dialog.dart';
+import '../dialog/confirm_dialog.dart';
+import '../dialog/conv_dialog.dart';
 
 ///conversation read/reply pane
 /// pane key = 'conv/id/h=hilite_term', h= part optional
@@ -63,7 +69,7 @@ class ConvPane extends BasePane {
     bodyElement.append(_postDiv);
     int postNo = 0;
     for (ConvGetPostItem post in _conv.posts) {
-      _appendOnePost(post);
+      _appendOnePost(post, true);
       if (!_isJoined) break; //if not joined, can only see opener
       if (postNo == 0 && _conv.anySkipped == 'Y')
         _appendMissingPosts(); //only after opening post
@@ -102,15 +108,20 @@ class ConvPane extends BasePane {
   }
 
   ///appends the given post to _postDiv, optionally inserting it after afterElement
-  Element _appendOnePost(ConvGetPostItem post, {Element afterElement}) {
-    bool isFromServer = post.createdAtWDT != null;
+  /// (which may be a .post, and it skips the expand-wrap following it)
+  Element _appendOnePost(ConvGetPostItem post, bool isFromServer, {Element afterElement}) {
     DateTime createdAt = WLib.wireToDateTime(post.createdAtWDT),
       readPos = WLib.wireToDateTime(_conv.readPositionWDT);
     bool isUnread = isFromServer && createdAt.isAfter(readPos);
 
     DivElement postEl = new DivElement() ..className = 'post';
     if (afterElement == null) _postDiv.append(postEl);
-    else afterElement.insertAdjacentElement('afterEnd', postEl);
+    else {
+      Element ewrap = afterElement.nextElementSibling;
+      if (ewrap != null && ewrap.classes.contains('post-expand-wrap'))
+        afterElement = ewrap;
+      afterElement.insertAdjacentElement('afterEnd', postEl);
+    }
     postElements[post] = postEl;
 
     //read/unread dot
@@ -151,16 +162,20 @@ class ConvPane extends BasePane {
       expand = new DivElement() ..className = 'post-expand' ..title = 'Options for this post';
       expandImg = new ImageElement() ..src = 'images/post-expand.png';
       expand.append(expandImg);
-      if (afterElement == null) _postDiv.append(expandWrap);
-      else afterElement.insertAdjacentElement('afterEnd', expandWrap);
+      postEl.insertAdjacentElement('afterEnd', expandWrap);
+      afterElement = expandWrap;
       expandWrap.append(expand);
     }
 
     //hook up events on read-dot and expander
     if (expand != null) {
       expand.onClick.listen((e) {
-        expandImg.src = 'images/post-collapse.png';
-        _buildPostExpandBox(post, postEl);
+        if (_postExpandBoxForPost == postEl) {
+          _removePostExpandBox();
+        } else {
+          expandImg.src = 'images/post-collapse.png';
+          _buildPostExpandBox(post, postEl);
+        }
       });
     }
     if (readDot != null) {
@@ -198,10 +213,54 @@ class ConvPane extends BasePane {
   /// post as the sibling following postEl
   Future _buildPostExpandBox(ConvGetPostItem post, Element postEl) async {
     _removePostExpandBox();
-      //TODO
 
-    //_postExpandBox = x;
+    //build the expansion with info available now
+    postEl.classes.add('expanded');
+    _postExpandBox = new DivElement() ..className = 'post-expand-box';
+    _postExpandBox.append(new HRElement());
+    DivElement createdAtDiv = new DivElement() ..text = 'Posted...';
+    _postExpandBox.append(createdAtDiv);
+    DivElement throttleDiv = new DivElement();
+    _postExpandBox.append(throttleDiv);
+    _postExpandBox.append(new HRElement());
+    CheckboxInputElement inappropriateCheck = new CheckboxInputElement() ..disabled = true;
+    _postExpandBox.append(new DivElement() ..append(inappropriateCheck) ..appendText(' Inappropriate'));
+    ButtonBarBuilder btns = new ButtonBarBuilder(_postExpandBox);
+
+    //add to DOM
+    postEl.nextElementSibling.insertAdjacentElement('afterEnd', _postExpandBox);
     _postExpandBoxForPost = postEl;
+
+    //hook up events on controls; add buttons
+    inappropriateCheck.onChange.listen((e) async {
+      _inappropriateClicked(post, inappropriateCheck.checked);
+    });
+    btns.addButton('New Conversation From Here', (e) async {
+      ConvDialog dlg = new ConvDialog.spawn(_convId, post.id, post.ptext);
+      int spawnedConvId = await dlg.show();
+      PaneFactory.createFromString('conv/${spawnedConvId}');
+    });
+
+    //get more info about post from server
+    ConvPostGetResponse moreInfo = await RpcLib.convPostGet(new ConvPostGetRequest() ..postId = post.id);
+
+    //modify the box with the newly fetched info
+    createdAtDiv.text = 'Posted on ' + moreInfo.createdAtReadable;
+    if ((moreInfo.throttleDescription ?? '').length > 0)
+      throttleDiv.text = moreInfo.throttleDescription + ' ';
+    if ((moreInfo.allReasons ?? '').length > 0)
+      throttleDiv.appendText('This post was considered inappropriate, and the following reasons were given: ' + moreInfo.allReasons);
+    if (moreInfo.reaction == 'X') inappropriateCheck.checked = true;
+    inappropriateCheck.disabled = false;
+
+    //add delete button if this is my own post or user has censor authority
+    bool isOwnPost = post.authorId == Globals.userId;
+    bool canCensor = moreInfo.canCensor == 'Y';
+    if (isOwnPost || canCensor) {
+      btns.addButton('Delete Post', (e) async {
+        _deletePostClicked(post, postEl, moreInfo);
+      });
+    }
   }
 
   ///remove post expanded control box if any
@@ -214,12 +273,59 @@ class ConvPane extends BasePane {
 
     //change collapse image to expand image
     if (_postExpandBoxForPost != null) {
+      _postExpandBoxForPost.classes.remove('expanded');
       Element expandWrap = _postExpandBoxForPost.nextElementSibling;
       if (expandWrap.classes.contains('post-expand-wrap')) { //should always be this
         ImageElement img = expandWrap.querySelector('img');
         img.src = 'images/post-expand.png';
       }
+      _postExpandBoxForPost = null;
     }
+  }
+
+  ///handle deleting or censoring a post
+  Future _deletePostClicked(ConvGetPostItem post, Element postEl, ConvPostGetResponse postInfo) async {
+    //confirm deletion
+    ConfirmDialog conf = new ConfirmDialog('Really delete post?', ConfirmDialog.YesNoOptions);
+    int btnIdx = await conf.show();
+    if (btnIdx != 0) return;
+
+    bool isOwnPost = post.authorId == Globals.userId;
+
+    //prep server request
+    ConvPostSaveRequest deleteReq = new ConvPostSaveRequest()
+      ..convId = _convId
+      ..postId = post.id;
+    if (isOwnPost)
+      deleteReq.delete = 'Y';
+    else {
+      deleteReq.censored = 'C';
+      deleteReq.ptext = 'Post deleted by: ' + Globals.nick;
+    }
+
+    //remove from DOM
+    _removePostExpandBox();
+    Element expandWrap = postEl.nextElementSibling;
+    if (expandWrap.classes.contains('post-expand-wrap'))
+      expandWrap.remove();
+    postEl.remove();
+
+    //notify server
+    await RpcLib.command('ConvPostSave', deleteReq);
+  }
+
+  ///handle inappropriate checkbox
+  Future _inappropriateClicked(ConvGetPostItem post, bool isChecked) async {
+    String reason = '';
+    if (isChecked) {
+      StringDialog dlg = new StringDialog('Enter reason for flagging this post', '', 50);
+      reason = await dlg.show();
+    }
+    await RpcLib.command('ConvPostUserSave', new ConvPostUserSaveRequest()
+      ..postId = post.id
+      ..reason = reason
+      ..reaction = isChecked ? 'X' : ''
+    );
   }
 
   ///append the post text with an expansion link of the right kind
@@ -264,7 +370,7 @@ class ConvPane extends BasePane {
       ConvGetResponse conv2 = await RpcLib.convGet(req);
       Element priorElement;
       for (ConvGetPostItem post in conv2.posts) {
-        priorElement = _appendOnePost(post, afterElement: priorElement ?? openingElement);
+        priorElement = _appendOnePost(post, true, afterElement: priorElement ?? openingElement);
       }
     });
   }
@@ -356,12 +462,57 @@ class ConvPane extends BasePane {
       var item = new ConvGetPostItem() ..ptext = text
         ..collapseMode = 'Normal' ..collapsePosition = 300
         ..createdAtWDT = WLib.dateTimeToWire(WLib.utcNow());
-      _appendOnePost(item);
+      _appendOnePost(item, false);
     }
   }
 
   ///build main button bar (for the whole conv)
   void _buildMainButtonBar() {
+    //important (like=I)
+    if (_isJoined) {
+      CheckboxInputElement imp = new CheckboxInputElement();
+      SpanElement impWrap = new SpanElement() ..className = 'check' ..append(imp)
+        ..appendText('Important');
+      if (_conv.like == 'I') imp.checked = true;
+      paneMenuBar.addElement(impWrap);
+      imp.onChange.listen((e) async {
+        ConvUserSaveRequest req = new ConvUserSaveRequest()
+          ..convId = _convId
+          ..like = (imp.checked ? 'I' : 'N');
+        await RpcLib.convUserSave(req);
+      });
+
+    }
+
+    //bookmarked
+    if (_isJoined) {
+      CheckboxInputElement bm = new CheckboxInputElement();
+      SpanElement bmWrap = new SpanElement() ..className = 'check' ..append(bm)
+        ..appendText('Bookmarked');
+      if (_conv.bookmarked == 'Y') bm.checked = true;
+      paneMenuBar.addElement(bmWrap);
+      bm.onChange.listen((e) async {
+        //update bookmarked items in my stuff
+        PushQueueItem it = new PushQueueItem()
+          ..kind = 'B' ..why = 'G'
+          ..iid = _convId
+          ..linkText = _conv.title
+          ..linkPaneKey = paneKey.full;
+        if (bm.checked) {
+          PushQueueHandler.itemsReceived(false, [it], 'B');
+        } else {
+          PushQueueHandler.removeItem(it, '!');
+        }
+
+        //tell server
+        ConvUserSaveRequest req = new ConvUserSaveRequest()
+          ..convId = _convId
+          ..bookmarked = (bm.checked ? 'Y' : 'N');
+        await RpcLib.convUserSave(req);
+      });
+    }
+
+    //join
     if (!_isJoined) {
       paneMenuBar.addButton('Join', (e) async {
         if (!Messages.checkLoggedIn()) return;
@@ -376,6 +527,24 @@ class ConvPane extends BasePane {
       });
     }
 
+    //leave
+    if (_isJoined) {
+      paneMenuBar.addButton('Leave', (e) async {
+        collapse();
+        await RpcLib.convUserSave(new ConvUserSaveRequest()
+          ..convId = _convId ..status = 'Q');
+      });
+    }
+
+    //edit rules
+    if (_isJoined && _isManager) {
+      paneMenuBar.addButton('Edit Rules', (e) async {
+        ConvDialog dlg = new ConvDialog(_convId, null, null);
+        int editedId = await dlg.show();
+        if (editedId == null) return;
+        recreatePane();
+      });
+    }
   }
 
 }

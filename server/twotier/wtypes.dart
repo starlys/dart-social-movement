@@ -293,8 +293,9 @@ class ConvPostGetRequest {
 class ConvPostGetResponse  {
   APIResponseBase base = new APIResponseBase();
   String avatarUrl; //of author
+  String createdAtReadable; //including author timezone, example: '31 Dec 1999 17:05 (America/Denver)'
   String reaction; //from conv_post_user for the current user
-  String throttleDescription; //in what way the author may be throttled
+  String throttleDescription; //in what way the author may be throttled, or empty/null if no restriction
   String canCensor; //Y if the current user has censoring authority and the post has gotten inappropriate votes
   String allReasons; //readable collection of reasons given in conv_post_user
 }
@@ -319,7 +320,7 @@ class ConvPostImageSaveRequest {
 class ConvPostUserSaveRequest {
   APIRequestBase base;
   String postId;
-  String reaction, reason; //see data model for definition
+  String reaction, reason; //see data model for definition; if reaction is null/empty, erases record
 }
 
 class ConvSetReadPositionRequest {
@@ -645,9 +646,9 @@ class PushQueueGetResponse  {
 // for each, since the client uses these in inter-window messaging
 // and it's better to avoid parsing complexity
 class PushQueueItem {
-  String kind; //N=notify, U=unread, S=suggested
-  String why; //why the item is in the queue: G=general, V=votable, I=invited, R=recommended, B=bookmarked
-    //all notify and unread kinds are why=G
+  String kind; //N=notify, U=unread, S=suggested, B=Bookmarked
+  String why; //why the item is in the queue: G=general, V=votable, I=invited, R=recommended
+    //all kinds other than S should have why=G
   int iid; //conv or proposal ID
   String sid; //notification ID
   String text; //notification text

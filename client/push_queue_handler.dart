@@ -111,7 +111,7 @@ class PushQueueHandler {
     List<PushQueueItem> items = _parseListOfRawItems(rawitems);
     if (action == 'A') itemsReceived(false, items, 'W');
     if (action == 'F') itemsReceived(true, items, 'W');
-    if (action == 'R') for (PushQueueItem item in items) _removeItem(item, false);
+    if (action == 'R') for (PushQueueItem item in items) removeItem(item, 'W');
   }
 
   ///send a list of queue items to other windows (to add or remove);
@@ -159,10 +159,12 @@ class PushQueueHandler {
   ///remove item from screen and propagate to other windows
   /// (equality is based only on linkPaneKey);
   /// dont use for NotifyPane
-  static void _removeItem(PushQueueItem item, bool fromLocal) {
-    //remove from queue
-    Globals.pushQueue.removeWhere((i) => i.kind != 'N' && i.linkPaneKey == item.linkPaneKey);
-    _finishRemoveItem(item, fromLocal);
+  /// Source is 'O' if opened in this window; 'W' if notified from another window; '!' if explicitly removed
+  static void removeItem(PushQueueItem item, String source) {
+    //remove from queue; bookmarks aren't removed when opened
+    Globals.pushQueue.removeWhere((i) => i.kind != 'N' && i.linkPaneKey == item.linkPaneKey
+      && (source == '!' || i.kind != 'B'));
+    _finishRemoveItem(item, source != 'W');
   }
 
   ///remove item from screen and propagate to other windows
@@ -194,22 +196,22 @@ class PushQueueHandler {
       String iconName = '';
       if (i.kind == 'N') iconName = 'panenotify'; //notify
       else if (i.kind == 'U') iconName = 'paneconv'; //unread
+      else if (i.kind == 'B') iconName = 'paneconv_star'; //bookmarked
       else if (i.why == 'V') iconName = 'paneproposal'; //why=vote
       else if (i.why == 'I') iconName = 'paneconv_invite'; //why=invited
       else if (i.why == 'R') iconName = 'paneconv_maybe'; //why=recommended
-      else if (i.why == 'B') iconName = 'paneconv_star'; //why=bookmarked
       if (iconName.length == 0) return '';
       return '<img src="images/${iconName}.png" />';
     }
 
     //function to build one section
-    void build1(String title, String kind) {
+    void build1(String title, bool isNotification, Function selector) {
       StringBuffer s = new StringBuffer();
       s.write('<h2>${title}</h2>');
-      List<PushQueueItem> items = Globals.pushQueue.where((i) => i.kind == kind).toList();
+      List<PushQueueItem> items = Globals.pushQueue.where(selector).toList();
       for (PushQueueItem item in items) {
         s.write('<div>${iconHtml(item)} ');
-        if (kind == 'N') { //notification: link to the notify pane
+        if (isNotification) { //notification: link to the notify pane
           String text = item.text ?? 'notification';
           if (text.length > 40) text = text.substring(0, 38) + '...';
           s.write('<a href="#notify/${item.sid}">${text}</a>');
@@ -222,24 +224,28 @@ class PushQueueHandler {
       section.innerHtml = s.toString();
     }
     section = querySelector('#queue-notify');
-    build1('Notifications', 'N');
+    build1('Notifications', true, (i) => i.kind == 'N');
     section = querySelector('#queue-unread');
-    build1('Unread', 'U');
+    build1('Unread', false, (i) => i.kind == 'U');
     section = querySelector('#queue-suggest');
-    build1('Suggestions', 'S');
+    build1('Suggestions', false, (i) => i.kind == 'S');
+    section = querySelector('#queue-bookmark');
+    build1('Bookmarks', false, (i) => i.kind == 'B');
     updateNextButton();
   }
 
   ///update the number showing in the 'Next' button
   static void updateNextButton() {
+    //how many in queue excluding bookmarks?
+    int count = Globals.pushQueue.where((i) => i.kind != 'B').length;
+
     //Next button
-    String num = '';
-    if (Globals.pushQueue.length > 0) num = Globals.pushQueue.length.toString();
+    String num = count > 0 ? count.toString() : '';
     querySelector('#button-next-number').text = num;
 
     //browser title
     String titlePrefix = num.length > 0 ? '(' + num + ') ' : '';
-    document.head.title = titlePrefix + Globals.appTitle;
+    document.title = titlePrefix + Globals.appTitle;
   }
 
   ///show next item in push queue
@@ -251,7 +257,8 @@ class PushQueueHandler {
     // isn't)
     PushQueueItem item = q.firstWhere((i) => i.kind == 'N',
       orElse: () => q.firstWhere((j) => j.kind == 'U',
-      orElse: () => q.first));
+      orElse: () => q.firstWhere((j) => j.kind == 'S')));
+    if (item == null) return;
 
     //open it
     if (item.kind == 'N')
@@ -270,7 +277,7 @@ class PushQueueHandler {
       item.sid = p.paneKey.full.substring(7); //omit 'notify/'
       _removeNotifyItem(item, true);
     } else {
-      _removeItem(item, true);
+      removeItem(item, 'O');
     }
   }
 

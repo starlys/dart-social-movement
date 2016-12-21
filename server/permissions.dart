@@ -87,7 +87,7 @@ class Permissions{
     //if there are restrictions, check the user's latest post in whole project to see if they
     //are allowed to post now
     if (spamInfo.restDays > 0 && projectId != null) {
-      DateTime latestPostAt = await MiscLib.queryScalar(db, 'select max(created_at) from conv_post inner join conv on conv_post.conv_id=conv.id where conv.project_id=${projectId} and conv_post.author_id=${userId}');
+      DateTime latestPostAt = await MiscLib.queryScalar(db, 'select max(conv_post.created_at) from conv_post inner join conv on conv_post.conv_id=conv.id where conv.project_id=${projectId} and conv_post.author_id=${userId}');
       if (latestPostAt != null) {
         Duration ago = WLib.utcNow().difference(latestPostAt);
         if (ago.inDays < spamInfo.restDays) {

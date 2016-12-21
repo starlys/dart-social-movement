@@ -253,6 +253,13 @@ class RpcLib {
     }
     return ret;
   }
+  static Future<ConvPostGetResponse> convPostGet(ConvPostGetRequest req) async {
+    Map raw = await rpcAsMap('ConvPostGet', req);
+    ConvPostGetResponse ret = new ConvPostGetResponse();
+    APIDeserializer.deserialize(raw, ret, ret.base);
+    Messages.showAPIError(ret.base);
+    return ret;
+  }
   static Future<ConvGetRulesResponse> convGetRules(ConvGetRulesRequest req) async {
     Map raw = await rpcAsMap('ConvGetRules', req);
     ConvGetRulesResponse ret = new ConvGetRulesResponse();

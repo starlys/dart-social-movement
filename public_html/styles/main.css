@@ -87,12 +87,12 @@ table.cardtable th {text-align:right;padding-right:4px;vertical-align:top;}
 
 .pane-border {border:solid gray 1px;margin:8px;}
 .pane {background-color:white;}
-.pane-header {margin-right: 8px;font-size:1.2em;color:green;border-bottom:solid 1px gray;background-color:#dfe;padding:4px;}
+.pane-header {font-size:1.2em;color:green;border-bottom:solid 1px gray;background-color:#dfe;padding:4px;}
 .pane-header img {margin-right:4px;}
 .pane-subheader {font-weight:normal;margin-left:12px;padding:6px;display:inline-block;font-size:1.0em;}
 .pane-body {margin:6px;}
 .pane-menubar {min-height:22px;}
-button.pane-close, button.pane-reopen, button.pane-min{height:18px;width:18px;border:none;background:transparent;float:right;border-radius:5px;margin-right:4px;}
+button.pane-close, button.pane-reopen, button.pane-min{height:18px;width:18px;border:none;background:transparent;float:right;border-radius:5px;margin-right:4px;background-repeat: no-repeat;}
 button.pane-close {background-image:url(../images/pane-close.png);}
 button.pane-reopen {background-image:url(../images/pane-reopen.png);}
 button.pane-min {background-image:url(../images/pane-minimize.png);}
@@ -105,9 +105,12 @@ button.pane-min {background-image:url(../images/pane-minimize.png);}
 .post .avatar img {width:50px;height:50px;}
 .post a.nick {color:#00a; font-size:0.9em;padding-right:4px;}
 .post span.ago {color:#0a0; font-size:0.9em;padding-right:4px;}
+.post.expanded {border-bottom:none;}
 .post-expand-wrap {width:100%;position:relative;}
 .post-expand {position:absolute;right:4px;bottom:-7px;width:20px;height:20px;cursor:pointer;}
 .post-image {display:block;max-width:500px;}
+.post-expand-box {border:solid 1px gray;border-top:none;margin-left:12px;padding-left:18px;margin-right:2px;}
+.pane.conv .check {padding:4px;}
 
 /* doc pane */
 

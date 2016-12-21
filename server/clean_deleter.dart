@@ -16,7 +16,7 @@ class CleanDeleter {
     await db.execute('delete from conv_post_xuser where conv_post_id=@i', {'i': postId});
 
     //delete row
-    await db.execute('delete from conv_post where conv_post_id=@i', {'i': postId});
+    await db.execute('delete from conv_post where id=@i', {'i': postId});
   }
 
   ///delete a conversation (with images and all child records)

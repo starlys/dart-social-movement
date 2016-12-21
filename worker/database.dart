@@ -154,7 +154,7 @@ class Database {
 
     //update conv_post.inappropriate_count for all affected posts
     for (String postId in postIds) {
-      await db.execute('update conv_post set inappropriate_count=(select count(*) from conv_post_xuser where post_id=\'${postId}\' and reaction=\'X\')');
+      await db.execute('update conv_post set inappropriate_count=(select count(*) from conv_post_xuser where conv_post_id=\'${postId}\' and reaction=\'X\')');
     }
 
     //loop suspicious authors
@@ -210,7 +210,7 @@ class Database {
     //if level changed, notify user with explanation of the change
     if (oldRestrictions.restrictionLevel != newRestrictions.restrictionLevel) {
       String projTitle = await MiscLib.queryScalar(db, 'select title from project where id=${projectId}');
-      String linkKey = 'projects/' + projectId.toString();
+      String linkKey = 'project/' + projectId.toString();
       bool isGettingWorse = newRestrictions.restrictionLevel > oldRestrictions.restrictionLevel;
       String levelMessage = newRestrictions.restrictionLevel == 0 ?
         'You no longer have any posting restrictions.'

@@ -449,22 +449,24 @@ class Servant {
 
     await Database.safely('ConvPostGet', r.base, (db) async {
       //get info from the post
-      Row postRow = await MiscLib.querySingle(db, 'select conv_id,author_id from conv_post where id=@i', {'i': args.postId});
+      Row postRow = await MiscLib.querySingle(db, 'select conv_id,author_id,created_at from conv_post where id=@i', {'i': args.postId});
       if (postRow == null) throw new Exception('Post does not exist');
       int convId = postRow.conv_id;
       int authorId = postRow.author_id;
 
       //get info from the author
-      Row authorRow = await MiscLib.querySingle(db, 'select avatar_no from xuser where id=${authorId}');
-      if (authorRow != null)
+      Row authorRow = await MiscLib.querySingle(db, 'select avatar_no,timezone from xuser where id=${authorId}');
+      if (authorRow != null) {
         r.avatarUrl = ImageLib.getAvatarUrl(authorId, authorRow.avatar_no);
+        r.createdAtReadable = DateLib.formatDateTime(postRow.created_at, authorRow.timezone) + ' (${authorRow.timezone})';
+      }
 
       //get info from the conv
       Row convRow = await MiscLib.querySingleChecked(db, 'select project_id,event_id,post_max_size,xuser_daily_max from conv where id=${convId}', 'Conversation does not exist');
       int projectId = convRow.project_id; //null ok
       int eventId = convRow.event_id; //null ok
 
-      //get info about the user in relation to the project
+      //get info about the author in relation to the project
       r.throttleDescription = '';
       if (projectId != null) {
         Row projectUserRow = await MiscLib.querySingleChecked(db, 'select spam_count from project_xuser where project_id=${projectId} and xuser_id=${authorId}', 'User is not joined to project');
@@ -529,7 +531,7 @@ class Servant {
       }
 
       //if censoring, user must be manager
-      else if (args.censored == 'Y') {
+      else if (args.censored == 'C') {
         bool canCensor = await Permissions.isConvManager(db, ai.id, projectId, eventId);
         if (canCensor) {
           await db.execute('update conv_post set ptext=\'Post was deleted by a manager\', censored=\'C\' where id=@i',
@@ -605,13 +607,18 @@ class Servant {
     await Database.safely('ConvPostUserSave', r, (db) async {
       //must be joined to conv (not checked because low security risk)
 
-      //update or insert conv_post_xuser
-      int nrows = await db.execute('update conv_post_xuser set reacion=@r,reason=@w where post_id=@i and created_by=${ai.id}',
-        {'r': args.reason, 'w': args.reaction, 'i': args.postId});
-      if (nrows == 0) {
-        await db.execute('insert into conv_post_xuser(conv_post_id,created_by,reaction,reason,processed)'
-          ' values(@i,${ai.id},@r,@w,\'N\')',
-          {'r': args.reason, 'w': args.reaction, 'i': args.postId});
+      //delete, update or insert conv_post_xuser
+      if ((args.reaction ?? '').length == 0) {
+        await db.execute('delete from conv_post_xuser where conv_post_id=@i and created_by=${ai.id}',
+          {'i': args.postId});
+      } else {
+        int nrows = await db.execute('update conv_post_xuser set reaction=@r,reason=@why where conv_post_id=@i and created_by=${ai.id}',
+          {'r': args.reaction, 'why': args.reason, 'i': args.postId});
+        if (nrows == 0) {
+          await db.execute('insert into conv_post_xuser(conv_post_id,created_by,reaction,reason,processed)'
+            ' values(@i,${ai.id},@r,@why,\'N\')',
+            {'r': args.reaction, 'why': args.reason, 'i': args.postId});
+        }
       }
     });
     return r;
@@ -1358,7 +1365,7 @@ class Servant {
       //if quitting, leave all convs in project
       if (args.kind == 'N') {
         checkAllowed(isManager || editingSelf);
-        await db.execute('update conv_xuser set status=\'Q\' where (select project_id from conv where id=conv_xuser.conv_id)=${args.projectId}');
+        await db.execute('update conv_xuser set status=\'Q\' where (select project_id from conv where id=conv_xuser.conv_id)=${args.projectId} and xuser_id=${ai.id}');
         await writeRole('N');
       }
 
@@ -1714,8 +1721,9 @@ class Servant {
 
         //copy invited, recommended, and bookmarked convs to output in separate
         // groups to maintain ordering
-        void copy1(Row row, String why) {
-          var i = new PushQueueItem() ..kind = 'S'
+        void copy1(Row row, String kind, String why) {
+          var i = new PushQueueItem()
+            ..kind = kind
             ..why = why
             ..iid = row.c_id
             ..linkText = row.c_title
@@ -1723,11 +1731,11 @@ class Servant {
           r.items.add(i);
         }
         for (Row row in suggestRows.where((r) => r.status == 'I')) //invited
-          copy1(row, 'I');
+          copy1(row, 'S', 'I');
         for (Row row in suggestRows.where((r) => r.status == 'R')) //recommended
-          copy1(row, 'R');
+          copy1(row, 'S', 'R');
         for (Row row in suggestRows.where((r) => r.bookmarked == 'Y')) //bookmarked
-          copy1(row, 'B');
+          copy1(row, 'B', 'G');
 
       }//if full
     });

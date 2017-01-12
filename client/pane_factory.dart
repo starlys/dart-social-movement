@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:animation/animation.dart';
 import 'push_queue_handler.dart';
 import 'root/pane_key.dart';
+import 'lib/html_lib.dart';
 import 'pane/base_pane.dart';
 import 'pane/notify_pane.dart';
 import 'pane/project_tree_pane.dart';
@@ -53,7 +54,11 @@ class PaneFactory {
 
     //delete existing panes with same key
     BasePane existingSamePane = Globals.panes.firstWhere((p) => p.paneKey.isLike(pk), orElse: () => null);
-    if (existingSamePane != null) delete(existingSamePane);
+    bool waitForCloseAnimation = false;
+    if (existingSamePane != null) {
+      waitForCloseAnimation = Globals.panes.last != existingSamePane;
+      delete(existingSamePane);
+    }
 
     //delete panes if >500 total
     while(Globals.panes.length > 5000) delete(Globals.panes[0]);
@@ -118,11 +123,19 @@ class PaneFactory {
     //remove pane from pushqueue/screen
     PushQueueHandler.notifyPaneOpened(p);
 
-    //scroll to new pane
-    if (doScroll && !isReopeningLastPane) {
+    //scroll to new pane (with possible delay)
+    var goSmoothScroll = () {
       new ElementAnimation(main1)
         ..properties = {'scrollTop': priorScrollHeight + 30}
+        ..easing = Easing.LINEAR
+        ..duration = 500
         ..run();
+    };
+    if (doScroll && !isReopeningLastPane) {
+      if (waitForCloseAnimation)
+        new Future.delayed(new Duration(milliseconds: 250), () => goSmoothScroll());
+      else
+        goSmoothScroll();
     }
 
     MainController.sizeScrollSpace(false);
@@ -131,14 +144,36 @@ class PaneFactory {
 
   ///remove pane from DOM and Globals
   static void delete(BasePane p) {
+    bool isLast = Globals.panes.length > 0 && Globals.panes.last == p;
+    Globals.panes.remove(p);
+
+    //collapse with animation; remove from DOM after animation complete
+    //(but if this is the bottom pane, then instant)
     try {
-      p.collapse(); //sets url to blank
-      p.borderElement.remove();
-      Globals.panes.remove(p);
+      int actualHeight = p.borderElement.clientHeight;
+      p.borderElement
+        ..style.height = HtmlLib.asPx(actualHeight)
+        ..className = ''
+        ..innerHtml = '';
+      if (isLast)
+        p.borderElement.remove();
+      else {
+        new ElementAnimation(p.borderElement)
+          ..properties = {'height': 0, 'margin-top': 0, 'margin-bottom': 0}
+          ..duration = 300
+          ..easing = Easing.LINEAR
+          ..onComplete.listen((e) => p.borderElement.remove())
+          ..run();
+        }
     } catch (ex) {}
+
+    //change URL to the new last pane, or blank if that is collapsed
     if (Globals.panes.length > 0) {
       BasePane lastPane = Globals.panes.last;
-      if (!lastPane.isCollapsed) MainController.changeUrlFragment(lastPane.paneKey.full);
+      if (lastPane.isCollapsed)
+        MainController.changeUrlFragment('');
+      else
+        MainController.changeUrlFragment(lastPane.paneKey.full);
     }
   }
 

@@ -19,20 +19,26 @@ import 'pane/notify_pane.dart';
 ///handles the my-stuff pane and calling the server periodically to update
 /// the push queues
 class PushQueueHandler {
+  static bool _initialized = false;
 
   static Timer _suppressQuickRefreshTimer; //set while refresh button is invisible for 30s following a poll
 
-  //one-time initializer
+  ///initializer called on app init and log in
   static void init() {
+    Globals.lastFullPollUtc = new DateTime(1970);
+    _rebuildMyStuff(); //this helps when logging in to another account
 
-    //set up receiver from other windows
-    ClientStore.registerReceiveMessage(_receiveFromOtherWindow);
+    if (!_initialized) {
+      //set up receiver from other windows
+      ClientStore.registerReceiveMessage(_receiveFromOtherWindow);
 
-    //call first time fairly soon
-    new Timer(new Duration(seconds:1), _timerTick);
+      //call first time fairly soon
+      new Timer(new Duration(seconds:1), _timerTick);
+    }
+    _initialized = true;
   }
 
-  //do timer work, and requeue the timer
+  ///do timer work, and requeue the timer
   static Future _timerTick() async {
     //determine if we should poll now
     DateTime now = WLib.utcNow(),

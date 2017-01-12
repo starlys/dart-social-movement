@@ -169,6 +169,7 @@ class MainController {
       if (notifyUser) Messages.timed('Logged in.');
       setVisibility();
       sizeEverything();
+      PushQueueHandler.init();
       if (Globals.isLargeScreen) showMyStuff();
     }
     else {

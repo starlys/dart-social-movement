@@ -53,6 +53,7 @@ class ProposalPane extends BasePane {
     }
 
     //show checkboxes for user's votes - only if eligible
+    Element myVoteDiv;
     List<CheckboxInputElement> allChecks = new List<CheckboxInputElement>();
     var handleCheckbox = (Event e) {
       if (_clickedInCode) return;
@@ -75,11 +76,12 @@ class ProposalPane extends BasePane {
       chk.dataset['opt'] = optionNo.toString();
       div.append(chk);
       div.appendText(' ' + text);
-      bodyElement.append(div);
+      myVoteDiv.append(div);
       chk.onChange.listen(handleCheckbox);
       return chk;
     }
     if (proposal.myEligible == 'Y' && proposal.active == 'Y') {
+      myVoteDiv = card.addAny('My vote');
       for (ProposalOptionItem opt in proposal.options) {
         CheckboxInputElement chk = add1Checkbox(proposal.myVote == opt.optionNo, opt.optionDesc, opt.optionNo);
         allChecks.add(chk);
@@ -122,5 +124,6 @@ class ProposalPane extends BasePane {
       ..proposalId = _proposalId
       ..vote = optionNo;
     await RpcLib.command('ProposalUserSave', req);
+    Messages.timed('We recorded your vote.');
   }
 }

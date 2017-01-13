@@ -376,12 +376,16 @@ class Servant {
 
     await Database.safely('ConvSave', r, (db) async {
       bool isNew = args.convId == null || args.convId == 0;
+      //int authorId = ai.id;
 
-      //preliminarily, if spawning, get parent keys from the source conv
+      //preliminarily, if spawning, get parent keys and author from the source conv
       //and ignore the proj or event that was passed in
       if (args.openingPostId != null) {
-        Row convRow = await MiscLib.querySingle(db, 'select project_id,event_id from conv where id=(select conv_id from conv_post where id=@p)',
+        Row openingPostRow = await MiscLib.querySingle(db, 'select select author_id,conv_id from conv_post where id=@p',
           {'p': args.openingPostId});
+        if (openingPostRow == null) throw new Exception('Source post does not exist');
+        //authorId = openingPostRow.author_id;
+        Row convRow = await MiscLib.querySingle(db, 'select project_id,event_id from conv where id=${openingPostRow.conv_id}');
         if (convRow == null) throw new Exception('Conversation does not exist');
         args.projectId = convRow.project_id; //null ok
         args.eventId = convRow.event_id; //null ok
@@ -421,13 +425,14 @@ class Servant {
 
         //copy opening post if spawning conv from an existing post
         if (args.openingPostId != null) {
-          List<Row> templatePost = await db.query('select ptext,tw_position,has_image from conv_post where id=@i',
+          List<Row> templatePost = await db.query('select author_id,ptext,tw_position,has_image from conv_post where id=@i',
             {'i': args.openingPostId}).toList();
           if (templatePost.length > 0) {
+            int authorId = templatePost[0].author_id;
             String ptext = templatePost[0].ptext;
             bool hasImage = templatePost[0].has_image == 'Y';
             int twPosition = templatePost[0].tw_position;
-            String newPostId = await ConvLib.writeConvPost(db, convId, ai.id, ptext, twPosition, hasImage, WLib.utcNow());
+            String newPostId = await ConvLib.writeConvPost(db, convId, authorId, ptext, twPosition, hasImage, WLib.utcNow());
             if (hasImage)
               await ImageLib.duplicatePostImage(args.openingPostId, newPostId);
           }

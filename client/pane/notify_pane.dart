@@ -23,24 +23,23 @@ class NotifyPane extends BasePane {
     clearLoadingMessage();
     bodyElement.append(new DivElement() ..text = _item.text);
     bodyElement.append(new BRElement());
-    var chk = new CheckboxInputElement();
-    bodyElement.append(chk);
-    bodyElement.appendText(' Dismiss ');
     if ((_item.linkPaneKey ?? '').length > 0) {
-      bodyElement.appendText(' - ');
-      var link = new AnchorElement() ..href = '#' + _item.linkPaneKey ..text = _item.linkText;
+      var link = new AnchorElement() ..href = '#' + _item.linkPaneKey ..text = 'Go to: ' + _item.linkText;
       bodyElement.append(link);
     }
 
-    //events
-    chk.onClick.listen((e) {
-      chk.disabled = true;
-      new Timer(new Duration(milliseconds: 300), () => chk.remove());
+    //button bar and events
+    ButtonElement dismissBtn;
+    dismissBtn = paneMenuBar.addButton('Dismiss', (e) {
+      //chk.disabled = true;
+      //new Timer(new Duration(milliseconds: 300), () => chk.remove());
+      dismissBtn.remove();
       dismiss();
+      paneMenuBar.addElement(new SpanElement() ..text = 'Dismissed');
     });
   }
 
-  //send server message to dismiss notification
+  ///send server message to dismiss notification
   void dismiss() {
     var req = new UserNotifySaveRequest();
     req.notifyId = _item.sid;

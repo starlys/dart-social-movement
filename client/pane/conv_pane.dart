@@ -96,15 +96,25 @@ class ConvPane extends BasePane {
       DateTime lastpos = WLib.wireToDateTime(_conv.posts.last.createdAtWDT);
       DateTime readpos = WLib.wireToDateTime(_conv.readPositionWDT);
       if (readpos.isBefore(lastpos)) {
+        _tellServerReadPosition(lastpos);
         var action = () {
-          _resetReadDotImages(lastpos);
-          RpcLib.command('ConvSetReadPosition', new ConvSetReadPositionRequest()
-            ..convId = _convId ..positionWDT = WLib.dateTimeToWire(lastpos));
+          _tellServerReadPosition(lastpos);
         };
         _autoReadPositionKey = 'c${_convId}_readpos';
         Globals.doOnUserAction[_autoReadPositionKey] = action;
       }
     }
+  }
+
+  ///report given read position to server and update visuals on this pane;
+  /// also cancels global action if it was registered
+  void _tellServerReadPosition(DateTime readpos) {
+    //NOTE this is not async!
+    _resetReadDotImages(readpos);
+    RpcLib.command('ConvSetReadPosition', new ConvSetReadPositionRequest()
+      ..convId = _convId ..positionWDT = WLib.dateTimeToWire(readpos));
+    Globals.doOnUserAction.remove(_autoReadPositionKey); //cancel auto-advance read position
+  _autoReadPositionKey = null;
   }
 
   ///appends the given post to _postDiv, optionally inserting it after afterElement
@@ -188,10 +198,7 @@ class ConvPane extends BasePane {
           //back up read position
           readpos = readpos.subtract(new Duration(milliseconds: 1));
         }
-        _resetReadDotImages(readpos);
-        await RpcLib.command('ConvSetReadPosition', new ConvSetReadPositionRequest()
-          ..convId = _convId ..positionWDT = WLib.dateTimeToWire(readpos));
-        Globals.doOnUserAction.remove(_autoReadPositionKey); //cancel auto-advance read position
+        _tellServerReadPosition(readpos);
       });
     }
 
@@ -451,6 +458,7 @@ class ConvPane extends BasePane {
 
   ///send new post to server, and then if successful, display post (as if it was loaded from server)
   Future _savePost(String text, String tw) async {
+    _resetReadDotImages(WLib.utcNow()); //server will mark all as read on post
     String lastPostWDT = _lastPost != null ? _lastPost.createdAtWDT : null;
     APIResponseBase response = await RpcLib.command('ConvPostSave', new ConvPostSaveRequest()
       ..convId = _convId

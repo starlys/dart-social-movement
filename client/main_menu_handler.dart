@@ -23,25 +23,25 @@ class MainMenuHandler {
     _panel = $('#menu2').first;
     int year = (new DateTime.now()).year;
 
-    addHeading('Resources - books, web, etc.');
+    addHeading('Resources - books, web, etc.', 'HELPRES');
     addItem('Browse/Create resources by category', 'paneresource', () => PaneFactory.createFromString('resourcetree'));
     addItem('Search resources by keyword', 'paneresource', () => PaneFactory.createFromString('resources'));
 
-    addHeading('Projects and conversations');
+    addHeading('Projects and conversations', 'HELPPROJ');
     addItem('Browse/Create projects by category', 'paneproject', () => PaneFactory.createFromString('projecttree'));
     addItem('Search projects by keyword', 'paneproject', () => PaneFactory.createFromString('projectsearch'));
     addItem('Search in all conversations', 'paneconv', () => PaneFactory.createFromString('convsearch'));
 
-    addHeading('Local events');
+    addHeading('Local events', 'HELPEV');
     addItem('Find events', 'paneevent', () => PaneFactory.createFromString('events'));
     addItem('Create an event', 'paneevent', () => (new EventDialog(0, null).show()));
 
-    addHeading('Organizing the movement');
+    addHeading('Organizing the movement', 'HELPORG');
     addItem('Movement agenda & documents', 'panedoc', () => PaneFactory.createFromString('rootdocs'));
     addItem('Proposed changes - active', 'paneproposal', () => PaneFactory.createFromString('proposals-active'));
     addItem('System changes', 'paneproposal', () => PaneFactory.createFromString('proposals-sys/${year}'));
 
-    addHeading('Accounts and settings');
+    addHeading('Accounts and settings', 'HELPSET');
     Element loginItem = addItem('Log In', null, () => MainController.toggleLogin());
     Element profileItem = addItem('My Profile', 'paneuser', () => PaneFactory.createFromString('user/${Globals.userId}'));
     Element logoutItem = addItem('Log Out', null, () => MainController.toggleLogin(), hover:'Shortcut: Ctrl-Q');
@@ -81,9 +81,9 @@ class MainMenuHandler {
     for (Element e in _loggedOutOnlyItems) makevis(e, !isLoggedIn);
   }
 
-  ///add a heading to the panel
-  static void addHeading(String s) {
-    _panel.appendHtml('<h2>${s}</h2>');
+  ///add a heading to the panel, with a help icon
+  static void addHeading(String heading, String helpDocCode) {
+    _panel.appendHtml('<h2>${heading} <a href="#doc/s=${helpDocCode}"><img src="images/help.png" /></a></h2>');
   }
 
   ///add a menu item to the panel; icon can be null

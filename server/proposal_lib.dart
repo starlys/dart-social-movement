@@ -442,8 +442,11 @@ class ProposalLib {
   ///perform follow up actions after a project record was created via _finalizeKindNew
   static Future _fixUpNewProject(Connection db, int projectId, int userId) async {
     //write the person who created the project as a member of it
-    await db.execute('insert into project_xuser(project_id,xuser_id,kind,spam_count)'
-      'values(${projectId},${userId},\'M\',0)');
+    if (projectId != null) {
+      await db.execute(
+          'insert into project_xuser(project_id,xuser_id,kind,spam_count)'
+              'values(${projectId},${userId},\'M\',0)');
+    }
   }
 
   ///perform follow up actions for closed proposals of kind=JOIN

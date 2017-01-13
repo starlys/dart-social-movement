@@ -24,7 +24,7 @@ class NotifyPane extends BasePane {
     bodyElement.append(new DivElement() ..text = _item.text);
     bodyElement.append(new BRElement());
     if ((_item.linkPaneKey ?? '').length > 0) {
-      var link = new AnchorElement() ..href = '#' + _item.linkPaneKey ..text = 'Go to: ' + _item.linkText;
+      var link = new AnchorElement() ..href = '#' + _item.linkPaneKey ..text = _item.linkText;
       bodyElement.append(link);
     }
 

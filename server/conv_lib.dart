@@ -130,9 +130,9 @@ class ConvLib {
   // Output cols are
   // * everything from conv_post
   // * xuser: nick, avatar_no
-  // * blocking_kind: xuser_xuser.kind by this user about the author
-  // * blocked_kind: xuser_xuser.kind by the author about this user
-  // * spam_count from the author's project_xuser record
+  // * blocking_kind: xuser_xuser.kind by this user about the author, or null
+  // * blocked_kind: xuser_xuser.kind by the author about this user, or null
+  // * spam_count from the author's project_xuser record or null (if author has left project)
   static Future<List<Row>> selectPosts(Connection db, int convId, int userId, int projectId,
     {bool first:false, bool betweenTimes:false,
     bool afterTime2:false, bool all:false,
@@ -205,7 +205,7 @@ class ConvLib {
     }
 
     //user has had other posts marked inappropriate
-    if (postRow.spam_count >= 7) {
+    if (postRow.spam_count != null && postRow.spam_count >= 7) {
       p.collapseMode = 'UserSuspcicious'; //expansion link in UI: View possibly inappropriate content
       p.collapsePosition = 0;
       return;

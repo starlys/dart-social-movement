@@ -83,7 +83,7 @@ class MainMenuHandler {
 
   ///add a heading to the panel, with a help icon
   static void addHeading(String heading, String helpDocCode) {
-    _panel.appendHtml('<h2>${heading} <a href="#doc/s=${helpDocCode}"><img src="images/help.png" /></a></h2>');
+    _panel.appendHtml('<h2>${heading} <a href="#doc/s=${helpDocCode}"><img src="images/help_dim.png" /></a></h2>');
   }
 
   ///add a menu item to the panel; icon can be null

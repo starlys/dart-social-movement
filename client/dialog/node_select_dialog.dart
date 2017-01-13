@@ -11,8 +11,9 @@ import '../lib/category_node.dart';
 /// CategoryNode if one is selected, or null if canceled
 class NodeSelectDialog extends DialogBox {
   List<CategoryNode> _topOptions;
+  String _instructionText;
 
-  NodeSelectDialog(this._topOptions) : super() {}
+  NodeSelectDialog(this._topOptions, this._instructionText) : super() {}
 
   @override
   Future build() async {
@@ -24,7 +25,7 @@ class NodeSelectDialog extends DialogBox {
     }
 
     //main content - outline
-    new FormBuilder(frame, 'Choose a category'); //the form is just used to format the title
+    new FormBuilder(frame, _instructionText); //the form is just used to format the title
     outline = new OutlineBuilder(frame, _nodeSelectHandler);
     void addToOutlineRecur(Element parentElement, CategoryNode node, int level) {
       Element el = outline.add(parentElement, node.title, node.id.toString(), childrenCollapsed: level > 1);

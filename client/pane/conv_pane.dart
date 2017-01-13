@@ -96,7 +96,6 @@ class ConvPane extends BasePane {
       DateTime lastpos = WLib.wireToDateTime(_conv.posts.last.createdAtWDT);
       DateTime readpos = WLib.wireToDateTime(_conv.readPositionWDT);
       if (readpos.isBefore(lastpos)) {
-        _tellServerReadPosition(lastpos);
         var action = () {
           _tellServerReadPosition(lastpos);
         };
@@ -212,7 +211,7 @@ class ConvPane extends BasePane {
       bool isUnread = createdAt.isAfter(readpos);
       String readDotImageName = isUnread ? 'unread-dot.png' : 'read-dot.png';
       ImageElement dot = div.querySelector('.read-dot img');
-      dot.src = 'images/${readDotImageName}';
+      if (dot != null) dot.src = 'images/${readDotImageName}';
     });
   }
 

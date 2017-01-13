@@ -270,7 +270,10 @@ class Database {
       ' and not exists(select * from conv where project_id=project.id)'
       ' and not exists(select * from proposal where project_id=project.id)',
       {'d': yearAgo}).toList();
-    for (Row row in rows) await CleanDeleter.deleteProjectPartial(db, row[0]);
+    for (Row row in rows) {
+      try {await CleanDeleter.deleteProjectPartial(db, row[0]);}
+      catch(ex) {}
+    }
 
   }
 

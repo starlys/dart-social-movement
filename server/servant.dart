@@ -381,7 +381,7 @@ class Servant {
       //preliminarily, if spawning, get parent keys and author from the source conv
       //and ignore the proj or event that was passed in
       if (args.openingPostId != null) {
-        Row openingPostRow = await MiscLib.querySingle(db, 'select select author_id,conv_id from conv_post where id=@p',
+        Row openingPostRow = await MiscLib.querySingle(db, 'select author_id,conv_id from conv_post where id=@p',
           {'p': args.openingPostId});
         if (openingPostRow == null) throw new Exception('Source post does not exist');
         //authorId = openingPostRow.author_id;
@@ -729,7 +729,7 @@ class Servant {
     await Database.safely('DocGet', r.base, (db) async {
       //get info about doc (but don't load text yet)
       String whereClause = 'id=${args.docId}';
-      if (args.specialCode != null && args.specialCode.length < 5)
+      if (args.specialCode != null && args.specialCode.length < 50)
         whereClause = 'special_code=\'${args.specialCode}\'';
       Row docRow = await MiscLib.querySingleChecked(db, 'select id,title,project_id,revision_no from doc where ${whereClause}', 'Document does not exist');
       args.docId = docRow.id;
@@ -1176,7 +1176,7 @@ class Servant {
     return r;
   }
 
-  //get one project for display, with related proposals, convs, docs
+  ///get one project for display, with related proposals, convs, docs
   @ApiMethod(method: 'POST', path: 'ProjectGet')
   Future<ProjectGetResponse> projectGet(ProjectGetRequest args) async {
     ProjectGetResponse r = new ProjectGetResponse();

@@ -3,6 +3,7 @@
 client/.pub/*
 packages/*
 client/packages/*
+.idea/**
 
 *active*.txt
 *alive*.txt

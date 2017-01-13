@@ -82,13 +82,19 @@ class CleanDeleter {
   ///delete a project and its documents only (does NOT delete convs or proposals, so if
   /// those records exist, this will fail)
   static Future deleteProjectPartial(Connection db, int projectId) async {
+    //note this could fail if there is a stray proposal pointing to the doc to be deleted,
+    //so ignore errors on those tables
+
     //cascade to child tables
     await db.execute('delete from project_xuser_xuser where project_id=${projectId}');
     await db.execute('delete from project_xuser where project_id=${projectId}');
-    await db.execute('delete from doc_revision where doc_id in (select id from doc where project_id=${projectId})');
-    await db.execute('delete from doc where project_id=${projectId}');
+    try {
+      await db.execute(
+          'delete from doc_revision where doc_id in (select id from doc where project_id=${projectId})');
+      await db.execute('delete from doc where project_id=${projectId}');
 
-    //delete row
-    await db.execute('delete from project where id=${projectId}');
+      //delete row
+      await db.execute('delete from project where id=${projectId}');
+    } catch (ex) {}
   }
 }

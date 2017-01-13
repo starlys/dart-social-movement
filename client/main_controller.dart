@@ -102,8 +102,9 @@ class MainController {
   ///process the Globals.doOnUserAction queue
   static void doOnUserAction() {
     Globals.lastActivityUtc = WLib.utcNow();
-    Globals.doOnUserAction.forEach((k, v) => v());
+    Map<String, UserActionFunc> actions = new Map.from(Globals.doOnUserAction);
     Globals.doOnUserAction.clear();
+    actions.forEach((k, v) => v());
   }
 
   ///log out

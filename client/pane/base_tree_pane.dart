@@ -137,7 +137,7 @@ class BaseTreePane extends BasePane {
   ///move the selected category to the sister or child position relative to another reference category
   Future moveCategoryHandler(MouseEvent e) async {
     //select the reference cat
-    NodeSelectDialog dlg = new NodeSelectDialog(_topCats);
+    NodeSelectDialog dlg = new NodeSelectDialog(_topCats, 'Choose the target category (where this category will move to)');
     int referenceCatId = await dlg.show();
     if (referenceCatId == null) return;
     CategoryItemResponse referenceCat = _allCats.singleWhere((i) => i.id == referenceCatId);
@@ -167,7 +167,7 @@ class BaseTreePane extends BasePane {
     if (titlesToMove == null) return;
 
     //select cat to move to
-    NodeSelectDialog dlg2 = new NodeSelectDialog(_topCats);
+    NodeSelectDialog dlg2 = new NodeSelectDialog(_topCats, 'Choose category for moved contents');
     int targetCatId = await dlg2.show();
     if (targetCatId == null) return;
     CategoryItemResponse targetCat = _allCats.singleWhere((c) => c.id == targetCatId);

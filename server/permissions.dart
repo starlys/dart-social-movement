@@ -187,7 +187,8 @@ class Permissions{
   /// Only sets maxProjectUserKind, mayJoin, mayRequest.
   static Future<JoinInfo> getProjectJoinPermissions(Connection db, int userId, int projectId) async {
       JoinInfo r = new JoinInfo()
-        ..projectId = projectId;
+        ..projectId = projectId
+        ..maxProjectUserKind = 'A'; //this default is necessary in case of weird data (like user is a conv member but not a proj member)
 
       //get associated project or event info
       String privacy = 'P'; //events are public

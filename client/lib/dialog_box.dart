@@ -2,6 +2,7 @@ import 'dart:html';
 import 'dart:math';
 import 'dart:async';
 import 'html_lib.dart';
+// ignore: uri_does_not_exist
 import '../client_store.dart';
 
 ///manages modal dialog life cycle. Derived classes should override

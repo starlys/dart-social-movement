@@ -4,7 +4,6 @@ import 'server/twotier/wlib.dart';
 import 'worker/database.dart';
 import 'worker/globals.dart';
 import 'worker/mail_lib.dart';
-import 'package:postgresql/postgresql.dart';
 
 ///entry point for sending mail; this script sends all queued mail
 /// and erases old sent mail

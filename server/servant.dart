@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:rpc/rpc.dart';
-import 'package:postgresql/postgresql.dart';
 import 'twotier/wtypes.dart';
 import 'misc_lib.dart';
 import 'date_lib.dart';

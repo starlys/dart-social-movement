@@ -1,7 +1,4 @@
-//import 'dart:async';
 import 'dart:io';
-import 'package:rpc/rpc.dart';
-import 'package:route/server.dart';
 import 'server/api_globals.dart';
 import 'server/pulse.dart';
 import 'server/servant.dart';
@@ -57,7 +54,7 @@ main() async {
   rpc.addApi(new Servant());
   router.defaultStream.listen(rpc.httpRequestHandler);
 
-  //attache the link-back style requests to the router (these include any
+  //attach the link-back style requests to the router (these include any
   // methods not served in the RPC style, such as links sent by email)
   router.serve(r'/linkback/ValidateEmail').listen(Linkback.validateEmail);
 

@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'config.dart';
 import 'api_globals.dart';
-import 'package:postgresql/postgresql.dart';
-import 'package:postgresql/pool.dart';
 import 'misc_lib.dart';
 import 'twotier/wlib.dart';
 import 'twotier/wtypes.dart';

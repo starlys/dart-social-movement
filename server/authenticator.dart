@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'database.dart';
-import 'package:postgresql/postgresql.dart';
 import 'misc_lib.dart';
 import 'twotier/wtypes.dart';
 import 'twotier/wlib.dart';

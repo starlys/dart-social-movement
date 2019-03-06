@@ -1,28 +1,3 @@
-@MirrorsUsed(targets: 'APIRequestBase,APIResponseBase,AuthenticateResponse,APIResponseAssociation'
-  /*cat:5*/',CategoryQueryRequest,CategoryQueryResponse,CategoryDeleteRequest'
-  ',CategorySaveRequest,CategoryMoveContentsRequest,CategoryItemResponse'
-  /*conv:17*/',ConvQueryRequest,ConvQueryResponse,ConvQueryConvItemResponse,ConvQueryPostItemResponse,ConvGetRequest,ConvGetResponse'
-  ',ConvGetPostItem,ConvGetRulesRequest,ConvGetRulesResponse,ConvSaveRequest,ConvPostGetRequest,ConvPostGetResponse'
-  ',ConvPostSaveRequest,ConvPostImageSaveRequest,ConvPostUserSaveRequest,ConvSetReadPositionRequest,ConvUserSaveRequest'
-  /*doc:8*/',DocQueryRequest,DocQueryResponse,DocQueryItem,DocGetRequest,DocGetResponse,DocGetVersionItem'
-  ',DocSaveRequest,DocRollbackRequest'
-  /*event:9*/',EventQueryRequest,EventQueryResponse,EventItemResponse,EventRequest'
-  ',EventGetResponse,EventGetUserResponse,EventGetConvResponse,EventSaveRequest,EventUserSaveRequest'
-  /*proj:14*/',ProjectQueryRequest,ProjectQueryResponse,ProjectQueryItem,ProjectGetRequest,ProjectGetResponse'
-  ',ProjectProposalItem,ProjectConvItem,ProjectDocItem,ProjectSaveRequest,ProjectUserQueryRequest'
-  ',ProjectUserQueryResponse,ProjectUserItem,ProjectUserSaveRequest,ProjectUserUserSaveRequest'
-  /*proposal:8*/',ProposalQueryRequest,ProposalQueryResponse,ProposalQueryItem,ProposalGetRequest'
-  ',ProposalGetResponse,ProposalOptionItem,ProposalSaveRequest,ProposalUserSaveRequest'
-  /*push:3*/',PushQueueGetRequest,PushQueueGetResponse,PushQueueItem'
-  /*resource:8*/',ResourceQueryRequest,ResourceQueryResponse,ResourceItem'
-  ',ResourceGetRequest,ResourceGetResponse,ResourceSaveRequest,ResourceTriageRequest'
-  ',ResourceUserSaveRequest'
-  /*user:10*/',UserQueryRequest,UserQueryResponse,UserQueryItem,UserGetRequest'
-  ',UserGetResponse,UserSaveRequest,UserAvatarSaveRequest'
-  ',UserNotifySaveRequest,UserRecoverPasswordRequest,UserUserSaveRequest'
-  )
-import 'dart:mirrors';
-
 //file contains all the wire types used on client and server
 
 //nestable class for API requests. The RPC library doesn't allow requests to

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:dart_config/default_server.dart';
 
 ///wraps config file and watches for changes;
 ///note that this class prevents the app from ending

@@ -1,8 +1,6 @@
 import 'dart:async';
-//import 'dart:io';
 import 'package:image/image.dart';
-import 'package:amazon_s3/amazon_s3.dart';
-import 'package:postgresql/postgresql.dart';
+import 'amazon/amazon_s3.dart';
 import 'config.dart';
 import 'misc_lib.dart';
 

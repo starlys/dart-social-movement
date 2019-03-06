@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:postgresql/postgresql.dart';
 import 'misc_lib.dart';
 import 'conv_lib.dart';
 import 'diff_lib.dart';

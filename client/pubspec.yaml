@@ -1,11 +1,7 @@
 name: autzone_client
 description: Civil rights social platform
 dependencies:
-  browser: any
-  #exportable: any
   dquery: any
   js: any
-  animation: any
-  #too big, hard to get to work: dart_web_toolkit: any #pub.dartlang.org/pacakges/dart_web_toolkit and akserg.github.io/dart_web_toolkit
 transformers:
 homepage: http://www.divergentlabs.org

@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'package:postgresql/postgresql.dart';
-//import 'misc_lib.dart';
-//import 'date_lib.dart';
 import 'image_lib.dart';
 
 ///static methods to delete records with cascading

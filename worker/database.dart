@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:io';
-import 'package:postgresql/postgresql.dart';
 import 'server/config.dart';
 import 'globals.dart';
 import 'server/misc_lib.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:io';
-import 'server/config.dart';
+import 'server/config_settings.dart';
 import 'globals.dart';
 import 'server/misc_lib.dart';
 import 'server/twotier/wlib.dart';
@@ -19,7 +19,8 @@ class Database {
   ///get the database connection
   static Future<dynamic> getConnection() async {
     bool isDev = Globals.config.isDev;
-    String connstring = Globals.config.settings['database'][isDev ? 'connection_dev' : 'connection'];
+    String connstring = Globals.configSettings.database.connection;
+    if (isDev) connstring = Globals.configSettings.database.connection_dev;
     return await connect(connstring, applicationName: 'autzone_bg');
   }
 
@@ -60,10 +61,10 @@ class Database {
   ///calculate site leadership (aka. site admins)
   static Future assignSiteLeadership(Connection db) async {
     //get settings
-    Map adminSettings = Globals.config.settings['site_admin'];
-    int minAdmins = adminSettings['min'];
-    int maxAdmins = adminSettings['max'];
-    double fracAdmins = adminSettings['percent'] / 100.0;
+    var adminSettings = Globals.configSettings.site_admin;
+    int minAdmins = adminSettings.min;
+    int maxAdmins = adminSettings.max;
+    double fracAdmins = adminSettings.percent / 100.0;
 
     //set project.member_count for all projects
     await db.execute('update project set member_count=(select count(*) from project_xuser where project_id=project.id)');
@@ -137,7 +138,7 @@ class Database {
   ///recalculate things affected by conv_post.reaction
   static Future recalcReactions(Connection db) async {
     //get settings
-    int reactionWeightDays = Globals.config.settings['spam']['reaction_weight_days'];
+    int reactionWeightDays = Globals.configSettings.spam.reaction_weight_days;
 
     //get the unique posts having new reactions
     List<Row> rows1 = await db.query('select distinct conv_post_id from conv_post_xuser where processed=\'N\' and reaction=\'X\'')
@@ -434,11 +435,11 @@ class Database {
     List<Row> rows = await db.query('select id,created_at,last_activity from conv where open=\'Y\'').toList();
 
     //get config values
-    var opSettings = Globals.config.settings['operation'];
-    int convInactiveDays = opSettings['conv_inactive_days'];
-    int convOldDays = opSettings['conv_old_days'];
-    int convTooBig = opSettings['conv_too_big'];
-    int deleteDays = Globals.config.settings['deletion']['conv_days'];
+    var opSettings = Globals.configSettings.operation;
+    int convInactiveDays = opSettings.conv_inactive_days;
+    int convOldDays = opSettings.conv_old_days;
+    int convTooBig = opSettings.conv_too_big;
+    int deleteDays = Globals.configSettings.deletion.conv_days;
 
     //loop and determine if it should be closed
     DateTime activityCutoff = WLib.utcNow().subtract(new Duration(days: convInactiveDays));
@@ -494,7 +495,7 @@ class Database {
   ///email new notifciations to user who request it
   static Future emailNotifications(Connection db) async {
     //get config settings
-    String siteName = Globals.config.settings['siteName'];
+    String siteName = Globals.configSettings.siteName;
 
     //get user ids having any un-emailed notifications
     List<Row> distinctUserRows = await db.query('select id,pref_email_notify,email from xuser where exists(select * from xuser_notify where xuser_id=xuser.id and emailed=\'N\')').toList();

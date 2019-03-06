@@ -1,11 +1,13 @@
 import 'dart:math';
-import 'server/config.dart';
+import 'server/config_settings.dart';
+import 'server/config_loader.dart';
 
 ///stores worker globals
 class Globals {
 
   ///config file settings
-  static Config config = new Config();
+  static ConfigLoader configLoader = new ConfigLoader();
+  static ConfigSettings get configSettings => configLoader.settings;
 
   //timing
   static DateTime next30s = new DateTime(1970);

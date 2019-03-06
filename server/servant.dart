@@ -14,6 +14,7 @@ import 'api_globals.dart';
 import 'authenticator.dart';
 import 'database.dart';
 import 'image_lib.dart';
+import 'config_settings.dart';
 
 ///exposed public API methods
 @ApiClass(version: 'v1')
@@ -2065,9 +2066,9 @@ class Servant {
         await db.execute('update xuser set proposed_email=@p where id=${userId}', {'p': proposedEmail});
 
         //email the code to args.email
-        Map settings = ApiGlobals.config.settings;
-        String link = settings['linkbackUrl'] + '/linkback/ValidateEmail?id=${userId}&code=${code}';
-        String body = 'Automated message from ${settings['siteName']}'
+        var settings = ApiGlobals.configSettings;
+        String link = settings.linkbackUrl + '/linkback/ValidateEmail?id=${userId}&code=${code}';
+        String body = 'Automated message from ${settings.siteName}'
           '\r\n\r\nIf you intended to associate this email address with the account "${args.saveNick}",'
           '\r\nplease click on the link below or copy it into a browser to verify that you own'
           '\r\nthe email address.'

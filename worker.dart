@@ -2,12 +2,11 @@ import 'worker/globals.dart';
 import 'worker/controller.dart';
 
 //app entry point
-main() async {
+main() {
   print("starting autzone worker");
 
   //set up globals
-  await Globals.config.init();
-  //print(Globals.config.settings['sample']);
+  Globals.configSettings.init();
 
   Controller c = new Controller();
   c.start();

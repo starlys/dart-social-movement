@@ -1,21 +1,23 @@
 import 'dart:async';
 import 'dart:io';
+import 'config_settings.dart';
+import 'package:safe_config/safe_config.dart';
 
 ///wraps config file and watches for changes;
 ///note that this class prevents the app from ending
-class Config {
+class ConfigLoader {
     String _configPath = 'config/config.yaml';
     DateTime _fileReadUtc;
     Timer _timer;
 
     ///the settings; only available after init is finished
-    Map settings;
+    ConfigSettings settings;
 
     ///true when this is the development server (when config.yaml has dev:true)
     bool get isDev => _isDev;
     bool _isDev = false;
 
-    Config() {
+    ConfigLoader() {
       _configPath = rootPath() + '/config/config.yaml';
     }
 
@@ -27,23 +29,23 @@ class Config {
     }
 
     ///load settings
-    init() async {
-      await _load();
+    init() {
+      _load();
 
       //set up recurring action to check file date every 1 min and reload
       _timer = new Timer.periodic(new Duration(minutes:1), _timerTick);
     }
 
-    Future _load() async {
-      _fileReadUtc=new DateTime.now().toUtc();
-      settings = await loadConfig(_configPath);
-      _isDev = settings['dev'] == 'Y';
+    void _load() {
+      _fileReadUtc = new DateTime.now().toUtc();
+      settings = ConfigSettings(_configPath);
+      _isDev = settings.dev == 'Y';
     }
 
     Future _timerTick(Timer t) async {
       File f = new File(_configPath);
       DateTime m = await f.lastModified();
-      if (m.isAfter(_fileReadUtc)) await _load();
+      if (m.isAfter(_fileReadUtc)) _load();
     }
 
     ///stop this instance from watching for changes in the config file

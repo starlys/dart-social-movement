@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:image/image.dart';
 import 'amazon/amazon_s3.dart';
-import 'config.dart';
+import 'config_settings.dart';
 import 'misc_lib.dart';
 
 ///functions for handling avatar and post images, saving to Amazon S3 buckets
@@ -10,15 +10,15 @@ class ImageLib {
   static S3Bucket _avatarBucket, _postBucket;
 
   ///initialize library
-  static void init(Config cfg) {
-    String endpoint = cfg.settings['amazonS3']['endpoint'];
-    String id = cfg.settings['amazonS3']['id'];
-    String key = cfg.settings['amazonS3']['key'];
-    String avatarBucketName = cfg.settings['amazonS3Avatar']['bucket'];
-    String postBucketName = cfg.settings['amazonS3Post']['bucket'];
+  static void init(ConfigSettings cfg) {
+    String endpoint = cfg.amazonS3.endpoint;
+    String id = cfg.amazonS3.id;
+    String key = cfg.amazonS3.key;
+    String avatarBucketName = cfg.amazonS3Avatar.bucket;
+    String postBucketName = cfg.amazonS3Post.bucket;
 
-    _avatarUrlBase = cfg.settings['amazonS3Avatar']['url'];
-    _postUrlBase = cfg.settings['amazonS3Post']['url'];
+    _avatarUrlBase = cfg.amazonS3Avatar.url;
+    _postUrlBase = cfg.samazonS3Post.url;
 
     _avatarBucket = new S3Bucket('username', id, key, endpoint, avatarBucketName);
     _postBucket = new S3Bucket('username', id, key, endpoint, postBucketName);

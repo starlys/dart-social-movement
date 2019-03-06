@@ -1,25 +1,25 @@
 import 'dart:async';
 import 'package:mailer/mailer.dart';
-import 'server/config.dart';
+import 'server/config_settings.dart';
 
 ///helpers for sending email; note that most processes add a row to the
 /// outgoing email table, instead of sending it, for performance
 class MailLib {
 
   ///send an email; return null on ok, or error message
-  static Future<String> send(Config cfg, String to, String subject, String body) async {
+  static Future<String> send(ConfigSettings cfg, String to, String subject, String body) async {
     try {
-      Map emailConfig = cfg.settings['smtp'];
+      var emailConfig = cfg.smtp;
       var options = new SmtpOptions() //AmazonSESSmtpOptions() //was SmtpOptions()
-        ..username = emailConfig['user']
-        ..password = emailConfig['password']
-        ..hostName = emailConfig['host']
-        ..port = emailConfig['port']
+        ..username = emailConfig.user
+        ..password = emailConfig.password
+        ..hostName = emailConfig.host
+        ..port = emailConfig.port
         //..secured = false
         //..requiresAuthentication = false
         ;
       var envelope = new Envelope()
-        ..from = emailConfig['from']
+        ..from = emailConfig.from
         ..recipients.add(to)
         ..subject = subject
         ..text = body;

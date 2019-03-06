@@ -13,7 +13,7 @@ main() async {
   print("starting autzone API listener");
 
   //set up globals and other initializers
-  await ApiGlobals.config.init();
+  ApiGlobals.config.init();
   bool isDev = ApiGlobals.config.isDev;
   await Authenticator.init();
   await DateLib.init();
@@ -40,10 +40,8 @@ main() async {
     context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
     //context.setTrustedCertificates('/var/www/cert/autzone.pem', password: password);
     //context.setTrustedCertificates('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
-    String host = ApiGlobals.config.settings['domain'];
+    String host = ApiGlobals.configSettings.domain;
     print('production mode - port 443 on host ${host}');
-    //List<InternetAddress> ips = await InternetAddress.lookup(host);
-    //if (ips.length == 0)       print('cannot resolve {$host}');
     server = await HttpServer.bindSecure(InternetAddress.ANY_IP_V6, 443, context); //production with certificate, running as root
   }
 

@@ -3,7 +3,7 @@ import 'misc_lib.dart';
 import 'conv_lib.dart';
 import 'diff_lib.dart';
 import 'permissions.dart';
-import 'config.dart';
+import 'config_settings.dart';
 import 'twotier/wlib.dart';
 
 ///centralizes access to proposal table with logic for various specific
@@ -92,18 +92,18 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a proposal of kind SYS
-  static Future proposeSystemChange(Config config, Connection db, int userId,
+  static Future proposeSystemChange(ConfigSettings config, Connection db, int userId,
     String changeTitle, String changeSummary, List<String> options) async {
     //put together all the values that will eventually go into the proposal
     // table for this system proposal
-    int votePeriodDays = config.settings['operation']['root_doc_vote_days'];
+    int votePeriodDays = config.operation.root_doc_vote_days;
     var colValues = {
       'kind': 'SYS',
       'active': 'Y',
       'eligible': 'E',
       'title': 'System change: ${changeTitle}',
       'summary': changeSummary,
-      'pass_target': config.settings['operation']['root_doc_vote_min'],
+      'pass_target': config.operation.root_doc_vote_min,
       'options': _stringsToMap(options),
       '*timeout': votePeriodDays,
       'timeout_action': 'M',
@@ -177,12 +177,12 @@ class ProposalLib {
   ///write proposal of kind NEW for a proposal of kind ROOT;
   ///changeSummary is in the proposer's own words while changeHtml is the change proposed
   /// in html; newBody is the complete document proposed
-  static Future proposeRootDocumentChange(Config config, Connection db, int userId, int docId,
+  static Future proposeRootDocumentChange(ConfigSettings config, Connection db, int userId, int docId,
     String docTitle, String changeSummary, String changeHtml, String newBody) async {
 
     //put together all the values that will eventually go into the proposal
     // table for this root doc amendment proposal
-    int votePeriodDays = config.settings['operation']['root_doc_vote_days'];
+    int votePeriodDays = config.operation.root_doc_vote_days;
     var colValues = {
       'kind': 'ROOT',
       'active': 'Y',
@@ -191,7 +191,7 @@ class ProposalLib {
       'summary': changeSummary,
       'summary_html': changeHtml,
       'dtext': newBody,
-      'pass_target': config.settings['operation']['root_doc_vote_min'],
+      'pass_target': config.operation.root_doc_vote_min,
       'options': _stringsToMap(_yesNoOptions()),
       '*timeout': votePeriodDays,
       'timeout_action': 'M',

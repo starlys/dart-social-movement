@@ -17,7 +17,8 @@ class Database {
   static Future init() async {
     //create connection pool (note min and max connections must be the same, since we initialize them all here)
     bool isDev = ApiGlobals.config.isDev;
-    String connstring = ApiGlobals.config.settings['database'][isDev ? 'connection_dev' : 'connection'];
+    String connstring = ApiGlobals.configSettings.database.connection;
+    if (isDev) connstring = ApiGlobals.configSettings.database.connection_dev;
     _pool = new Pool(connstring, minConnections: poolSize, maxConnections: poolSize);
     await _pool.start();
 
@@ -44,9 +45,6 @@ class Database {
 
   ///get a database connection
   static Future<dynamic> getConnection() async {
-    //bool isDev = ApiGlobals.config.isDev;
-    //String connstring = ApiGlobals.config.settings['database'][isDev ? 'connection_dev' : 'connection'];
-    //return await connect(connstring, applicationName: 'autzone');
     return await _pool.connect();
   }
 

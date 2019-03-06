@@ -1,7 +1,7 @@
 import "dart:async";
 import "dart:math";
 import 'misc_lib.dart';
-import "config.dart";
+import "config_settings.dart";
 import 'twotier/wlib.dart';
 
 ///container for use with Permissions methods
@@ -35,27 +35,27 @@ class Permissions{
 
   ///convert spam_count (defined in project_xuser table) to specific info about
   /// posting restrictions; does NOT set explanation or allowedNow
-  static RestrictionInfo spamCountToRestrictions(Config cfg, int spamCount) {
+  static RestrictionInfo spamCountToRestrictions(ConfigSettings cfg, int spamCount) {
     //get settings
-    Map spamSettings = cfg.settings['spam'];
-    int restrict1Score = spamSettings['restrict1_score'];
-    int restrict2Score = spamSettings['restrict2_score'];
-    int restrict3Score = spamSettings['restrict3_score'];
+    var spamSettings = cfg.spam;
+    int restrict1Score = spamSettings.restrict1_score;
+    int restrict2Score = spamSettings.restrict2_score;
+    int restrict3Score = spamSettings.restrict3_score;
 
     //populate return structure
     RestrictionInfo r = new RestrictionInfo();
     if (spamCount >= restrict3Score) {
       r.restrictionLevel = 3;
-      r.restDays = spamSettings['restrict3_rest_days'];
-      r.charLimit = spamSettings['restrict3_chars'];
+      r.restDays = spamSettings.restrict3_rest_days;
+      r.charLimit = spamSettings.restrict3_chars;
     } else if (spamCount >= restrict2Score) {
       r.restrictionLevel = 2;
-      r.restDays = spamSettings['restrict2_rest_days'];
-      r.charLimit = spamSettings['restrict2_chars'];
+      r.restDays = spamSettings.restrict2_rest_days;
+      r.charLimit = spamSettings.restrict2_chars;
     } else if (spamCount >= restrict1Score) {
       r.restrictionLevel = 1;
-      r.restDays = spamSettings['restrict1_rest_days'];
-      r.charLimit = spamSettings['restrict1_chars'];
+      r.restDays = spamSettings.restrict1_rest_days;
+      r.charLimit = spamSettings.restrict1_chars;
     }
     return r;
   }

@@ -56,8 +56,8 @@ class Linkback {
   //writes content and closes req, where body is plain text or html;
   //this gets wrapped in html+body tags
   static Future _commonResponse(HttpRequest req, String body) async {
-    String homeUrl = ApiGlobals.config.settings['homeUrl'];
-    String siteName = ApiGlobals.config.settings['siteName'];
+    String homeUrl = ApiGlobals.config.homeUrl;
+    String siteName = ApiGlobals.config.siteName;
     String page = '<html><body>' + body
       + '<hr />Close this tab, or continue to <a href="${homeUrl}">${siteName}</a></body></html>';
 

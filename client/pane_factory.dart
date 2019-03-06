@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:html';
-import 'package:animation/animation.dart';
 import 'push_queue_handler.dart';
 import 'root/pane_key.dart';
 import 'lib/html_lib.dart';
@@ -125,11 +124,10 @@ class PaneFactory {
 
     //scroll to new pane (with possible delay)
     var goSmoothScroll = () {
-      new ElementAnimation(main1)
-        ..properties = {'scrollTop': priorScrollHeight + 30}
-        ..easing = Easing.LINEAR
-        ..duration = 500
-        ..run();
+      main1.animate([{"scrollTop": priorScrollHeight + 30}], {
+        "duration": 500,
+        "fill": "forwards"
+      });
     };
     if (doScroll && !isReopeningLastPane) {
       if (waitForCloseAnimation)
@@ -158,12 +156,11 @@ class PaneFactory {
       if (isLast)
         p.borderElement.remove();
       else {
-        new ElementAnimation(p.borderElement)
-          ..properties = {'height': 0, 'margin-top': 0, 'margin-bottom': 0}
-          ..duration = 300
-          ..easing = Easing.LINEAR
-          ..onComplete.listen((e) => p.borderElement.remove())
-          ..run();
+        var effect = p.borderElement.animate([{"height": 0, 'margin-top': 0, 'margin-bottom': 0}], {
+          "duration": 300,
+          "fill": "forwards"
+        });
+        effect.onFinish.listen((e) => p.borderElement.remove());
         }
     } catch (ex) {}
 

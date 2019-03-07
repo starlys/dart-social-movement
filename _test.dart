@@ -7,16 +7,16 @@ import 'worker/globals.dart';
 
 //scratchpad/tests
 main() async {
-  await Globals.config.init();
+  await Globals.configLoader.init();
 
   //send mail
-  String err = await MailLib.send(Globals.config, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
+  String err = await MailLib.send(Globals.configSettings, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
   print(err);
 
   //test infinite loop for mem leak
   //pulse();
 
-  Globals.config.stopWatching();
+  Globals.configLoader.stopWatching();
 }
 
 //supervisor fast testing - no leaks

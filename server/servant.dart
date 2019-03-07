@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'twotier/wtypes.dart';
 import 'misc_lib.dart';
 import 'date_lib.dart';
 import 'diff_lib.dart';
@@ -15,14 +14,27 @@ import 'authenticator.dart';
 import 'database.dart';
 import 'image_lib.dart';
 import 'config_settings.dart';
+import 'twotier/wtypes.dart';
 
 ///exposed public API methods
-@ApiClass(version: 'v1')
+@Expose("/servant/v2")
+class ServantController extends Controller {
+  @Expose(method: 'POST', as: 'CategoryQuery')
+  Future<CategoryQueryResponse> categoryQuery(RequestContext req, ResponseContext resp) async {
+    await req.parseBody();
+    CategoryQueryRequest args = //deserialize here
+    var ctrlr = Servant();
+    resp.serializer = x; //serialize using mautogen code
+    return ctrlr.categoryQuery(args);
+  }
+}
+
+///implementation of exposed public API methods
 class Servant {
 
   ///bounce back the given code/message
   /// verify with: http://localhost:8083/servant/v1/HelloWorld?errorCode=x&errorMessage=y
-  @ApiMethod(method: 'GET', path: 'HelloWorld')
+  @Expose(method: 'GET')
   APIResponseBase helloWorld({String errorCode, String errorMessage}) {
     return new APIResponseBase()
       ..ok = 'Y'
@@ -31,7 +43,7 @@ class Servant {
   }
 
   //check credentials, and return some extra info if valid
-  @ApiMethod(method: 'POST', path: 'Authenticate')
+  @Expose(method: 'POST', as: 'Authenticate')
   Future<AuthenticateResponse> authenticate(APIRequestBase args) async {
     AuthenticateResponse r = new AuthenticateResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args);
@@ -49,8 +61,10 @@ class Servant {
   }
 
   //get all categories matching kind; no authentication
-  @ApiMethod(method: 'POST', path: 'CategoryQuery')
-  Future<CategoryQueryResponse> categoryQuery(CategoryQueryRequest args) async {
+  @Expose(method: 'POST', as: 'CategoryQuery')
+  Future<CategoryQueryResponse> categoryQuery(RequestContext req) async {
+    await req.parseBody();
+    CategoryQueryRequest args = //deserialize here
     CategoryQueryResponse r = new CategoryQueryResponse();
     await Database.safely('CategoryQuery', r.base, (db) async {
       r.categories = new List<CategoryItemResponse>();
@@ -68,7 +82,7 @@ class Servant {
   }
 
   //save a category (new, edited, or reparented)
-  @ApiMethod(method: 'POST', path: 'CategorySave')
+  @Expose(method: 'POST', as: 'CategorySave')
   Future<APIResponseBase> categorySave(CategorySaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -105,7 +119,7 @@ class Servant {
   }
 
   //delete a category and relink all references
-  @ApiMethod(method: 'POST', path: 'CategoryDelete')
+  @Expose(method: 'POST', as: 'CategoryDelete')
   Future<APIResponseBase> categoryDelete(CategoryDeleteRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -152,7 +166,7 @@ class Servant {
   }
 
   //move projects/resources from one category to another
-  @ApiMethod(method: 'POST', path: 'CategoryMoveContents')
+  @Expose(method: 'POST', as: 'CategoryMoveContents')
   Future<APIResponseBase> categoryMoveContents(CategoryMoveContentsRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -179,7 +193,7 @@ class Servant {
   }
 
   //full text search in convs and posts
-  @ApiMethod(method: 'POST', path: 'ConvQuery')
+  @Expose(method: 'POST', as: 'ConvQuery')
   Future<ConvQueryResponse> convQuery(ConvQueryRequest args) async {
     ConvQueryResponse r = new ConvQueryResponse();
 
@@ -199,7 +213,7 @@ class Servant {
 
   ///get conv and post detail;
   /// if conv was recommended/invited, can have side effect of changing staus
-  @ApiMethod(method: 'POST', path: 'ConvGet')
+  @Expose(method: 'POST', as: 'ConvGet')
   Future<ConvGetResponse> convGet(ConvGetRequest args) async {
     ConvGetResponse r = new ConvGetResponse();
 
@@ -334,7 +348,7 @@ class Servant {
   }
 
   ///get conv rules (for editing)
-  @ApiMethod(method: 'POST', path: 'ConvGetRules')
+  @Expose(method: 'POST', as: 'ConvGetRules')
   Future<ConvGetRulesResponse> convGetRules(ConvGetRulesRequest args) async {
     ConvGetRulesResponse r = new ConvGetRulesResponse();
 
@@ -364,7 +378,7 @@ class Servant {
   /// the project or event ID must be set for a new blank conv, unless it is
   /// spawned from a post, in which case this method figures out the parent
   /// relationships
-  @ApiMethod(method: 'POST', path: 'ConvSave')
+  @Expose(method: 'POST', as: 'ConvSave')
   Future<APIResponseBase> convSave(ConvSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -442,7 +456,7 @@ class Servant {
   }
 
   ///get limited extra info about a post (which would be too inefficient to get in ConvGet)
-  @ApiMethod(method: 'POST', path: 'ConvPostGet')
+  @Expose(method: 'POST', as: 'ConvPostGet')
   Future<ConvPostGetResponse> convPostGet(ConvPostGetRequest args) async {
     ConvPostGetResponse r = new ConvPostGetResponse();
 
@@ -502,7 +516,7 @@ class Servant {
   }
 
   ///save a new post, or censor or delete  post
-  @ApiMethod(method: 'POST', path: 'ConvPostSave')
+  @Expose(method: 'POST', as: 'ConvPostSave')
   Future<APIResponseBase> convPostSave(ConvPostSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -574,7 +588,7 @@ class Servant {
   }
 
   ///save a new post with an image
-  @ApiMethod(method: 'POST', path: 'ConvPostImageSave')
+  @Expose(method: 'POST', as: 'ConvPostImageSave')
   Future<APIResponseBase> convPostImageSave(ConvPostImageSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -599,7 +613,7 @@ class Servant {
   }
 
   ///save reaction to a post
-  @ApiMethod(method: 'POST', path: 'ConvPostUserSave')
+  @Expose(method: 'POST', as: 'ConvPostUserSave')
   Future<APIResponseBase> convPostUserSave(ConvPostUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -629,7 +643,7 @@ class Servant {
   }
 
   ///save read position
-  @ApiMethod(method: 'POST', path: 'ConvSetReadPosition')
+  @Expose(method: 'POST', as: 'ConvSetReadPosition')
   Future<APIResponseBase> convSetReadPosition(ConvSetReadPositionRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -645,7 +659,7 @@ class Servant {
   }
 
   ///join, quit, or update likes for a conv
-  @ApiMethod(method: 'POST', path: 'ConvUserSave')
+  @Expose(method: 'POST', as: 'ConvUserSave')
   Future<ConvUserSaveResponse> convUserSave(ConvUserSaveRequest args) async {
     ConvUserSaveResponse r = new ConvUserSaveResponse();
 
@@ -700,7 +714,7 @@ class Servant {
   }
 
   ///get all root docs; no authentication
-  @ApiMethod(method: 'POST', path: 'DocQuery')
+  @Expose(method: 'POST', as: 'DocQuery')
   Future<DocQueryResponse> docQuery(DocQueryRequest args) async {
     DocQueryResponse r = new DocQueryResponse();
     if (args.mode != 'R') throw new Exception('unknown mode');
@@ -718,7 +732,7 @@ class Servant {
   }
 
   ///get all projects matching criteria
-  @ApiMethod(method: 'POST', path: 'DocGet')
+  @Expose(method: 'POST', as: 'DocGet')
   Future<DocGetResponse> docGet(DocGetRequest args) async {
     DocGetResponse r = new DocGetResponse()
       ..isProjectManager = 'N';
@@ -791,7 +805,7 @@ class Servant {
   }
 
   //create or update a document
-  @ApiMethod(method: 'POST', path: 'DocSave')
+  @Expose(method: 'POST', as: 'DocSave')
   Future<APIResponseBase> docSave(DocSaveRequest args) async {
     assert(args.docId != null);
     APIResponseBase r = new APIResponseBase();
@@ -875,7 +889,7 @@ class Servant {
   }
 
   //roll back a project document to the previous version
-  @ApiMethod(method: 'POST', path: 'DocRollback')
+  @Expose(method: 'POST', as: 'DocRollback')
   Future<APIResponseBase> docRollback(DocRollbackRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -908,7 +922,7 @@ class Servant {
   }
 
   ///get all events matching criteria
-  @ApiMethod(method: 'POST', path: 'EventQuery')
+  @Expose(method: 'POST', as: 'EventQuery')
   Future<EventQueryResponse> eventQuery(EventQueryRequest args) async {
     EventQueryResponse r = new EventQueryResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
@@ -954,7 +968,7 @@ class Servant {
   }
 
   ///get single event
-  @ApiMethod(method: 'POST', path: 'EventGet')
+  @Expose(method: 'POST', as: 'EventGet')
   Future<EventGetResponse> eventGet(EventRequest args) async {
     EventGetResponse r = new EventGetResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
@@ -1016,7 +1030,7 @@ class Servant {
   }
 
   ///create or update event
-  @ApiMethod(method: 'POST', path: 'EventSave')
+  @Expose(method: 'POST', as: 'EventSave')
   Future<APIResponseBase> eventSave(EventSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
     assert(args.eventId != null);
@@ -1072,7 +1086,7 @@ class Servant {
   }
 
   ///delete event
-  @ApiMethod(method: 'POST', path: 'EventDelete')
+  @Expose(method: 'POST', as: 'EventDelete')
   Future<APIResponseBase> eventDelete(EventRequest args) async {
     APIResponseBase r = new APIResponseBase();
     assert(args.eventId != null);
@@ -1097,7 +1111,7 @@ class Servant {
   }
 
   ///for an event save whether the authenticated user is coming or not
-  @ApiMethod(method: 'POST', path: 'EventUserSave')
+  @Expose(method: 'POST', as: 'EventUserSave')
   Future<APIResponseBase> eventUserSave(EventUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
     assert(args.eventId != null);
@@ -1121,7 +1135,7 @@ class Servant {
   }
 
   ///get all projects matching criteria
-  @ApiMethod(method: 'POST', path: 'ProjectQuery')
+  @Expose(method: 'POST', as: 'ProjectQuery')
   Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest args) async {
     ProjectQueryResponse r = new ProjectQueryResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
@@ -1176,7 +1190,7 @@ class Servant {
   }
 
   ///get one project for display, with related proposals, convs, docs
-  @ApiMethod(method: 'POST', path: 'ProjectGet')
+  @Expose(method: 'POST', as: 'ProjectGet')
   Future<ProjectGetResponse> projectGet(ProjectGetRequest args) async {
     ProjectGetResponse r = new ProjectGetResponse();
 
@@ -1232,7 +1246,7 @@ class Servant {
   }
 
   ///create or update project
-  @ApiMethod(method: 'POST', path: 'ProjectSave')
+  @Expose(method: 'POST', as: 'ProjectSave')
   Future<APIResponseBase> projectSave(ProjectSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1270,7 +1284,7 @@ class Servant {
   }
 
   ///get info about users in a project
-  @ApiMethod(method: 'POST', path: 'ProjectUserQuery')
+  @Expose(method: 'POST', as: 'ProjectUserQuery')
   Future<ProjectUserQueryResponse> projectUserQuery(ProjectUserQueryRequest args) async {
     final int pageSize = 100;
     ProjectUserQueryResponse r = new ProjectUserQueryResponse();
@@ -1336,7 +1350,7 @@ class Servant {
   }
 
   ///quit or downgrade own role in project, or change another member's role
-  @ApiMethod(method: 'POST', path: 'ProjectUserSave')
+  @Expose(method: 'POST', as: 'ProjectUserSave')
   Future<APIResponseBase> projectUserSave(ProjectUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1414,7 +1428,7 @@ class Servant {
   }
 
   //record a vote for/against another user taking leadership in a project
-  @ApiMethod(method: 'POST', path: 'ProjectUserUserSave')
+  @Expose(method: 'POST', as: 'ProjectUserUserSave')
   Future<APIResponseBase> projectUserUserSave(ProjectUserUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1443,7 +1457,7 @@ class Servant {
   }
 
   //get all proposals matching inputs; no authentication
-  @ApiMethod(method: 'POST', path: 'ProposalQuery')
+  @Expose(method: 'POST', as: 'ProposalQuery')
   Future<ProposalQueryResponse> proposalQuery(ProposalQueryRequest args) async {
     ProposalQueryResponse r = new ProposalQueryResponse();
     await Database.safely('ProposalQuery', r.base, (db) async {
@@ -1480,7 +1494,7 @@ class Servant {
   }
 
   //get details on one proposal
-  @ApiMethod(method: 'POST', path: 'ProposalGet')
+  @Expose(method: 'POST', as: 'ProposalGet')
   Future<ProposalGetResponse> proposalGet(ProposalGetRequest args) async {
     ProposalGetResponse r = new ProposalGetResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);//null ok
@@ -1543,7 +1557,7 @@ class Servant {
 
   ///create new proposal (use only for the proposal kinds that users create directly);
   /// for PROJ type only, returns newId
-  @ApiMethod(method: 'POST', path: 'ProposalSave')
+  @Expose(method: 'POST', as: 'ProposalSave')
   Future<APIResponseBase> proposalSave(ProposalSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1569,7 +1583,7 @@ class Servant {
   }
 
   ///delete proposal
-  @ApiMethod(method: 'POST', path: 'ProposalDelete')
+  @Expose(method: 'POST', as: 'ProposalDelete')
   Future<APIResponseBase> proposalDelete(ProposalGetRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1593,7 +1607,7 @@ class Servant {
   }
 
   ///record vote for proposal
-  @ApiMethod(method: 'POST', path: 'ProposalUserSave')
+  @Expose(method: 'POST', as: 'ProposalUserSave')
   Future<APIResponseBase> proposalUserSave(ProposalUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1616,7 +1630,7 @@ class Servant {
 
   ///get all 3 kinds of push queue items: notifications, unreads, and
   /// suggestions. May return error code 'FREQ' if too frequent
-  @ApiMethod(method: 'POST', path: 'PushQueueGet')
+  @Expose(method: 'POST', as: 'PushQueueGet')
   Future<PushQueueGetResponse> pushQueueGet(PushQueueGetRequest args) async {
     PushQueueGetResponse r = new PushQueueGetResponse();
      bool isFull = args.depth == 'F';
@@ -1747,7 +1761,7 @@ class Servant {
   }
 
   //get all resources matching criteria
-  @ApiMethod(method: 'POST', path: 'ResourceQuery')
+  @Expose(method: 'POST', as: 'ResourceQuery')
   Future<ResourceQueryResponse> resourceQuery(ResourceQueryRequest args) async {
     ResourceQueryResponse r = new ResourceQueryResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
@@ -1782,7 +1796,7 @@ class Servant {
   }
 
   ///get one resource
-  @ApiMethod(method: 'POST', path: 'ResourceGet')
+  @Expose(method: 'POST', as: 'ResourceGet')
   Future<ResourceGetResponse> resourceGet(ResourceGetRequest args) async {
     ResourceGetResponse r = new ResourceGetResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
@@ -1818,7 +1832,7 @@ class Servant {
   }
 
   ///save a resource
-  @ApiMethod(method: 'POST', path: 'ResourceSave')
+  @Expose(method: 'POST', as: 'ResourceSave')
   Future<APIResponseBase> resourceSave(ResourceSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1850,7 +1864,7 @@ class Servant {
   }
 
   ///save a resource
-  @ApiMethod(method: 'POST', path: 'ResourceTriage')
+  @Expose(method: 'POST', as: 'ResourceTriage')
   Future<APIResponseBase> resourceTriage(ResourceTriageRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1877,7 +1891,7 @@ class Servant {
   }
 
   ///record votes for/against a resource
-  @ApiMethod(method: 'POST', path: 'ResourceUserSave')
+  @Expose(method: 'POST', as: 'ResourceUserSave')
   Future<APIResponseBase> resourceUserSave(ResourceUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -1905,7 +1919,7 @@ class Servant {
   }
 
   ///get all users matching criteria
-  @ApiMethod(method: 'POST', path: 'UserQuery')
+  @Expose(method: 'POST', as: 'UserQuery')
   Future<UserQueryResponse> userQuery(UserQueryRequest args) async {
     UserQueryResponse r = new UserQueryResponse();
     await Database.safely('UserQuery', r.base, (db) async {
@@ -1932,7 +1946,7 @@ class Servant {
   }
 
   ///get a user
-  @ApiMethod(method: 'POST', path: 'UserGet')
+  @Expose(method: 'POST', as: 'UserGet')
   Future<UserGetResponse> userGet(UserGetRequest args) async {
     UserGetResponse r = new UserGetResponse();
 
@@ -2001,7 +2015,7 @@ class Servant {
   }
 
   ///save/create a user
-  @ApiMethod(method: 'POST', path: 'UserSave')
+  @Expose(method: 'POST', as: 'UserSave')
   Future<APIResponseBase> userSave(UserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
     DateTime now = WLib.utcNow();
@@ -2086,7 +2100,7 @@ class Servant {
   }
 
   ///save a user avatar
-  @ApiMethod(method: 'POST', path: 'UserAvatarSave')
+  @Expose(method: 'POST', as: 'UserAvatarSave')
   Future<APIResponseBase> userAvatarSave(UserAvatarSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -2102,7 +2116,7 @@ class Servant {
   }
 
   ///dismiss a notification
-  @ApiMethod(method: 'POST', path: 'UserNotifySave')
+  @Expose(method: 'POST', as: 'UserNotifySave')
   Future<APIResponseBase> userNotifySave(UserNotifySaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 
@@ -2119,7 +2133,7 @@ class Servant {
   }
 
   ///recover a password (see args doc for the 2 modes)
-  @ApiMethod(method: 'POST', path: 'UserRecoverPassword')
+  @Expose(method: 'POST', as: 'UserRecoverPassword')
   Future<APIResponseBase> userRecoverPassword(UserRecoverPasswordRequest args) async {
     APIResponseBase r = new APIResponseBase();
     await Database.safely('UserRecoverPassword', r, (db) async {
@@ -2170,7 +2184,7 @@ class Servant {
   }
 
   ///save a user's opinion of another user
-  @ApiMethod(method: 'POST', path: 'UserUserSave')
+  @Expose(method: 'POST', as: 'UserUserSave')
   Future<APIResponseBase> userUserSave(UserUserSaveRequest args) async {
     APIResponseBase r = new APIResponseBase();
 

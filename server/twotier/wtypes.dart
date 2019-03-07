@@ -1,759 +1,813 @@
+import 'package:angel_model/angel_model.dart';
+import 'package:angel_serialize/angel_serialize.dart';
+import 'package:collection/collection.dart';
+
 //file contains all the wire types used on client and server
 
-//nestable class for API requests. The RPC library doesn't allow requests to
+//nestable class for API requests. The original library did not allow requests to
 //be derived from a superclass, so APIRequestBase has to be nested in each
 //request type
-class APIRequestBase {
+@serializable
+abstract class _APIRequestBase extends Model {
   ///user nickname
-  String nick;
+  String get nick;
 
   ///password for uid
-  String password;
-}
-
-///methods to help with serializing requests (client side only)
-class APISerializer {
-
-  ///copy values into a map for each property of the object; this only goes
-  /// 1 level so any nested objects have to be handled by the caller
-  static void membersToMap(dynamic obj, Map<String, dynamic> map) {
-    //Map map = new Map<String,dynamic>();
-    InstanceMirror im = reflect(obj);
-    ClassMirror cm = im.type;
-    while (cm != null) {
-      var decls = cm.declarations.values.where((dm) => dm is VariableMirror);
-      decls.forEach((dm) {
-        var key = MirrorSystem.getName(dm.simpleName);
-        var val = im.getField(dm.simpleName).reflectee;
-        if (val != null) map[key] = val;
-      });
-      cm = cm.superclass;
-    }
-    //return map;
-  }
-}
-
-//nestable class for API responses. The RPC library doesn't allow responses to
-//be derived from a superclass, so APIResponseBase has to be nested in each
-//response type
-class APIResponseBase {
-  String errorMessage;
-
-  ///code depends on specific call
-  String errorCode;
-
-  ///'Y' if call was successful
-  String ok = 'Y';
-
-  ///the newly created id (used rarely; only in cases where a new id is created
-  /// and no other more specific return type is needed)
-  int newId;
-
-  ///convert ok to bool
-  bool get isOK => ok == 'Y';
-
-  //idea might work but kind of complex to deal with nested lists
-  /*//copy the key+values from map into this instance.
-  //Includes inherited members, but only copies one level deep
-  void mapToMembers(Map map) {
-    _mapToMembers(map, this);
-  }
-
-  static void _mapToMembers(Map map, Object o) {
-    InstanceMirror im = reflect(o);
-    ClassMirror cm = im.type;
-    while (cm != null) {
-      List<VariableMirror> decls = cm.declarations.values.where((dm) => dm is VariableMirror);
-      decls.forEach((VariableMirror dm) {
-        var key = MirrorSystem.getName(dm.simpleName);
-        if (dm.type.isSubtypeOf(reflectType(APIResponseMember))) {
-          //recurse
-          _mapToMembers(map[key], );
-        } else {
-          //simple assignment
-          im.setField(dm.simpleName, map[key]);
-        }
-      });
-      cm = cm.superclass;
-    }
-  }*/
-
-  //deserialize any member of map that matches a variable declared in this
-  // class, but only for simple types (int, string).
-  // So, this is modified by setting its values from map.
-  void deserialize(Map map) {
-    APIDeserializer.deserialize(map, this, null);
-  }
-
-}
-
-//helpers for deserializing RPC calls (used client side only)
-class APIDeserializer {
-
-  //deserialize any member of map that matches a variable declared in o's
-  // class, but only for simple types (int, string).
-  // So, o is modified by setting its values from map.
-  // Because of the primitiveness of the RPC library, you have
-  // to pass in o.base (or null) to obase to also deserialize that.
-  static void deserialize(Map map, Object o, APIResponseBase obase) {
-    InstanceMirror im = reflect(o);
-    ClassMirror cm = im.type;
-    while (cm != null) {
-      List<VariableMirror> decls = cm.declarations.values.where((dm) => dm is VariableMirror);
-      decls.forEach((VariableMirror dm) {
-        var key = MirrorSystem.getName(dm.simpleName);
-        var value = map[key];
-        Type t = value.runtimeType;
-        if (t == int || t == String)
-          im.setField(dm.simpleName, value);
-      });
-      cm = cm.superclass;
-    }
-
-    //handle obase recursively
-    if (obase != null) deserialize(map['base'], obase, null);
-  }
+  String get password;
 }
 
 ///a general purpose container for links from one entity to others
-class APIResponseAssociation {
-  String linkText, linkPaneKey;
+@serializable
+abstract class _APIResponseAssociation extends Model {
+  String get linkText;
+  String get linkPaneKey;
 }
 
-class AuthenticateResponse {
-  APIResponseBase base = new APIResponseBase();
-  String publicName, nick; //nick with corrected capitalization
-  int userId;
-  String isSiteAdmin; //Y or N
+@serializable
+abstract class _AuthenticateResponse extends Model {
+  APIResponseBase get base;
+  String get publicName;
+  String get nick; //nick with corrected capitalization
+  int get userId;
+  String get isSiteAdmin; //Y or N
 }
 
-class CategoryQueryRequest {
-  APIRequestBase base;
-  String kind;
+@serializable
+abstract class _CategoryQueryRequest extends Model {
+  APIRequestBase get base;
+  String get kind;
 }
 
-class CategoryQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<CategoryItemResponse> categories;
+@serializable
+abstract class _CategoryQueryResponse  extends Model {
+  APIResponseBase get base;
+  List<CategoryItemResponse> get categories;
 }
 
-class CategoryDeleteRequest {
-  APIRequestBase base;
-  int catId; //0 or null for new
-  String kind;
+@serializable
+abstract class _CategoryDeleteRequest extends Model {
+  APIRequestBase get base;
+  int get catId; //0 or null for new
+  String get kind;
 }
 
-class CategorySaveRequest {
-  APIRequestBase base;
-  int catId; //0 or null for new
-  String kind;
-  int referenceId; //null or some existing category id
-  String referenceMode; //blank=not changing parent; "S"=catId is a sister of referenceId; "C"=catId is a child of referenceId
+@serializable
+abstract class _CategorySaveRequest extends Model {
+  APIRequestBase get base;
+  int get catId; //0 or null for new
+  String get kind;
+  int get referenceId; //null or some existing category id
+  String get referenceMode; //blank=not changing parent; "S"=catId is a sister of referenceId; "C"=catId is a child of referenceId
   //also note if referenceId is null and referenceMode=C, this indicates to make
   // it top level
-  String title;
-  String description;
+  String get title;
+  String get description;
 }
 
-class CategoryMoveContentsRequest {
-  APIRequestBase base;
-  int catId;
-  String kind;
-  List<int> relatedIds; //project or resource ids to move
+@serializable
+abstract class _CategoryMoveContentsRequest extends Model {
+  APIRequestBase get base;
+  int get catId;
+  String get kind;
+  List<int> get relatedIds; //project or resource ids to move
 }
 
 //single entry in CategoryQueryResponse
-class CategoryItemResponse {
-  int id;
-  int parentId; //null if none
-  String title;
-  String description;
+@serializable
+abstract class _CategoryItemResponse extends Model {
+  int get id;
+  int get parentId; //null if none
+  String get title;
+  String get description;
 }
 
-class ConvQueryRequest {
-  APIRequestBase base;
-  String term; //search term
+@serializable
+abstract class _ConvQueryRequest extends Model {
+  APIRequestBase get base;
+  String get term; //search term
 }
 
-class ConvQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<ConvQueryConvItemResponse> convs;
+@serializable
+abstract class _ConvQueryResponse  extends Model {
+  APIResponseBase get base;
+  List<ConvQueryConvItemResponse> get convs;
 }
 
 //entry in ConvQueryResponse for one conv record
-class ConvQueryConvItemResponse {
-  int convId;
-  String hitText; //title text surrounding the match phrase
-  List<ConvQueryPostItemResponse> posts; //null if none
+@serializable
+abstract class _ConvQueryConvItemResponse extends Model {
+  int get convId;
+  String get hitText; //title text surrounding the match phrase
+  List<ConvQueryPostItemResponse> get posts; //null if none
 }
 
 //entry in ConvQueryConvItemResponse
-class ConvQueryPostItemResponse {
-  String postId;
-  String hitText; //post text surrounding the match phrase
+@serializable
+abstract class _ConvQueryPostItemResponse extends Model {
+  String get postId;
+  String get hitText; //post text surrounding the match phrase
 }
 
-class ConvGetRequest {
-  APIRequestBase base;
-  int convId;
-  String mode; //U=unread, R=range, A=all
-  String rangeFromWDT, rangeToWDT; //the exclusive range to include if mode=R, in wire-datetime format
+@serializable
+abstract class _ConvGetRequest extends Model {
+  APIRequestBase get base;
+  int get convId;
+  String get mode; //U=unread, R=range, A=all
+  String get rangeFromWDT;
+  String get rangeToWDT; //the exclusive range to include if mode=R, in wire-datetime format
   //For range loads: loads posts whose dates are between the given times, not
   // including the posts *at* those times
 }
 
-class ConvGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String isManager; //Y if manager of owning proj/creator of owning event
-  String isJoined; //Y if joined else N
-  String readPositionWDT; //created_at of the last post read, or an earlier time, in wire-datetime format
-  String title;
-  String anySkipped; //Y if unread mode and earlier posts are omitted, else N
-  List<ConvGetPostItem> posts;
-  String replyAllowed; //Y if reply is allowed else N
-  String replyAllowedDesc; //printable description of why reply isn't allowed or the amount that is allowed
-  int replyMaxLength; //max length of reply
-  String deleteMessage; //optional user message about when conv will be deleted
-  String like; //from conv_xuser
-  String bookmarked; //from conv_xuser
-  String parentTitle; //title of parent item (project/event)
-  String parentPaneKey; //pane key of parent item
+@serializable
+abstract class _ConvGetResponse  extends Model {
+  APIResponseBase get base;
+  String get isManager; //Y if manager of owning proj/creator of owning event
+  String get isJoined; //Y if joined else N
+  String get readPositionWDT; //created_at of the last post read, or an earlier time, in wire-datetime format
+  String get title;
+  String get anySkipped; //Y if unread mode and earlier posts are omitted, else N
+  List<ConvGetPostItem> get posts;
+  String get replyAllowed; //Y if reply is allowed else N
+  String get replyAllowedDesc; //printable description of why reply isn't allowed or the amount that is allowed
+  int get replyMaxLength; //max length of reply
+  String get deleteMessage; //optional user message about when conv will be deleted
+  String get like; //from conv_xuser
+  String get bookmarked; //from conv_xuser
+  String get parentTitle; //title of parent item (project/event)
+  String get parentPaneKey; //pane key of parent item
 }
 
 //post element used in ConvGet
-class ConvGetPostItem {
-  String id; //uuid
-  int authorId;
-  String authorNick;
-  String avatarUrl; //null if none
-  String createdAtReadable;
-  String createdAtWDT; //in wire-datetime format
-  String ago; //for example "2 days"
-  String ptext; //post text
-  String imageUrl; //optional image in post
-  String collapseMode; //blank or a string defined in ConvLib like "BlockedByAuthor"
-  int collapsePosition; //position in ptext where expansion link should be placed; 0 means collapse all
+@serializable
+abstract class _ConvGetPostItem extends Model {
+  String get id; //uuid
+  int get authorId;
+  String get authorNick;
+  String get avatarUrl; //null if none
+  String get createdAtReadable;
+  String get createdAtWDT; //in wire-datetime format
+  String get ago; //for example "2 days"
+  String get ptext; //post text
+  String get imageUrl; //optional image in post
+  String get collapseMode; //blank or a string defined in ConvLib like "BlockedByAuthor"
+  int get collapsePosition; //position in ptext where expansion link should be placed; 0 means collapse all
   //note: use a high number for collapsePosition to not show a link
 }
 
-class ConvGetRulesRequest {
-  APIRequestBase base;
-  int convId;
+@serializable
+abstract class _ConvGetRulesRequest extends Model {
+  APIRequestBase get base;
+  int get convId;
 }
 
-class ConvGetRulesResponse  {
-  APIResponseBase base = new APIResponseBase();
-  int postMaxSize;
-  int userDailyMax;
-  String title;
+@serializable
+abstract class _ConvGetRulesResponse  extends Model {
+  APIResponseBase get base;
+  int get postMaxSize;
+  int get userDailyMax;
+  String get title;
 }
 
-class ConvSaveRequest {
-  APIRequestBase base;
-  int convId; //null or 0 if new conv
-  int projectId;
-  int eventId;
-  int fromConvId;
-  String openingPostId; //optional post id for the post this conv is spawned from
-  String title;
-  int postMaxSize;
-  int userDailyMax;
+@serializable
+abstract class _ConvSaveRequest extends Model {
+  APIRequestBase get base;
+  int get convId; //null or 0 if new conv
+  int get projectId;
+  int get eventId;
+  int get fromConvId;
+  String get openingPostId; //optional post id for the post this conv is spawned from
+  String get title;
+  int get postMaxSize;
+  int get userDailyMax;
 }
 
-class ConvPostGetRequest {
-  APIRequestBase base;
-  String postId;
+@serializable
+abstract class _ConvPostGetRequest extends Model {
+  APIRequestBase get base;
+  String get postId;
 }
 
-class ConvPostGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String avatarUrl; //of author
-  String createdAtReadable; //including author timezone, example: '31 Dec 1999 17:05 (America/Denver)'
-  String reaction; //from conv_post_user for the current user
-  String throttleDescription; //in what way the author may be throttled, or empty/null if no restriction
-  String canCensor; //Y if the current user has censoring authority and the post has gotten inappropriate votes
-  String allReasons; //readable collection of reasons given in conv_post_user
+@serializable
+abstract class _ConvPostGetResponse  extends Model {
+  APIResponseBase get base;
+  String get avatarUrl; //of author
+  String get createdAtReadable; //including author timezone, example: '31 Dec 1999 17:05 (America/Denver)'
+  String get reaction; //from conv_post_user for the current user
+  String get throttleDescription; //in what way the author may be throttled, or empty/null if no restriction
+  String get canCensor; //Y if the current user has censoring authority and the post has gotten inappropriate votes
+  String get allReasons; //readable collection of reasons given in conv_post_user
 }
 
-class ConvPostSaveRequest {
-  APIRequestBase base;
-  int convId;
-  String postId; //null/blank for new post
-  String triggerWarning, ptext;
-  String censored; //C or null
-  String delete; //Y to delete or null
-  String lastKnownWDT; //time of last viewed post in conv, in wire-datetime format (used to allow server to determine whether to update read position)
+@serializable
+abstract class _ConvPostSaveRequest extends Model {
+  APIRequestBase get base;
+  int get convId;
+  String get postId; //null/blank for new post
+  String get triggerWarning, ptext;
+  String get censored; //C or null
+  String get delete; //Y to delete or null
+  String get lastKnownWDT; //time of last viewed post in conv, in wire-datetime format (used to allow server to determine whether to update read position)
 }
 
-class ConvPostImageSaveRequest {
-  APIRequestBase base;
-  int convId;
-  String ptext;
-  List<int> imageBytes;
+@serializable
+abstract class _ConvPostImageSaveRequest extends Model {
+  APIRequestBase get base;
+  int get convId;
+  String pget text;
+  List<int> get imageBytes;
 }
 
-class ConvPostUserSaveRequest {
-  APIRequestBase base;
-  String postId;
-  String reaction, reason; //see data model for definition; if reaction is null/empty, erases record
+@serializable
+abstract class _ConvPostUserSaveRequest extends Model {
+  APIRequestBase get base;
+  String get postId;
+  String get reaction;
+  String get reason; //see data model for definition; if reaction is null/empty, erases record
 }
 
-class ConvSetReadPositionRequest {
-  APIRequestBase base;
-  int convId;
-  String positionWDT; //in wire-datetime format
+@serializable
+abstract class _ConvSetReadPositionRequest extends Model {
+  APIRequestBase get base;
+  int get convId;
+  String get positionWDT; //in wire-datetime format
 }
 
-class ConvUserSaveRequest {
-  APIRequestBase base;
-  int convId;
-  String status; //null indicates no change; only J or Q values allowed
-  String like; //null indicates no change
-  String bookmarked; //null indicates no change
+@serializable
+abstract class _ConvUserSaveRequest extends Model {
+  APIRequestBase get base;
+  int get convId;
+  String get status; //null indicates no change; only J or Q values allowed
+  String get like; //null indicates no change
+  String get bookmarked; //null indicates no change
 }
 
-class ConvUserSaveResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String action; //flag set when join was requested: 'J'=joined, 'R'=request sent, 'X'=disallowed
+@serializable
+abstract class _ConvUserSaveResponse  extends Model {
+  APIResponseBase get base;
+  String get action; //flag set when join was requested: 'J'=joined, 'R'=request sent, 'X'=disallowed
 }
 
-class DocQueryRequest {
-  APIRequestBase base;
-  String mode; //kind of documents to look for: R=root (that's the only value supported for now)
+@serializable
+abstract class _DocQueryRequest extends Model {
+  APIRequestBase get base;
+  String get mode; //kind of documents to look for: R=root (that's the only value supported for now)
 }
 
-class DocQueryResponse {
-  APIResponseBase base = new APIResponseBase();
-  List<DocQueryItem> docs;
+@serializable
+abstract class _DocQueryResponse extends Model {
+  APIResponseBase get base;
+  List<DocQueryItem> get docs;
 }
 
 ///element in DocQueryResponse
-class DocQueryItem {
-  int id;
-  String title;
+@serializable
+abstract class _DocQueryItem extends Model {
+  int get id;
+  String get title;
 }
 
-class DocGetRequest {
-  APIRequestBase base;
-  int docId;
-  String specialCode; //if given, docId is ignored and the doc is looked up by code
-  int revisionNo; //null for latest or a specific revision
-  String getVerList; //Y or N; controls if the version list is returned
+@serializable
+abstract class _DocGetRequest extends Model {
+  APIRequestBase get base;
+  int get docId;
+  String get specialCode; //if given, docId is ignored and the doc is looked up by code
+  int get revisionNo; //null for latest or a specific revision
+  String get getVerList; //Y or N; controls if the version list is returned
 }
 
-class DocGetResponse {
-  APIResponseBase base = new APIResponseBase();
-  int docId;
-  String title, body;
-  String htmlDiff; //readable diff from prior version to this version
-  int projectId; //null for root docs (even though db has a value)
-  String projectTitle;
-  String isProjectManager; //Y if user is a manager of the related project else N
-  String allowSave; //Y or N; controls whether changes are allowed by this user
-  String reasonNotEditable; //null or a readable reason why user cannot edit this
-  String createdAt; //when version created in readable format
-  int proposalId; //proposal connected to the prior version (which created the requested version)
-  List<DocGetVersionItem> verList; //list of all version (may be capped at ~100)
+@serializable
+abstract class _DocGetResponse extends Model {
+  APIResponseBase get base;
+  int get docId;
+  String get title;
+  String get body;
+  String get htmlDiff; //readable diff from prior version to this version
+  int get projectId; //null for root docs (even though db has a value)
+  String get projectTitle;
+  String get isProjectManager; //Y if user is a manager of the related project else N
+  String get allowSave; //Y or N; controls whether changes are allowed by this user
+  String get reasonNotEditable; //null or a readable reason why user cannot edit this
+  String get createdAt; //when version created in readable format
+  int get proposalId; //proposal connected to the prior version (which created the requested version)
+  List<DocGetVersionItem> get verList; //list of all version (may be capped at ~100)
 }
 
 ///element used in DocGetResponse
-class DocGetVersionItem {
-  int revisionNo;
-  String createdAt; //when version created in readable format
+@serializable
+abstract class _DocGetVersionItem extends Model {
+  int get revisionNo;
+  String get createdAt; //when version created in readable format
 }
 
-class DocSaveRequest {
-  APIRequestBase base;
-  int docId; //0 for new document
-  int projectId; //null for root doc, inspected for new docs only
-  String title;
-  String retitleMode; //R=retitle a project document, null=normal
-  String body;
-  String summary; //used for root doc proposals to summarize the change proposed
+@serializable
+abstract class _DocSaveRequest extends Model {
+  APIRequestBase get base;
+  int get docId; //0 for new document
+  int get projectId; //null for root doc, inspected for new docs only
+  String get title;
+  String get retitleMode; //R=retitle a project document, null=normal
+  String get body;
+  String get summary; //used for root doc proposals to summarize the change proposed
 }
 
-class DocRollbackRequest {
-  APIRequestBase base;
-  int docId;
-  int revisionNo; //must match latest revision_no
+@serializable
+abstract class _DocRollbackRequest extends Model {
+  APIRequestBase get base;
+  int get docId;
+  int get revisionNo; //must match latest revision_no
 }
 
-class EventQueryRequest {
-  APIRequestBase base;
-  String title; //any part of title
-  String dateFrom, dateTo; //required date range in user-entered date format (time should be zero, dateTo is inclusive of all events on that day)
-  int miles; //0 or null to omit location search, else miles around lat/lon to include
-  String lat, lon; //geolocation, or null to omit location search; float number as string, american format
+@serializable
+abstract class _EventQueryRequest extends Model {
+  APIRequestBase get base;
+  String get title; //any part of title
+  String get dateFrom;
+  String get dateTo; //required date range in user-entered date format (time should be zero, dateTo is inclusive of all events on that day)
+  int get miles; //0 or null to omit location search, else miles around lat/lon to include
+  String get lat;
+  String get lon; //geolocation, or null to omit location search; float number as string, american format
 }
 
-class EventQueryResponse {
-  APIResponseBase base = new APIResponseBase();
-  List<EventItemResponse> events;
+@serializable
+abstract class _EventQueryResponse extends Model {
+  APIResponseBase get base;
+  List<EventItemResponse> get events;
 }
 
 ///used in EventQueryResponse for 1 event
-class EventItemResponse {
-  int id;
-  String title;
-  String startTime; //in readable format
-  String creatorNick;
-  int creatorId;
+@serializable
+abstract class _EventItemResponse extends Model {
+  int get id;
+  String get title;
+  String get startTime; //in readable format
+  String get creatorNick;
+  int get creatorId;
 }
 
-class EventRequest {
-  APIRequestBase base;
-  int eventId;
+@serializable
+abstract class _EventRequest extends Model {
+  APIRequestBase get base;
+  int get eventId;
 }
 
-class EventGetResponse {
-  APIResponseBase base = new APIResponseBase();
-  String title, description, duration, location;
-  String startTimeU; //in user entry packed date format
-  String startTimeR; //in readable format
-  String creatorNick;
-  int creatorId;
-  String creatorAvatarUrl; //null if none
-  String createdAtR; //in readable format
-  String lat, lon; //float number as string, american format
-  List<EventGetUserResponse> users; //users going to event
-  List<EventGetConvResponse> convs; //convs started about the event
-  String isCreator; //Y if the requesting user is the event creator else N
+@serializable
+abstract class _EventGetResponse extends Model {
+  APIResponseBase get base;
+  String get title;
+  String get description;
+  String get duration;
+  String get location;
+  String get startTimeU; //in user entry packed date format
+  String get startTimeR; //in readable format
+  String get creatorNick;
+  int get creatorId;
+  String get creatorAvatarUrl; //null if none
+  String get createdAtR; //in readable format
+  String get lat;
+  Stromg get lon; //float number as string, american format
+  List<EventGetUserResponse> get users; //users going to event
+  List<EventGetConvResponse> get convs; //convs started about the event
+  String get isCreator; //Y if the requesting user is the event creator else N
 }
 
 ///used in EventGetResponse
-class EventGetUserResponse {
-  int userId;
-  String nick, publicName;
-  String avatarUrl; //null if none
-  String status, statusDesc;
+@serializable
+abstract class _EventGetUserResponse extends Model {
+  int get userId;
+  String get nick;
+  String get publicName;
+  String get avatarUrl; //null if none
+  String get status;
+  String get statusDesc;
 }
 
 ///used in EventGetResponse for associated conv
-class EventGetConvResponse {
-  int id;
-  String open, title;
-  String lastActivity; //in wire date format
+@serializable
+abstract class _EventGetConvResponse extends Model {
+  int get id;
+  String get open;
+  String get title;
+  String get lastActivity; //in wire date format
 }
 
-class EventSaveRequest {
-  APIRequestBase base;
-  int eventId; //0 for new record
-  String title, description, duration, location;
-  String startTime; //in user-entry packed date format
-  String lat, lon; //float number as string, american format
+@serializable
+abstract class _EventSaveRequest extends Model {
+  APIRequestBase get base;
+  int get eventId; //0 for new record
+  String get title;
+  String get description;
+  String get duration;
+  String get location;
+  String get startTime; //in user-entry packed date format
+  String get lat;
+  String get lon; //float number as string, american format
 }
 
-class EventUserSaveRequest {
-  APIRequestBase base;
-  int eventId;
-  String status, statusDesc;
+@serializable
+abstract class _EventUserSaveRequest extends Model {
+  APIRequestBase bget ase;
+  int get eventId;
+  String get status;
+  String get statusDesc;
   //note assumes this is about the requesting user
 }
 
-class ProjectQueryRequest {
-  APIRequestBase base;
-  int catId; //or null
-  String title; //any part of title
+@serializable
+abstract class _ProjectQueryRequest extends Model {
+  APIRequestBase get base;
+  int get catId; //or null
+  String get title; //any part of title
 }
 
-class ProjectQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<ProjectQueryItem> projects;
+@serializable
+abstract class _ProjectQueryResponse  extends Model {
+  APIResponseBase get base;
+  List<ProjectQueryItem> get projects;
 }
 
 ///element in ProjectQueryResponse
-class ProjectQueryItem {
-  int projectId;
-  String title, description, leadership, privacy;
+@serializable
+abstract class _ProjectQueryItem extends Model {
+  int get projectId;
+  String get title;
+  String get description;
+  String get leadership;
+  String get privacy;
 }
 
-class ProjectGetRequest {
-  APIRequestBase base;
-  int projectId;
+@serializable
+abstract class _ProjectGetRequest extends Model {
+  APIRequestBase get base;
+  int get projectId;
 }
 
-class ProjectGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String active, leadership, privacy, title, description;
-  int categoryId;
-  String userKind; //from project_xuser.kind for current user
+@serializable
+abstract class _ProjectGetResponse  extends Model {
+  APIResponseBase get base;
+  String get active;
+  String get leadership;
+  String get privacy;
+  String get title;
+  String get description;
+  int get categoryId;
+  String get userKind; //from project_xuser.kind for current user
 
   //related child records
-  List<ProjectProposalItem> proposals;
-  List<ProjectConvItem> convs;
-  List<ProjectDocItem> docs;
+  List<ProjectProposalItem> get proposals;
+  List<ProjectConvItem> get convs;
+  List<ProjectDocItem> get docs;
 }
 
 ///element in ProjectGetResponse
-class ProjectProposalItem {
-  int id;
-  String active, title, createdAt;
+@serializable
+abstract class _ProjectProposalItem extends Model {
+  int get id;
+  String get active;
+  String get title;
+  String get createdAt;
 }
 
 ///element in ProjectGetResponse
-class ProjectConvItem {
-  int id;
-  String open, title, lastActivity;
+@serializable
+abstract class _ProjectConvItem extends Model {
+  int get id;
+  String get open, get title, get lastActivity;
 }
 
 ///element in ProjectGetResponse
-class ProjectDocItem {
-  int id;
-  String title;
+@serializable
+abstract class _ProjectDocItem extends Model {
+  int get id;
+  String get title;
 }
 
-class ProjectSaveRequest {
-  APIRequestBase base;
-  int projectId; //0 if new
-  String leadership, privacy,title,description;
-  int categoryId;
+@serializable
+abstract class _ProjectSaveRequest extends Model {
+  APIRequestBase get base;
+  int get projectId; //0 if new
+  String get leadership;
+  String get privacy;
+  String get title;
+  String get description;
+  int get categoryId;
 }
 
-class ProjectUserQueryRequest {
-  APIRequestBase base;
-  int projectId;
-  String name; //matches any part of public name or nick
-  int resultPage = 0; //0 for first page of 100 results
+@serializable
+abstract class _ProjectUserQueryRequest extends Model {
+  APIRequestBase get base;
+  int get projectId;
+  String get name; //matches any part of public name or nick
+  int get resultPage; //0 for first page of 100 results
 }
 
-class ProjectUserQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String projectTitle;
-  String completeLoad; //Y or N denoting if the load was complete
-  String editable; //Y or N denoting if this user can edit project users
-  List<ProjectUserItem> users;
+@serializable
+abstract class _ProjectUserQueryResponse  extends Model {
+  APIResponseBase get base;
+  String get projectTitle;
+  String get completeLoad; //Y or N denoting if the load was complete
+  String get editable; //Y or N denoting if this user can edit project users
+  List<ProjectUserItem> get users;
 }
 
 //element in ProjectUserQueryResponse
-class ProjectUserItem {
-  int userId;
-  String kind; //from project_xuser
-  String throttle; //readable description of throttling or null if none
-  String nick, publicName;
-  String avatarUrl;  //null if nonw
-  String voteKind; //from project_xuser_xuser by current user about userId
+@serializable
+abstract class _ProjectUserItem extends Model {
+  int get userId;
+  String get kind; //from project_xuser
+  String get throttle; //readable description of throttling or null if none
+  String get nick;
+  String get publicName;
+  String get avatarUrl;  //null if nonw
+  String get voteKind; //from project_xuser_xuser by current user about userId
 }
 
-class ProjectUserSaveRequest {
-  APIRequestBase base;
-  int projectId;
-  int userId; //not necessarily the current user
-  String kind;
+@serializable
+abstract class _ProjectUserSaveRequest extends Model {
+  APIRequestBase get base;
+  int get projectId;
+  int get userId; //not necessarily the current user
+  String get kind;
 }
 
-class ProjectUserUserSaveRequest {
-  APIRequestBase base;
-  int projectId;
-  int aboutId; //the user being voted for
-  String kind; //L or null
+@serializable
+abstract class _ProjectUserUserSaveRequest extends Model {
+  APIRequestBase get base;
+  int get projectId;
+  int get aboutId; //the user being voted for
+  String get kind; //L or null
 }
 
-class ProposalQueryRequest {
-  APIRequestBase base;
-  String mode; //one of 'A'(active ROOT and SYS proposals), 'P'(PROJ), 'S'(closed SYS by year)
-  int year; //required year for mode=S
-  int projectId; //required for mode=P
+@serializable
+abstract class _ProposalQueryRequest extends Model {
+  APIRequestBase bget ase;
+  String get mode; //one of 'A'(active ROOT and SYS proposals), 'P'(PROJ), 'S'(closed SYS by year)
+  int get year; //required year for mode=S
+  int get projectId; //required for mode=P
 }
 
-class ProposalQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<ProposalQueryItem> items;
+@serializable
+abstract class _ProposalQueryResponse  extends Model {
+  APIResponseBase get base;
+  List<ProposalQueryItem> get items;
 }
 
 ///used in ProposalQueryResponse for one proposal
-class ProposalQueryItem {
-  int id;
-  String title, kind;
+@serializable
+abstract class _ProposalQueryItem extends Model {
+  int get id;
+  String get title;
+  String get kind;
 }
 
-class ProposalGetRequest {
-  APIRequestBase base;
-  int proposalId;
+@serializable
+abstract class _ProposalGetRequest extends Model {
+  APIRequestBase get base;
+  int get proposalId;
 }
 
-class ProposalGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String active, kind, eligible, title, summary, summaryHtml, dtext;
-  String timeout, deleteTime; //in wiredate format
-  int winningOption, createdBy, projectId, docId;
-  String createdByNick, createdByAvatarUrl;
-  List<ProposalOptionItem> options;
-  int myVote; //null or the vote for the requesting user
-  String statusDescription; //readable description of the status and when it will close
-  String myEligible; //Y if this user eligible to vote else N
+@serializable
+abstract class _ProposalGetResponse  extends Model {
+  APIResponseBase get base;
+  String get active;
+  String get kind;
+  String get eligible;
+  String get title;
+  String get summary;
+  String get summaryHtml;
+  String get dtext;
+  String get timeout;
+  String get deleteTime; //in wiredate format
+  int get winningOption;
+  int get createdBy;
+  int get projectId;
+  int get docId;
+  String get createdByNick;
+  String get createdByAvatarUrl;
+  List<ProposalOptionItem> get options;
+  int get myVote; //null or the vote for the requesting user
+  String get statusDescription; //readable description of the status and when it will close
+  String get myEligible; //Y if this user eligible to vote else N
 }
 
 ///detail on one proposal option used in ProposalGetResponse; note that
 /// voteCount will be 0 or null if proposal is open
-class ProposalOptionItem {
-  int optionNo, voteCount;
-  String optionDesc;
+@serializable
+abstract class _ProposalOptionItem extends Model {
+  int get optionNo;
+  int get voteCount;
+  String get optionDesc;
 }
 
-class ProposalSaveRequest {
-  APIRequestBase base;
-  String kind; //see table def
-  int projectId; //for kind=PROJ only
-  String eligible; //see table def
-  String title, summary;
-  int days; //number of days to stay open
-  List<String> options; //description of the options (order of this list determines the option #s)
+@serializable
+abstract class _ProposalSaveRequest extends Model {
+  APIRequestBase get base;
+  String get kind; //see table def
+  int get projectId; //for kind=PROJ only
+  String get eligible; //see table def
+  String get title;
+  String get summary;
+  int get days; //number of days to stay open
+  List<String> get options; //description of the options (order of this list determines the option #s)
 }
 
-class ProposalUserSaveRequest {
-  APIRequestBase base;
-  int proposalId;
-  int vote; //may be null to delete vote
+@serializable
+abstract class _ProposalUserSaveRequest extends Model {
+  APIRequestBase get base;
+  int get proposalId;
+  int get vote; //may be null to delete vote
 }
 
-class PushQueueGetRequest {
-  APIRequestBase base;
-  String depth; //L=light, F=full
+@serializable
+abstract class _PushQueueGetRequest extends Model {
+  APIRequestBase get base;
+  String get depth; //L=light, F=full
 }
 
-class PushQueueGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<PushQueueItem> items;
-  String fullModeStatus; //normally null; if 'T' then full mode is disallowed based on timing
+@serializable
+abstract class _PushQueueGetResponse  extends Model {
+  APIResponseBase get base;
+  List<PushQueueItem> get items;
+  String get fullModeStatus; //normally null; if 'T' then full mode is disallowed based on timing
 }
 
 //Any of 3 kinds of push queue items. We aren't using separate classes
 // for each, since the client uses these in inter-window messaging
 // and it's better to avoid parsing complexity
-class PushQueueItem {
-  String kind; //N=notify, U=unread, S=suggested, B=Bookmarked
-  String why; //why the item is in the queue: G=general, V=votable, I=invited, R=recommended
+@serializable
+abstract class _PushQueueItem extends Model {
+  String get kind; //N=notify, U=unread, S=suggested, B=Bookmarked
+  String get why; //why the item is in the queue: G=general, V=votable, I=invited, R=recommended
     //all kinds other than S should have why=G
-  int iid; //conv or proposal ID
-  String sid; //notification ID
-  String text; //notification text
-  String linkText, linkPaneKey; //link to any other pane from notification, or link to conv or proposal
+  int get iid; //conv or proposal ID
+  String get sid; //notification ID
+  String get text; //notification text
+  String get linkText;
+  String get linkPaneKey; //link to any other pane from notification, or link to conv or proposal
 }
 
-class ResourceQueryRequest {
-  APIRequestBase base;
-  int categoryId; //null to omit category searching
-  String title; //any part of title
-  String kind; //optional exact match for kind
+@serializable
+abstract class _ResourceQueryRequest extends Model {
+  APIRequestBase get base;
+  int get categoryId; //null to omit category searching
+  String get title; //any part of title
+  String get kind; //optional exact match for kind
 }
 
-class ResourceQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<ResourceItem> items;
+@serializable
+abstract class _ResourceQueryResponse  extends Model {
+  APIResponseBase get base;
+  List<ResourceItem> get items;
 }
 
 ///resource used in ResourceQueryResponse
-class ResourceItem {
-  int id;
-  String title, url, description;
+@serializable
+abstract class _ResourceItem extends Model {
+  int get id;
+  String get title;
+  String get url;
+  String get description;
 }
 
-class ResourceGetRequest {
-  APIRequestBase base;
-  int id;
+@serializable
+abstract class _ResourceGetRequest extends Model {
+  APIRequestBase get base;
+  int get id;
 }
 
-class ResourceGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  int categoryId, userId, importantCount;
-  String title, description;
-  String createdAt; //readable format
-  String visible, kind, url;
-  String userKind; //kind from resource_xuser
-  String isSiteAdmin; //Y if this user is a site admin
-  String isCreator; //Y if this user created the resource
-  String nick; //of the creator
+@serializable
+abstract class _ResourceGetResponse  extends Model {
+  APIResponseBase get base;
+  int get categoryId;
+  int get userId;
+  int get importantCount;
+  String get title;
+  String get description;
+  String get createdAt; //readable format
+  String get visible;
+  String get kind;
+  String get url;
+  String get userKind; //kind from resource_xuser
+  String get isSiteAdmin; //Y if this user is a site admin
+  String get isCreator; //Y if this user created the resource
+  String get nick; //of the creator
 }
 
-class ResourceSaveRequest {
-  APIRequestBase base;
-  int id; //0 for new record
-  int categoryId; //inspected for new resources only
-  String title, description;
-  String kind, url;
+@serializable
+abstract class _ResourceSaveRequest extends Model {
+  APIRequestBase get base;
+  int get id; //0 for new record
+  int get categoryId; //inspected for new resources only
+  String get title;
+  String get description;
+  String get kind;
+  String get url;
 }
 
-class ResourceTriageRequest {
-  APIRequestBase base;
-  int id;
-  String mode; //R=reset; D=delete
+@serializable
+abstract class _ResourceTriageRequest extends Model {
+  APIRequestBase get base;
+  int get id;
+  String get mode; //R=reset; D=delete
 }
 
-class ResourceUserSaveRequest {
-  APIRequestBase base;
-  int id;
-  String kind; //resource_xuser.kind
+@serializable
+abstract class _ResourceUserSaveRequest extends Model {
+  APIRequestBase get base;
+  int get id;
+  String get kind; //resource_xuser.kind
 }
 
-class UserQueryRequest {
-  APIRequestBase base;
-  String name; //any part of name or nick
+@serializable
+abstract class _UserQueryRequest extends Model {
+  APIRequestBase get base;
+  String get name; //any part of name or nick
 }
 
-class UserQueryResponse  {
-  APIResponseBase base = new APIResponseBase();
-  List<UserQueryItem> users;
+@serializable
+abstract class _UserQueryResponse  extends Model {
+  APIResponseBase get base;
+  List<UserQueryItem> get users;
 }
 
 ///a user in UserQueryResponse
-class UserQueryItem {
-  int id;
-  String nick, kind, publicName;
-  String avatarUrl; //null if none
+@serializable
+abstract class _UserQueryItem extends Model {
+  int get id;
+  String get nick;
+  String get kind;
+  String get publicName;
+  String get avatarUrl; //null if none
 }
 
-class UserGetRequest {
-  APIRequestBase base;
-  int userId; //0 for blank data
-  String includeDetail; //Y or N; if Y, includes events, project, and resources
-  String includeEditing; //Y or N; if Y includes dropdown values for editing (such as timezones)
+@serializable
+abstract class _UserGetRequest extends Model {
+  APIRequestBase get base;
+  int get userId; //0 for blank data
+  String get includeDetail; //Y or N; if Y, includes events, project, and resources
+  String get includeEditing; //Y or N; if Y includes dropdown values for editing (such as timezones)
 }
 
-class UserGetResponse  {
-  APIResponseBase base = new APIResponseBase();
-  String status, nick, email, kind, isSiteAdmin, publicName;
-  String prefEmailNotify = 'N'; //Y or N
-  Map<String,String> publicLinks;
-  String timeZone;
-  List<String> allTimeZones; //dropdown values
-  String avatarUrl; //null if none
-  String userUserKind; //xuser_xuser.kind value by the current user about the user in this object
-  List<APIResponseAssociation> events; //events the user is going to
-  List<APIResponseAssociation> projects; //projects the user is part of
-  List<APIResponseAssociation> resources; //resource the user created
+@serializable
+abstract class _UserGetResponse  extends Model {
+  APIResponseBase get base;
+  String get status;
+  String get nick;
+  String get email;
+  String get kind;
+  String get isSiteAdmin;
+  String get publicName;
+  String get prefEmailNotify = 'N'; //Y or N
+  Map<String,String> get publicLinks;
+  String get timeZone;
+  List<String> get allTimeZones; //dropdown values
+  String get avatarUrl; //null if none
+  String get userUserKind; //xuser_xuser.kind value by the current user about the user in this object
+  List<APIResponseAssociation> get events; //events the user is going to
+  List<APIResponseAssociation> get projects; //projects the user is part of
+  List<APIResponseAssociation> get resources; //resource the user created
 }
 
-class UserSaveRequest {
-  APIRequestBase base;
-  String isNew; //Y or N
-  String isDelete; //Y or N
-  String saveNick; //nick to create (new users only)
-  String savePW; //password to change to, or null if not changing
-  String kind, email, isSiteAdmin, publicName, prefEmailNotify;
-  Map<String,String> publicLinks;
-  String timeZone;
+@serializable
+abstract class _UserSaveRequest extends Model {
+  APIRequestBase get base;
+  String get isNew; //Y or N
+  String get isDelete; //Y or N
+  String get saveNick; //nick to create (new users only)
+  String get savePW; //password to change to, or null if not changing
+  String get kind;
+  String get email;
+  String get isSiteAdmin;
+  String get publicName;
+  String get prefEmailNotify;
+  Map<String,String> get publicLinks;
+  String get timeZone;
 }
 
-class UserAvatarSaveRequest {
-  APIRequestBase base;
-  List<int> imageBytes;
+@serializable
+abstract class _UserAvatarSaveRequest extends Model {
+  APIRequestBase get base;
+  List<int> get imageBytes;
 }
 
-class UserNotifySaveRequest {
-  APIRequestBase base;
-  String notifyId; //id to dismiss
+@serializable
+abstract class _UserNotifySaveRequest extends Model {
+  APIRequestBase get base;
+  String get notifyId; //id to dismiss
 }
 
-class UserRecoverPasswordRequest {
-  APIRequestBase base;
-  String recoveryNick;
-  String mode; //E=send email to start recovery; V=validate code from the email
-  String recoveryPassword; //new password in mode V
-  String code; //user entered code in mode V
+@serializable
+abstract class _UserRecoverPasswordRequest extends Model {
+  APIRequestBase get base;
+  String get recoveryNick;
+  String get mode; //E=send email to start recovery; V=validate code from the email
+  String get recoveryPassword; //new password in mode V
+  String get code; //user entered code in mode V
 }
 
-class UserUserSaveRequest {
-  APIRequestBase base;
-  int aboutId; //the subject of the opinion being saved
-  String kind;
+@serializable
+abstract class _UserUserSaveRequest extends Model {
+  APIRequestBase get base;
+  int get aboutId; //the subject of the opinion being saved
+  String get kind;
 }

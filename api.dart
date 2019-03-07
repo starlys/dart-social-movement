@@ -7,17 +7,21 @@ import 'server/authenticator.dart';
 import 'server/date_lib.dart';
 import 'server/database.dart';
 import 'server/image_lib.dart';
+import 'package:angel_framework/angel_framework.dart';
+import 'package:angel_framework/http.dart';
+import 'package:angel_static/angel_static.dart';
+import 'package:file/local.dart';
 
 //app entry point
 main() async {
   print("starting autzone API listener");
 
   //set up globals and other initializers
-  ApiGlobals.config.init();
-  bool isDev = ApiGlobals.config.isDev;
+  ApiGlobals.configLoader.init();
+  bool isDev = ApiGlobals.configLoader.isDev;
   await Authenticator.init();
   await DateLib.init();
-  ImageLib.init(ApiGlobals.config);
+  ImageLib.init(ApiGlobals.configSettings);
 
   //write alive file (do early so supervisor doesn't try to run api twice)
   Pulse pulse = new Pulse();
@@ -27,34 +31,43 @@ main() async {
   await Database.init();
   await Database.loadGlobals();
 
-  //start listener
-  HttpServer server;
+  //set up Angel
+  var angelApp = new Angel();
+  AngelHttp angelHttp;
   if (isDev) {
-    print('developer mode - port 8083, nonsecure');
-    server = await HttpServer.bind(InternetAddress.ANY_IP_V4, 8083); //for development only
+    http = AngelHttp(angelApp);
+    print('developer mode, nonsecure');
   } else {
-    //String password = new File('/var/www/cert/pwdfile').readAsStringSync().trim();
     SecurityContext context = new SecurityContext();
-    //SecurityContext context = SecurityContext.defaultContext;
     context.useCertificateChain('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
     context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
-    //context.setTrustedCertificates('/var/www/cert/autzone.pem', password: password);
-    //context.setTrustedCertificates('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
     String host = ApiGlobals.configSettings.domain;
     print('production mode - port 443 on host ${host}');
-    server = await HttpServer.bindSecure(InternetAddress.ANY_IP_V6, 443, context); //production with certificate, running as root
+    http = AngelHttp.fromSecurityContext(angelApp, context)
   }
 
-  //start rpc server with a router (so we can listen for multiple things)
-  Router router = new Router(server);
-  //router.serve(r'/servant/').listen(rpc.httpRequestHandler); //could not get this pattern matching to work
-  ApiServer rpc = new ApiServer();
-  rpc.addApi(new Servant());
-  router.defaultStream.listen(rpc.httpRequestHandler);
+  //add routes for diagnostics
+  angelApp.get("/hello", (req, res) => "Hello, world!");
+
+  //add routes for servant (the main api)
+  await angelApp.configure(new Servant().configureServer);
+  //alternately?: await angelApp.mountController<Servant>();
+
+  //add routes for static files
+  final fs = const LocalFileSystem();
+  final publicDir = Directory(ApiGlobals.configLoader.appPath() + '/public_html');
+  final vDirRoot = CachingVirtualDirectory(angelApp, fs, publicPath: '/', indexFileNames: ['App.html'], source: publicDir);
+  angelApp.configure(vDirRoot);
+  final vDirChild = CachingVirtualDirectory(angelApp, fs, publicPath: '/static', source: publicDir);
+  angelApp.configure(vDirChild);
 
   //attach the link-back style requests to the router (these include any
   // methods not served in the RPC style, such as links sent by email)
-  router.serve(r'/linkback/ValidateEmail').listen(Linkback.validateEmail);
+  angelApp.get('/linkback/ValidateEmail', (RequestContext req) => Linkback.validateEmail(req));
+
+  //start listener
+  HttpServer server = await http.startServer();
+  print("Angel server listening at ${http.uri}");
 
   //start 30s pulse tasks and register app-ending code
   pulse.init(() async {
@@ -62,7 +75,7 @@ main() async {
     ApiGlobals.config.stopWatching();
 
     //in testing, this method does end, but the dart process takes a couple more
-    // minutes to actually end. This could be the server listener??
+    // minutes to actually end.
     //For now, really really force it
     sleep(new Duration(seconds: 5));
     exit(0);

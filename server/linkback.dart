@@ -1,3 +1,4 @@
+import 'package:angel_framework/angel_framework.dart';
 import 'dart:io';
 import 'dart:async';
 import 'database.dart';
@@ -8,7 +9,7 @@ class Linkback {
 
   //validate email address for user id; see xuser.proposed_email field for
   // explanation. Url is /linkback/ValidateEmail?id=1&code=abc
-  static Future validateEmail(HttpRequest req) async {
+  static Future validateEmail(RequestContext req) async {
     await Database.safely('ValidateEmail', null, (db) async {
 
       //get params
@@ -20,6 +21,7 @@ class Linkback {
       bool ok = false;
       String finalMessage = null;
       String email = null, actualCode = null;
+
       //load proposed_email and unpack
       Row row = await db.query('select proposed_email from xuser where id=@i',
         {'i':id}).single;

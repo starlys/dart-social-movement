@@ -1,6 +1,6 @@
 import 'dart:math';
 import "config_settings.dart";
-import 'server/config_loader.dart';
+import 'config_loader.dart';
 
 ///stores API globals
 class ApiGlobals {

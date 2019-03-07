@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'globals.dart';
 import 'database.dart';
-import 'server/twotier/wlib.dart';
-import 'server/config.dart';
-import 'server/logger.dart';
+import '../server/twotier/wlib.dart';
+import '../server/config_settings.dart';
+import '../server/config_loader.dart';
+import '../server/logger.dart';
 
 ///controls access to all the worker tasks on a timer
 class Controller {
@@ -17,9 +18,9 @@ class Controller {
     //infinite loop
     while (true) {
       //exit if stop file exists
-      File stopFile = new File(Config.rootPath() + '/stop.txt');
+      File stopFile = new File(ConfigLoader.rootPath() + '/stop.txt');
       if (await stopFile.exists()) {
-        Globals.config.stopWatching();
+        Globals.configLoader.stopWatching();
         await writeAliveFile(false);
         return;
       }

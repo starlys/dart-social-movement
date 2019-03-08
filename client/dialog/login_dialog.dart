@@ -53,9 +53,9 @@ class LoginDialog extends DialogBox {
       }
 
       //tell server to email the recovery code
-      UserRecoverPasswordRequest args = new UserRecoverPasswordRequest()
-        ..recoveryNick = trimInput(nickInput)
-        ..mode = 'E';
+      UserRecoverPasswordRequest args = new UserRecoverPasswordRequest(
+        recoveryNick: trimInput(nickInput),
+        mode: 'E');
       APIResponseBase response = await RpcLib.command('UserRecoverPassword', args);
       if (!response.isOK) {form.showError(response.errorMessage); return;}
 

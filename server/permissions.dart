@@ -1,5 +1,6 @@
 import "dart:async";
 import "dart:math";
+import 'package:postgres/postgres.dart';
 import 'misc_lib.dart';
 import "config_settings.dart";
 import '../models/models.dart';
@@ -64,11 +65,11 @@ class Permissions{
   /// and the rules of the conv.
   /// Does NOT check if user is joined to the conv.
   /// convRow must contain the posting rules fields, and open.
-  static Future<RestrictionInfo> getConvPostPermissions(Config cfg, Connection db, int userId,
-    int convId, Row convRow) async {
+  static Future<RestrictionInfo> getConvPostPermissions(ConfigSettings cfg, PostgreSQLConnection db, int userId,
+    int convId, Map<String,dynamic> convRow) async {
 
     //if conv is closed, exit now
-    if (convRow.open != 'Y') {
+    if (convRow['open'] != 'Y') {
       RestrictionInfo info = new RestrictionInfo()
         ..explanation = 'Conversation has been closed.';
       return info;
@@ -76,9 +77,9 @@ class Permissions{
 
     //get this user's spam count and set info to rules based on that
     int spamCount = 0;
-    int projectId = convRow.project_id;
+    int projectId = convRow['project_id'];
     if (projectId != null) {
-      spamCount = (await MiscLib.queryScalar(db, 'select spam_count from project_xuser where project_id=${projectId} and xuser_id=${userId}')) ?? 0;
+      spamCount = (await MiscLib.queryScalar(db, 'select spam_count from project_xuser where project_id=${projectId} and xuser_id=${userId}', null)) ?? 0;
     }
     RestrictionInfo spamInfo = spamCountToRestrictions(cfg, spamCount);
     spamInfo.allowedNow = true;
@@ -86,7 +87,8 @@ class Permissions{
     //if there are restrictions, check the user's latest post in whole project to see if they
     //are allowed to post now
     if (spamInfo.restDays > 0 && projectId != null) {
-      DateTime latestPostAt = await MiscLib.queryScalar(db, 'select max(conv_post.created_at) from conv_post inner join conv on conv_post.conv_id=conv.id where conv.project_id=${projectId} and conv_post.author_id=${userId}');
+      DateTime latestPostAt = await MiscLib.queryScalar(db, 'select max(conv_post.created_at) from conv_post inner join conv on conv_post.conv_id=conv.id where conv.project_id=${projectId} and conv_post.author_id=${userId}',
+        null);
       if (latestPostAt != null) {
         Duration ago = WLib.utcNow().difference(latestPostAt);
         if (ago.inDays < spamInfo.restDays) {
@@ -97,9 +99,9 @@ class Permissions{
 
     //check the conv rules for separate restrictions
     RestrictionInfo rulesInfo = new RestrictionInfo()
-      ..charLimit = convRow.post_max_size
+      ..charLimit = convRow['post_max_size']
       ..allowedNow = true;
-    int userDailyMax = convRow.xuser_daily_max;
+    int userDailyMax = convRow['xuser_daily_max'];
     if (userDailyMax < 999) {
       DateTime yesterday = WLib.utcNow().subtract(new Duration(days:1));
       int postCount = (await MiscLib.queryScalar(db, 'select count(*) from conv_post where conv_id=${convId} and author_id=${userId}'
@@ -133,21 +135,21 @@ class Permissions{
 
   //look in project or event to determine if user is manager/owner;
   //only pass nonnull for one of the keys (projectId, eventId)
-  static Future<bool> isConvManager(Connection db, int userId, int projectId, int eventId) async {
+  static Future<bool> isConvManager(PostgreSQLConnection db, int userId, int projectId, int eventId) async {
     if (projectId != null) {
       String kind = await getProjectUserKind(db, userId, projectId);
       return isProjectUserKindIn(kind, testForManager: true);
     }
     if (eventId != null) {
-      int createdBy = await MiscLib.queryScalar(db, 'select created_by from event where id=${eventId}');
+      int createdBy = await MiscLib.queryScalar(db, 'select created_by from event where id=${eventId}', null);
       if (createdBy == userId) return true;
     }
     return false;
   }
 
   ///get user membership in project (project_xuser.kind)
-  static Future<String> getProjectUserKind(Connection db, int userId, int projectId) async {
-    return await MiscLib.queryScalar(db, 'select kind from project_xuser where project_id=${projectId} and xuser_id=${userId}');
+  static Future<String> getProjectUserKind(PostgreSQLConnection db, int userId, int projectId) async {
+    return await MiscLib.queryScalar(db, 'select kind from project_xuser where project_id=${projectId} and xuser_id=${userId}', null);
   }
 
   ///compare the value of project_xuser.kind to see if the kind is a manager, posting user
@@ -163,19 +165,19 @@ class Permissions{
   }
 
   ///get whether a user is joined to a project (as observer or posting user)
-  static Future<bool> isJoinedToProject(Connection db, int userId, int projectId) async {
+  static Future<bool> isJoinedToProject(PostgreSQLConnection db, int userId, int projectId) async {
     String kind = await getProjectUserKind(db, userId, projectId);
     return isProjectUserKindIn(kind);
   }
 
   ///look in project or event to determine if user is a member;
   ///only pass nonnull for one of the keys (projectId, eventId)
-  static Future<bool> isConvCreatable(Connection db, int userId, int projectId, int eventId) async {
+  static Future<bool> isConvCreatable(PostgreSQLConnection db, int userId, int projectId, int eventId) async {
     if (projectId != null) {
       return await isJoinedToProject(db, userId, projectId);
     }
     if (eventId != null) {
-      String status = await MiscLib.queryScalar(db, 'select status from event_xuser where event_id=${eventId} and xuser_id=${userId}');
+      String status = await MiscLib.queryScalar(db, 'select status from event_xuser where event_id=${eventId} and xuser_id=${userId}', null);
       if (status == 'A') return true;
     }
     return false;
@@ -184,7 +186,7 @@ class Permissions{
   ///get info about permissions for joining a project (without joining a conv in
   /// the project). If projectId is null assumes public.
   /// Only sets maxProjectUserKind, mayJoin, mayRequest.
-  static Future<JoinInfo> getProjectJoinPermissions(Connection db, int userId, int projectId) async {
+  static Future<JoinInfo> getProjectJoinPermissions(PostgreSQLConnection db, int userId, int projectId) async {
       JoinInfo r = new JoinInfo()
         ..projectId = projectId
         ..maxProjectUserKind = 'A'; //this default is necessary in case of weird data (like user is a conv member but not a proj member)
@@ -192,8 +194,8 @@ class Permissions{
       //get associated project or event info
       String privacy = 'P'; //events are public
       if (projectId != null) {
-        Row projRow = await MiscLib.querySingleChecked(db, 'select privacy from project where id=${projectId}', 'Project does not exist');
-        privacy = projRow.privacy;
+        final projRow = await MiscLib.queryRowChecked(db, 'select privacy from project where id=${projectId}', 'Project does not exist', null);
+        privacy = projRow['privacy'];
 
         //if this user already joined project:
         String projUserKind = await Permissions.getProjectUserKind(db, userId, projectId);
@@ -229,20 +231,20 @@ class Permissions{
   }
 
   //get info about permissions for joining a conversation
-  static Future<JoinInfo> getConvJoinPermissions(Connection db, int userId, int convId) async {
+  static Future<JoinInfo> getConvJoinPermissions(PostgreSQLConnection db, int userId, int convId) async {
       //get info from the conv
-      Row convRow = await MiscLib.querySingleChecked(db, 'select project_id,event_id from conv where id=${convId}', 'Conversation does not exist');
-      int projectId = convRow.project_id; //null ok
+      final convRow = await MiscLib.queryRowChecked(db, 'select project_id,event_id from conv where id=${convId}', 'Conversation does not exist', null);
+      int projectId = convRow['project_id']; //null ok
 
       //get project level join permissions
       JoinInfo r = await getProjectJoinPermissions(db, userId, projectId);
 
       //get whether user is already joined
-      List<Row> convUserRows = await db.query('select status from conv_xuser where conv_id=${convId} and xuser_id=${userId}').toList();
+      final convUserRows = await MiscLib.query(db, 'select status from conv_xuser where conv_id=${convId} and xuser_id=${userId}', null);
       r.hasConvUserRecord = convUserRows.length > 0;
       if (r.hasConvUserRecord) {
-        Row convUserRow = convUserRows[0];
-        r.existingStatus = convUserRow.status;
+        final convUserRow = convUserRows[0];
+        r.existingStatus = convUserRow['status'];
         if (r.existingStatus == 'J') {
           r.isAlreadyJoined = true;
           r.mayJoin = false;
@@ -267,11 +269,11 @@ class Permissions{
   ///throw exceptions if the user may not post to the conv; convRow must be loaded from ConvLib.getConvRow
   /// or equivalent; projectId is from that row and may be null; postLength is the proposed length
   /// of the post
-  static Future checkConvPostPermissions(Config cfg, Connection db, int userId, int convId,
-    Row convRow, int projectId, int postLength) async {
+  static Future checkConvPostPermissions(ConfigSettings cfg, PostgreSQLConnection db, int userId, int convId,
+    Map<String, dynamic> convRow, int projectId, int postLength) async {
     //check user is joined to conv
-    Row convUserRow = await db.query('select status from conv_xuser where conv_id=${convId} and xuser_id=${userId}').first;
-    if (convUserRow == null || convUserRow.status != 'J') throw new Exception('Cannot post to a conversation that you have not joined');
+    final convUserRow = await MiscLib.queryRow(db, 'select status from conv_xuser where conv_id=${convId} and xuser_id=${userId}', null);
+    if (convUserRow == null || convUserRow['status'] != 'J') throw new Exception('Cannot post to a conversation that you have not joined');
 
     //check user is allowed to post in project
     if (projectId != null) {

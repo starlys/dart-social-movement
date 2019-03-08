@@ -34,11 +34,11 @@ class LoginRecoveryDialog extends DialogBox {
       if (err != null) {form.showError(err); return;}
 
       //tell server; handle error
-      UserRecoverPasswordRequest args = new UserRecoverPasswordRequest()
-        ..recoveryNick = nick
-        ..recoveryPassword = pw1
-        ..code = code
-        ..mode = 'V';
+      UserRecoverPasswordRequest args = new UserRecoverPasswordRequest(
+        recoveryNick: nick,
+        recoveryPassword: pw1,
+        code: code,
+        mode: 'V');
       APIResponseBase response = await RpcLib.command('UserRecoverPassword', args);
       if (!response.isOK) {form.showError(response.errorMessage); return;}
 

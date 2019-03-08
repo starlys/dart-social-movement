@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:postgres/postgres.dart';
 import 'misc_lib.dart';
 import 'conv_lib.dart';
 import 'diff_lib.dart';
@@ -24,7 +25,7 @@ class ProposalLib {
   //options gets converted to element 0 -> key 0, etc.
   //days is converted to the current time + days.
   //Returns proposal.id
-  static Future<int> _writeProposal(Connection db, String kind, String eligible,
+  static Future<int> _writeProposal(PostgreSQLConnection db, String kind, String eligible,
     String title, String summary, String summaryHtml, int passTarget, int failTarget,
     List<String> options, int days, String timeoutAction, int createdBy) async {
 
@@ -49,7 +50,7 @@ class ProposalLib {
   /// or numeric value, plus it can contain this special entry: '*field_name' (value is integer
   /// number of days ahead of the current time; causes the resolved datetime to be stored in
   /// field_name)
-  static Future<int> _writeNew(Connection db, int createdBy, String recordDescription,
+  static Future<int> _writeNew(PostgreSQLConnection db, int createdBy, String recordDescription,
     String summary, String tableName, String keyPrefix, Map<String, dynamic> colValues) async {
     String proposalTitle = 'Determine if a new ${recordDescription} is legitimate';
     //require 1 to pass, 3 to fail
@@ -73,7 +74,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind JOIN (note caller must handle writing conv_xuser record)
-  static Future proposeJoinConv(Connection db, int userId, String nick, int projectId, int convId) async {
+  static Future proposeJoinConv(PostgreSQLConnection db, int userId, String nick, int projectId, int convId) async {
     //write proposal requiring 1 pass vote or 9 fail votes to reject;
     //timeout in a month; fail if no votes after timeout
     int proposalId = await _writeProposal(db, 'JOIN', 'L', 'Request to join project',
@@ -83,7 +84,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind PROJ (for arbitrary user polls), returns id
-  static Future<int> proposeInProject(Connection db, int userId, int projectId, String eligible,
+  static Future<int> proposeInProject(PostgreSQLConnection db, int userId, int projectId, String eligible,
     String title, String summary, List<String> options, int days) async {
     int proposalId = await _writeProposal(db, 'PROJ', eligible, title, summary, '', null,
       null, options, days, 'M', userId);
@@ -92,7 +93,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a proposal of kind SYS
-  static Future proposeSystemChange(ConfigSettings config, Connection db, int userId,
+  static Future proposeSystemChange(ConfigSettings config, PostgreSQLConnection db, int userId,
     String changeTitle, String changeSummary, List<String> options) async {
     //put together all the values that will eventually go into the proposal
     // table for this system proposal
@@ -117,7 +118,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a new project
-  static Future proposeNewProject(Connection db, int userId, String leadership,
+  static Future proposeNewProject(PostgreSQLConnection db, int userId, String leadership,
     String privacy, String title, String description, int categoryId) async {
     var colValues = {
       'kind': 'P',
@@ -136,7 +137,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a new resource
-  static Future proposeNewResource(Connection db, int userId, String kind, String title,
+  static Future proposeNewResource(PostgreSQLConnection db, int userId, String kind, String title,
     String description, String url, int categoryId) async {
     Map<String, dynamic> colValues = {
       'category_id': categoryId,
@@ -156,7 +157,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a new event
-  static Future proposeNewEvent(Connection db, int userId, String title,
+  static Future proposeNewEvent(PostgreSQLConnection db, int userId, String title,
     String description, DateTime startTime, String duration, double lat, double lon,
     String location) async {
     var colValues = {
@@ -177,7 +178,7 @@ class ProposalLib {
   ///write proposal of kind NEW for a proposal of kind ROOT;
   ///changeSummary is in the proposer's own words while changeHtml is the change proposed
   /// in html; newBody is the complete document proposed
-  static Future proposeRootDocumentChange(ConfigSettings config, Connection db, int userId, int docId,
+  static Future proposeRootDocumentChange(ConfigSettings config, PostgreSQLConnection db, int userId, int docId,
     String docTitle, String changeSummary, String changeHtml, String newBody) async {
 
     //put together all the values that will eventually go into the proposal
@@ -209,7 +210,7 @@ class ProposalLib {
   //determine if a user is eligible to vote on a project; may load a db record
   /// to determine this. proposalRow must contain created_by, eligible and project_id columns
   /// at least.
-  static Future<bool> isEligibleToVote(Connection db, int userId, bool isSiteAdmin,
+  static Future<bool> isEligibleToVote(PostgreSQLConnection db, int userId, bool isSiteAdmin,
     Row proposalRow) async {
     String eligibleCode = proposalRow.eligible;
     if (eligibleCode == 'E') return true; //everyone
@@ -237,7 +238,7 @@ class ProposalLib {
 
   ///cast a vote; caller is responsible for calling isEligibleToVote first;
   /// optionNo can be null to un-vote
-  static Future vote(Connection db, int proposalId, int userId, int optionNo) async {
+  static Future vote(PostgreSQLConnection db, int proposalId, int userId, int optionNo) async {
     //check proposal exists
     Row proposalRow = await MiscLib.querySingle(db, 'select timeout,active,timeout_action,pass_target,fail_target from proposal where id=${proposalId}');
     if (proposalRow == null) {
@@ -280,7 +281,7 @@ class ProposalLib {
   ///tally votes; close proposal; see in line comments for specific steps for each proposal type;
   /// this is called either from vote() to close early, or from worker to close after
   /// the timeout
-  static Future closeProposal(Connection db, int proposalId) async {
+  static Future closeProposal(PostgreSQLConnection db, int proposalId) async {
     //tally votes
     List<Row> sumRows = await db.query('select vote,count(vote) as c from proposal_xuser where proposal_id=${proposalId} group by vote').toList();
     Map<String, int> voteCounts = new Map<String, int>(); //counts indexed by (option#.tostring)
@@ -347,7 +348,7 @@ class ProposalLib {
   }
 
   ///delete the proposal votes, and optionally the header (that is, the proposal row)
-  static Future delete(Connection db, int proposalId, bool deleteHeader) async {
+  static Future delete(PostgreSQLConnection db, int proposalId, bool deleteHeader) async {
     await db.execute('delete from proposal_xuser where proposal_id=${proposalId}');
     if (deleteHeader)
       await db.execute('delete from proposal where id=${proposalId}');
@@ -356,7 +357,7 @@ class ProposalLib {
   ///perform follow up actions for closed proposals of kind=NEW;
   /// there are a few hacks to this based on the type of thing being created,
   /// as marked by 'special cases' in-line
-  static Future _finalizeKindNew(Connection db, int proposalId, Row proposalRow, int winOption) async {
+  static Future _finalizeKindNew(PostgreSQLConnection db, int proposalId, Row proposalRow, int winOption) async {
     //create a colValues map that undoes the magic column names (see datase doc)
     Map<String, dynamic> colValuesWithMagic = proposalRow.col_values;
     Map<String, dynamic> colValues = new Map<String, dynamic>();
@@ -425,7 +426,7 @@ class ProposalLib {
   ///check if a new record is allowed; currently only checks special cases for
   /// these types: root doc proposal.
   /// Returns null if ok, else an error message
-  static Future<String> _allowNewRecord(Connection db, String tableName, Map<String, dynamic> colValues) async {
+  static Future<String> _allowNewRecord(PostgreSQLConnection db, String tableName, Map<String, dynamic> colValues) async {
     //for root doc proposals, don't allow it if another voting period is in
     // progress
     if (tableName == 'proposal' && colValues['kind'] == 'ROOT') {
@@ -439,7 +440,7 @@ class ProposalLib {
   }
 
   ///perform follow up actions after a project record was created via _finalizeKindNew
-  static Future _fixUpNewProject(Connection db, int projectId, int userId) async {
+  static Future _fixUpNewProject(PostgreSQLConnection db, int projectId, int userId) async {
     //write the person who created the project as a member of it
     if (projectId != null) {
       await db.execute(

@@ -233,7 +233,7 @@ class ConvLib {
 
   //write one conv_xuser record (attempts update, then insert)
   //NOTE like argument is only honored for inserts
-  static Future writeConvUser(Connection db, int convId, int userId, String status, String like) async {
+  static Future writeConvUser(PostgreSQLConnection db, int convId, int userId, String status, String like) async {
     int count = await db.execute('update conv_xuser set status=@s where conv_id=${convId} and xuser_id=${userId}',
       {'s': status});
     if (count == 0) {
@@ -246,7 +246,7 @@ class ConvLib {
   //write a project_xuser record (insert only), and auto-vote for all the
   // existing managers in the project. Also for democratic projects, save a
   // notification about the auto-vote status
-  static Future insertProjectUser(Connection db, int projectId, int userId, String kind) async {
+  static Future insertProjectUser(PostgreSQLConnection db, int projectId, int userId, String kind) async {
     //join project
     await db.execute('insert into project_xuser(project_id,xuser_id,kind,spam_count)'
       'values(${projectId},${userId},\'${kind}\',0)');

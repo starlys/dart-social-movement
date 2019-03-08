@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:crypto/crypto.dart' show sha256;
+import 'package:postgres/postgres.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/models.dart';
@@ -7,56 +8,69 @@ import '../models/models.dart';
 ///misc helper functions for API and worker
 class MiscLib {
 
-  ///get a xuser row using query.single for the given user id; includes nick, avatar_no only
-  static Future<Row> userRowForAvatars(Connection db, int userId) async {
-    return await db.query('select nick,avatar_no from xuser where id=${userId}').single;
+  /// given a complex row as returned by the postgres package, simplify the structure so there are no table names
+  /// and the result is just column-name:value pairs
+  static Map<String, dynamic> reduceRowWithTableNames(Map<String, Map<String, dynamic>> row) {
+    final ret = Map<String, dynamic>();
+    for (var tableMap in row.values) ret.addAll(tableMap);
+    return ret;
   }
 
-  ///query a scalar value; null if no rows found
-  static Future<dynamic> queryScalar(Connection db, String sql, [dynamic values]) async {
-    Row row = await querySingle(db, sql, values);
-    if (row == null) return null;
-    return row[0];
-
-    //old implementation, unsure if this closes the stream immediately:
-    /*await for (Row row in db.query(sql, values)) {
-      return row[0];
-    }
-    return null;*/
+  ///query a single row; null if not found or a map of column-name:values
+  static Future<Map<String, dynamic>> queryRow(PostgreSQLConnection db, String sql, Map<String, dynamic> substitutionValues) async {
+    final rows = await db.mappedResultsQuery(sql, substitutionValues: substitutionValues);
+    if (rows == null || rows.length == 0) return null;
+    return reduceRowWithTableNames(rows[0]);
   }
 
-  ///query a single row; null if not found
-  static Future<Row> querySingle(Connection db, String sql, [dynamic values]) async {
-    Stream<Row> rows = db.query(sql, values);
-    Row row = await rows.firstWhere((r) => true, defaultValue: () => null);
-    return row;
-  }
-
-  ///version of querySingle with the added feature of throwing an exception
+  ///version of queryRow with the added feature of throwing an exception
   /// if the row is null
-  static Future<Row> querySingleChecked(Connection db, String sql, String messageIfNotFound, [dynamic values]) async {
-    Row row = await querySingle(db, sql, values);
+  static Future<Map<String, dynamic>> queryRowChecked(PostgreSQLConnection db, String sql, String messageIfNotFound, Map<String, dynamic> substitutionValues) async {
+    final row = await queryRow(db, sql, substitutionValues);
     if (row == null) throw new Exception(messageIfNotFound);
     return row;
   }
 
+  ///query multiple rows; guaranteed list of map of column-name:values
+  static Future<List<Map<String, dynamic>>> query(PostgreSQLConnection db, String sql, Map<String, dynamic> substitutionValues) async {
+    var ret = List<Map<String, dynamic>>();
+    final rows = await db.mappedResultsQuery(sql, substitutionValues: substitutionValues);
+    if (rows == null || rows.length == 0) return ret;
+    for (var row in rows) ret.add(reduceRowWithTableNames(row));
+    return ret;
+  }
+
+  ///get a xuser row for the given user id; includes nick, avatar_no only
+  static Future<Map<String, dynamic>> userRowForAvatars(PostgreSQLConnection db, int userId) {
+    return queryRow(db, 'select nick,avatar_no from xuser where id=${userId}', null);
+  }
+
+  ///query a scalar value; null if no rows found
+  static Future<dynamic> queryScalar(PostgreSQLConnection db, String sql, Map<String, dynamic> substitutionValues) async {
+    final row = await queryRow(db, sql, substitutionValues);
+    if (row == null) return null;
+    final colName = row.keys.first;
+    return row[colName];
+  }
+
   ///queue up email to be sent by an occasional background process
-  static Future queueEmail(Connection db, String recipient, String subject, String body) async {
-    await db.execute('insert into tomail(recipient,subject,body)values(@r,@s,@b)',
+  static Future queueEmail(PostgreSQLConnection db, String recipient, String subject, String body) async {
+    await db.query('insert into tomail(recipient,subject,body)values(@r,@s,@b)', substitutionValues:
       {'r': recipient, 's': subject, 'b': body});
   }
 
   ///notify the user of something. linkText is an optional name to hyperlink to,
   /// which links to linkKey (for example 'user/3')
-  static Future notify(Connection db, int userId, String body,
+  static Future notify(PostgreSQLConnection db, int userId, String body,
     {String linkText:null, String linkKey:null}) async {
-    await db.execute('insert into xuser_notify(id,xuser_id,body,link_text,link_key,emailed,created_at)values(uuid_generate_v4(),@uid,@body,@linktext,@linkkey,\'N\',@d)',
-    {'uid': userId, 'body': body, 'linktext':linkText, 'linkkey':linkKey, 'd':WLib.utcNow()}
+    await db.query('insert into xuser_notify(id,xuser_id,body,link_text,link_key,emailed,created_at)values(uuid_generate_v4(),@uid,@body,@linktext,@linkkey,\'N\',@d)',
+      substitutionValues: {'uid': userId, 'body': body, 'linktext':linkText, 'linkkey':linkKey, 'd':WLib.utcNow()}
     );
   }
 
   ///get all project manager user Ids for a project
-  static Future<List<int>> getProjectManagers(Connection db, int projectId) async {
+  static Future<List<int>> getProjectManagers(PostgreSQLConnection db, int projectId) async {
+    var managerRows = await query
     List<Row> managerRows = await db.query('select xuser_id from project_xuser where project_id=${projectId} and kind=\'M\'').toList();
     return managerRows.map((row) => row[0]).toList();
   }
@@ -67,11 +81,6 @@ class MiscLib {
     List<int> pwBytes = sha256.convert(UTF8.encode(s)).bytes;
     String hashed = BASE64.encode(pwBytes);
     return hashed;
-  }
-
-  //get a Stream of UTF chars from a string
-  static Stream<List<int>> stringToStream(String s) {
-    return new Stream.fromIterable(UTF8.encode(s));
   }
 
   //Get distinct items based on a map function. The map should return a
@@ -87,7 +96,7 @@ class MiscLib {
   }
 
   ///get a list of all non-deleted user ids
-  static Future<List<int>> getAllUserIds(Connection db) async {
+  static Future<List<int>> getAllUserIds(PostgreSQLConnection db) async {
     List<int> userIds = new List<int>();
     await for (Row row in db.query('select id from xuser where status=\'A\''))
       userIds.add(row[0]);
@@ -95,7 +104,7 @@ class MiscLib {
   }
 
   ///set xuser.last_activity, but for performance, skip if it has been set in the last 10 min
-  static Future touchUser(Connection db, int userId) async {
+  static Future touchUser(PostgreSQLConnection db, int userId) async {
     DateTime now = WLib.utcNow();
     DateTime recent = now.subtract(new Duration(minutes:10));
     await db.execute('update xuser set last_activity=@t2 where id=${userId} and last_activity<@t1',

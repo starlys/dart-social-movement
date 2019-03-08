@@ -6,7 +6,7 @@ import '../messages.dart';
 import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../root/globals.dart';
 
 ///dialog to create a PROJ or SYS proposal; show method returns int proposalId if saved, true if saved but
@@ -68,15 +68,14 @@ class ProposalDialog extends DialogBox {
       if (isKindProj) eligible = eligibleInput.value;
 
       //save it
-      ProposalSaveRequest saveArgs = new ProposalSaveRequest()
-        ..kind = _kind
-        ..projectId = _projectId
-        ..eligible = eligible
-        ..title = title
-        ..summary = trimTextArea(descInput)
-        ..days = int.parse(daysInput.value)
-        ..options = options
-        ;
+      ProposalSaveRequest saveArgs = new ProposalSaveRequest(
+        kind: _kind,
+        projectId: _projectId,
+        eligible: eligible,
+        title: title,
+        summary: trimTextArea(descInput),
+        days: int.parse(daysInput.value),
+        options: options);
       APIResponseBase response = await RpcLib.command('ProposalSave', saveArgs);
       if (response.isOK) {
         bool hasId = response.newId != null;

@@ -6,7 +6,7 @@ import '../root/globals.dart';
 import '../lib/outline_builder.dart';
 import '../lib/html_lib.dart';
 import '../lib/button_bar_builder.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../rpc_lib.dart';
 import '../lib/category_node.dart';
 import '../dialog/confirm_dialog.dart';

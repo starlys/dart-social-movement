@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'database.dart';
 import 'misc_lib.dart';
-import 'twotier/wtypes.dart';
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 
 //tried to use 2 dart libs for memcache, and gave up for now. memcached_client
 //is bulky and lacks documentation. memcache has no constructor except if

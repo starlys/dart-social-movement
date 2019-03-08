@@ -16,7 +16,7 @@ class ButtonBarBuilder {
   }
 
   ///add a button to the bar with handler
-  ButtonElement addButton(String text, void handler(MouseEvent)) {
+  ButtonElement addButton(String text, Future handler(MouseEvent)) {
     var b = new ButtonElement() ..text = text ..className = 'button';
 
     //wrap handler in a function that does systemwide things

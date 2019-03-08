@@ -4,7 +4,7 @@ import '../root/pane_key.dart';
 import '../pane_factory.dart';
 import '../lib/html_lib.dart';
 import '../lib/button_bar_builder.dart';
-import '../twotier/wlib.dart';
+import '../../models/models.dart';
 
 typedef void PaneHandler(BasePane);
 

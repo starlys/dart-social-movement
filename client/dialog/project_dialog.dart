@@ -6,7 +6,7 @@ import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../root/globals.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 
 ///dialog for creating a project or changing its settings; returns true if saved, else false
 class ProjectDialog extends DialogBox {

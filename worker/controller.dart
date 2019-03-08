@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'globals.dart';
 import 'database.dart';
-import '../server/twotier/wlib.dart';
+import '../models/models.dart';
 import '../server/config_settings.dart';
 import '../server/config_loader.dart';
 import '../server/logger.dart';

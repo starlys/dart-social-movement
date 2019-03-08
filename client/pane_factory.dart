@@ -24,7 +24,7 @@ import 'pane/resource_pane.dart';
 import 'pane/user_search_pane.dart';
 import 'pane/user_pane.dart';
 import 'root/globals.dart';
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 import 'main_controller.dart';
 
 ///logic to create empty panes

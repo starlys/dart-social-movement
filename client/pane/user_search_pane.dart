@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:async';
 import 'base_pane.dart';
 import '../root/pane_key.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../rpc_lib.dart';
 import '../lib/html_lib.dart';
 import '../lib/form_builder.dart';

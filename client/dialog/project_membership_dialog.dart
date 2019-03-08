@@ -5,7 +5,7 @@ import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../root/globals.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 
 ///dialog for requeting to join a project or change ones membership type;
 /// returns true if changes saved, else false if canceled
@@ -39,10 +39,10 @@ class ProjectMembershipDialog extends DialogBox {
     //buttons
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('Change Membership', (e) async {
-      ProjectUserSaveRequest req = new ProjectUserSaveRequest()
-        ..projectId = _projectId
-        ..userId = Globals.userId
-        ..kind = newRole.value;
+      ProjectUserSaveRequest req = new ProjectUserSaveRequest(
+        projectId = _projectId,
+        userId = Globals.userId,
+        kind = newRole.value);
       APIResponseBase response = await RpcLib.command('ProjectUserSave', req);
       if (response.isOK) {
         hide(true);

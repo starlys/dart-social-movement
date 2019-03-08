@@ -27,8 +27,8 @@ class ClientStore {
   ///use local storage to send a message to other winodw;
   /// msg must be a simple type, List, or Map
   static void sendMessage(dynamic msg) {
-    String json = JSON.encode(msg);
-    _store['message'] = json;
+    String json2 = json.encode(msg);
+    _store['message'] = json2;
     _store.remove('message');
   }
 
@@ -36,7 +36,7 @@ class ClientStore {
   /// from other windows
   static void registerReceiveMessage(void f(dynamic)) {
     window.onStorage.listen((e) {
-      var message = JSON.decode(e.newValue);
+      var message = json.decode(e.newValue);
       f(message);
     });
   }

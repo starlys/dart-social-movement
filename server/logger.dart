@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'config.dart';
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 
 ///error logger
 class Logger{

@@ -6,7 +6,7 @@ import '../rpc_lib.dart';
 import '../messages.dart';
 import '../lib/html_lib.dart';
 import '../lib/button_bar_builder.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../dialog/resource_dialog.dart';
 
 ///shows outline of resource  categories and commands for accessing the resources

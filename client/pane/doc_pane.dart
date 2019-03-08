@@ -3,7 +3,7 @@ import 'dart:async';
 import 'base_pane.dart';
 import '../root/globals.dart';
 import '../root/pane_key.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../rpc_lib.dart';
 import '../lib/js_interop.dart';
 import '../messages.dart';

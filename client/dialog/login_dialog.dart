@@ -4,7 +4,7 @@ import '../lib/dialog_box.dart';
 import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import 'login_recovery_dialog.dart';
 import 'user_dialog.dart';
 

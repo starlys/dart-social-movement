@@ -2,6 +2,7 @@ import 'dart:io';
 import 'server/api_globals.dart';
 import 'server/pulse.dart';
 import 'server/servant.dart';
+import 'server/config_loader.dart';
 import 'server/linkback.dart';
 import 'server/authenticator.dart';
 import 'server/date_lib.dart';
@@ -35,7 +36,7 @@ main() async {
   var angelApp = new Angel();
   AngelHttp angelHttp;
   if (isDev) {
-    http = AngelHttp(angelApp);
+    angelHttp = AngelHttp(angelApp);
     print('developer mode, nonsecure');
   } else {
     SecurityContext context = new SecurityContext();
@@ -43,36 +44,36 @@ main() async {
     context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
     String host = ApiGlobals.configSettings.domain;
     print('production mode - port 443 on host ${host}');
-    http = AngelHttp.fromSecurityContext(angelApp, context)
+    angelHttp = AngelHttp.fromSecurityContext(angelApp, context);
   }
 
   //add routes for diagnostics
   angelApp.get("/hello", (req, res) => "Hello, world!");
 
   //add routes for servant (the main api)
-  await angelApp.configure(new Servant().configureServer);
+  await angelApp.configure(new ServantController().configureServer);
   //alternately?: await angelApp.mountController<Servant>();
 
   //add routes for static files
   final fs = const LocalFileSystem();
-  final publicDir = Directory(ApiGlobals.configLoader.appPath() + '/public_html');
+  final publicDir = Directory(ConfigLoader.rootPath() + '/public_html');
   final vDirRoot = CachingVirtualDirectory(angelApp, fs, publicPath: '/', indexFileNames: ['App.html'], source: publicDir);
-  angelApp.configure(vDirRoot);
+  angelApp.fallback(vDirRoot.handleRequest);
   final vDirChild = CachingVirtualDirectory(angelApp, fs, publicPath: '/static', source: publicDir);
-  angelApp.configure(vDirChild);
+  angelApp.fallback(vDirChild.handleRequest);
 
   //attach the link-back style requests to the router (these include any
   // methods not served in the RPC style, such as links sent by email)
-  angelApp.get('/linkback/ValidateEmail', (RequestContext req) => Linkback.validateEmail(req));
+  angelApp.get('/linkback/ValidateEmail', (req, resp) => Linkback.validateEmail(req));
 
   //start listener
-  HttpServer server = await http.startServer();
-  print("Angel server listening at ${http.uri}");
+  HttpServer server = await angelHttp.startServer();
+  print("Angel server listening at ${angelHttp.uri}");
 
   //start 30s pulse tasks and register app-ending code
   pulse.init(() async {
     await server.close(force: true);
-    ApiGlobals.config.stopWatching();
+    ApiGlobals.configLoader.stopWatching();
 
     //in testing, this method does end, but the dart process takes a couple more
     // minutes to actually end.

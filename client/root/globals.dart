@@ -1,7 +1,6 @@
 import 'dart:async';
 import '../pane/base_pane.dart';
-import '../twotier/wtypes.dart';
-import '../twotier/wlib.dart';
+import '../../models/models.dart';
 
 typedef Future UserActionFunc();
 

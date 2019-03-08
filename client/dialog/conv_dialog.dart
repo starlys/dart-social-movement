@@ -6,7 +6,7 @@ import '../lib/form_builder.dart';
 import '../lib/html_lib.dart';
 import '../root/globals.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 
 ///create or edit a conversation; also allow it to be spawned from a post on
 /// some other conversation;
@@ -32,9 +32,9 @@ class ConvDialog extends DialogBox {
     bool isNew = _convId == null;
     bool isSpawning = _fromConvId != null;
     if (!isNew)
-      _convRules = await RpcLib.convGetRules(new ConvGetRulesRequest() ..convId = _convId);
+      _convRules = await RpcLib.convGetRules(new ConvGetRulesRequest(convId: _convId);
     else
-      _convRules = new ConvGetRulesResponse() ..postMaxSize = 5000 ..userDailyMax = 3; //defaults
+      _convRules = new ConvGetRulesResponse(postMaxSize: 5000, userDailyMax: 3); //defaults
 
     //main content
     FormBuilder form = new FormBuilder(frame, 'Conversation');

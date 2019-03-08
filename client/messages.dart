@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'lib/js_interop.dart';
-import 'twotier/wtypes.dart';
+import '../models/models.dart';
 import 'root/globals.dart';
 import 'dialog/confirm_dialog.dart';
 

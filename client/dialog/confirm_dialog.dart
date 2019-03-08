@@ -20,10 +20,11 @@ class ConfirmDialog extends DialogBox {
     frame.appendText(_message);
 
     //handler
-    void buttonHandler(e) {
+    Future buttonHandler(e) {
       String text = e.currentTarget.text;
       int idx = _options.indexOf(text);
       hide(idx);
+      return Future.value(0);
     }
 
     //buttons

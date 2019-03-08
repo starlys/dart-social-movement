@@ -3,7 +3,7 @@ import 'dart:async';
 import 'base_pane.dart';
 import '../root/pane_key.dart';
 import '../lib/html_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../rpc_lib.dart';
 
 ///pane listing all root documents - paneKey is 'rootdocs'

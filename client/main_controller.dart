@@ -6,12 +6,11 @@ import 'root/pane_key.dart';
 import 'client_store.dart';
 import 'pane_factory.dart';
 import 'rpc_lib.dart';
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 import 'lib/html_lib.dart';
 import 'messages.dart';
 import 'lib/button_bar_builder.dart';
 import 'root/globals.dart';
-import 'twotier/wtypes.dart';
 import 'pane/base_pane.dart';
 import 'dialog/login_dialog.dart';
 import 'dialog/location_dialog.dart';
@@ -292,6 +291,7 @@ class MainController {
   ///set visibility of elements based on login status
   /// (also set public name)
   static void setVisibility() {
+    var $ = document.querySelector;
     Element logInOut = new ButtonElement() ..onClick.listen((e) => toggleLogin());
     Element hello = $('#hello').first;
     hello.innerHtml = '';
@@ -321,15 +321,17 @@ class MainController {
   static void hideMenuPanels() {
     Globals.myStuffShowing = false;
     Globals.menuShowing = false;
-    $('#mystuff1').hide();
-    $('#menu1').hide();
-    $('#popupconnector').hide();
-    $('#button-mystuff').first.style.borderTopWidth = '1px';
-    $('#button-menu').first.style.borderTopWidth = '1px';
+    var $ = document.querySelector;
+    $('#mystuff1').style.display = 'none';
+    $('#menu1').style.display = 'none';
+    $('#popupconnector').style.display = 'none';
+    $('#button-mystuff').style.borderTopWidth = '1px';
+    $('#button-menu').style.borderTopWidth = '1px';
   }
 
   ///show my-stuff panel
   static void showMyStuff({bool allowHide: false}) {
+    var $ = document.querySelector;
     bool wasShowing = Globals.myStuffShowing;
     hideMenuPanels();
     if (allowHide && wasShowing) return;

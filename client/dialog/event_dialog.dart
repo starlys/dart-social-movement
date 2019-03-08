@@ -6,8 +6,7 @@ import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../root/globals.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
-import '../twotier/wlib.dart';
+import '../../models/models.dart';
 import '../lib/primitive_datetime.dart';
 import 'location_dialog.dart';
 

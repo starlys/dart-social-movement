@@ -1,6 +1,6 @@
 //import 'dart:html';
 import 'dart:async';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 import '../rpc_lib.dart';
 import '../pane_factory.dart';
 import 'proposal_list_pane.dart';

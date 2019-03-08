@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:angel_framework/angel_framework.dart';
 import 'misc_lib.dart';
 import 'date_lib.dart';
 import 'diff_lib.dart';
@@ -8,13 +9,13 @@ import 'query_clause_builder.dart';
 import 'proposal_lib.dart';
 import 'permissions.dart';
 import 'clean_deleter.dart';
-import 'twotier/wlib.dart';
+import 'models/models.dart';
 import 'api_globals.dart';
 import 'authenticator.dart';
 import 'database.dart';
 import 'image_lib.dart';
 import 'config_settings.dart';
-import 'twotier/wtypes.dart';
+import 'models/models.dart';
 
 ///exposed public API methods
 @Expose("/servant/v2")

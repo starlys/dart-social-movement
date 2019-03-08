@@ -20,6 +20,7 @@ class MainMenuHandler {
     int fontThemeIndex = MainController.fontThemes.indexOf(ClientStore.fontTheme);
 
     //create all items
+    var $ = document.querySelector;
     _panel = $('#menu2').first;
     int year = (new DateTime.now()).year;
 

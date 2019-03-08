@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'twotier/wtypes.dart';
+import '../models/models.dart';
 import 'misc_lib.dart';
-import 'twotier/wlib.dart';
 import 'permissions.dart';
 
 ///centralized access to joining conversations, visibility of convs to users,

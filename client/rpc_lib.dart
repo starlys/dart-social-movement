@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:convert';
 import 'messages.dart';
-import 'twotier/wtypes.dart';
+import '../models/models.dart';
 import 'root/globals.dart';
 
 ///helpers for calling RPC methods; must call init before use
@@ -40,23 +40,6 @@ class RpcLib {
       requestHeaders : requestHeaders, sendData : js);
     Map responseMap = JSON.decode(hreq.responseText);
     return responseMap;
-
-    //old technique
-    /* //convert to formdata string like a=b&c=d, call http
-    bool ok = true;
-    HttpRequest hreq = await postFormData(url, argsmap)
-      .catchError(() {
-        ok = false;
-      });
-
-    //decode reponse to Map
-    if (ok) {
-      Map responseMap = JSON.decode(hreq.responseText);
-      return responseMap;
-    }
-
-    return {'base': { 'errorMessage': 'Communications failure', 'errorCode': 1, 'ok': false} };
-    */
   }
 
   //slight rewrite of HttpRequest.postFormData to allow non-string values

@@ -5,7 +5,7 @@ import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../root/globals.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 
 ///dialog for creating or editing a category, which is either a sister or child
 /// of some other reference category; returns true if saved on server, else false
@@ -50,13 +50,13 @@ class CategoryDialog extends DialogBox {
       String referenceMode = '';
       if (sameLevelRadio != null && sameLevelRadio.checked) referenceMode = 'S';
       if (subLevelRadio != null && subLevelRadio.checked) referenceMode = 'C';
-      CategorySaveRequest req = new CategorySaveRequest()
-        ..catId = _existingCatId
-        ..kind = _kind
-        ..referenceId = _referenceCatId
-        ..referenceMode = referenceMode
-        ..title = trimInput(titleInput)
-        ..description = trimTextArea(descrInput);
+      CategorySaveRequest req = new CategorySaveRequest(
+        catId: _existingCatId,
+        kind: _kind,
+        referenceId: _referenceCatId,
+        referenceMode: referenceMode,
+        title: trimInput(titleInput),
+        description: trimTextArea(descrInput));
 
       APIResponseBase response = await RpcLib.command('CategorySave', req);
       if (response.isOK) {

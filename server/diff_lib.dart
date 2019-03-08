@@ -1,7 +1,7 @@
 import "dart:async";
 import "dart:convert";
 import 'package:diff_match_patch/diff_match_patch.dart';
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 import 'misc_lib.dart';
 
 ///structure to store 2 versions of a doc

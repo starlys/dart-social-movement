@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:crypto/crypto.dart' show sha256;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 
 ///misc helper functions for API and worker
 class MiscLib {

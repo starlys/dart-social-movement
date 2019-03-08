@@ -2,7 +2,7 @@ import "dart:async";
 import "dart:math";
 import 'misc_lib.dart';
 import "config_settings.dart";
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 
 ///container for use with Permissions methods
 class RestrictionInfo {

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:html';
 import 'client_store.dart';
-import 'twotier/wtypes.dart';
+import '../models/models.dart';
 import 'rpc_lib.dart';
 import 'lib/html_lib.dart';
 import 'root/globals.dart';
 import 'pane_factory.dart';
-import 'twotier/wlib.dart';
 import 'pane/base_pane.dart';
 import 'pane/notify_pane.dart';
 

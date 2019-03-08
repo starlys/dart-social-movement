@@ -3,8 +3,7 @@ import 'dart:io';
 import 'config.dart';
 import 'api_globals.dart';
 import 'misc_lib.dart';
-import 'twotier/wlib.dart';
-import 'twotier/wtypes.dart';
+import '../models/models.dart';
 import 'logger.dart';
 
 typedef Future WorkFunc(Connection db);

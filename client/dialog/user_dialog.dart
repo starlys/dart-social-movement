@@ -8,10 +8,9 @@ import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../root/globals.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
-import '../twotier/wlib.dart';
 import '../lib/js_interop.dart';
 import '../lib/string_tuple.dart';
+import '../../models/models.dart';
 
 ///edit user's own record or create account; return true if edited else false
 class UserDialog extends DialogBox {

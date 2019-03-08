@@ -6,8 +6,7 @@ import '../messages.dart';
 import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
-//import '../twotier/wlib.dart';
+import '../../models/models.dart';
 import '../root/globals.dart';
 
 ///edit one resource record; show method returns true if saved

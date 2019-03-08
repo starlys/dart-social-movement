@@ -4,7 +4,7 @@ import '../lib/dialog_box.dart';
 import '../lib/button_bar_builder.dart';
 import '../lib/form_builder.dart';
 import '../rpc_lib.dart';
-import '../twotier/wtypes.dart';
+import '../../models/models.dart';
 
 ///dialog to upload an image for 2 specific cases: user avatars and conv posts;
 /// returns true if upload happened, false on cancel

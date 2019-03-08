@@ -4,7 +4,7 @@ import 'conv_lib.dart';
 import 'diff_lib.dart';
 import 'permissions.dart';
 import 'config_settings.dart';
-import 'twotier/wlib.dart';
+import '../models/models.dart';
 
 ///centralizes access to proposal table with logic for various specific
 /// proposal types

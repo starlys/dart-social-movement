@@ -1,8 +1,6 @@
-part of models;
-
 import 'package:angel_model/angel_model.dart';
 import 'package:angel_serialize/angel_serialize.dart';
-import 'package:collection/collection.dart';
+//import 'package:collection/collection.dart';
 
 part 'wtypes.g.dart';
 

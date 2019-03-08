@@ -1,5 +1,5 @@
 library models;
 
-part 'lib/src/models/wtypes.dart';
-part 'lib/src/models/wtypes.g.dart';
-part 'lib/wlib.dart';
+export 'lib/src/models/wtypes.dart';
+export 'lib/src/models/wtypes.g.dart';
+export 'lib/wlib.dart';

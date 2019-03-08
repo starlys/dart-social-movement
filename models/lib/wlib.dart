@@ -1,5 +1,3 @@
-part of models;
-
 ///very general functions shared by all tiers (cannot rely on html,
 /// database, etc)
 class WLib {

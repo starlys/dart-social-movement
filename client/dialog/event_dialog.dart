@@ -32,8 +32,8 @@ class EventDialog extends DialogBox {
       //the datetime hack puts the local time in a DateTime marked as UTC
       DateTime nowLocal = new DateTime.now();
       //DateTime nowHack = new DateTime.utc(nowLocal.year, nowLocal.month, nowLocal.day, nowLocal.hour, nowLocal.minute);
-      _event = new EventGetResponse()
-        ..startTimeU = WLib.packDateEntry(nowLocal.year, nowLocal.month, nowLocal.day, nowLocal.hour, nowLocal.minute);
+      _event = EventGetResponse(
+        startTimeU: WLib.packDateEntry(nowLocal.year, nowLocal.month, nowLocal.day, nowLocal.hour, nowLocal.minute));
     }
 
     //main content
@@ -75,15 +75,15 @@ class EventDialog extends DialogBox {
 
       List<double> latlon = _currentLatLon();
       DateTime startsAt = startsAtInput.getValue();
-      EventSaveRequest saveArgs = new EventSaveRequest()
-        ..eventId = _eventId
-        ..title = newTitle
-        ..description = trimTextArea(descInput)
-        ..duration = trimInput(durationInput)
-        ..location = trimTextArea(locationInput)
-        ..startTime = WLib.packDateEntry(startsAt.year, startsAt.month, startsAt.day, startsAt.hour, startsAt.minute)
-        ..lat = latlon[0].toString()
-        ..lon = latlon[1].toString();
+      EventSaveRequest saveArgs = new EventSaveRequest(
+        eventId: _eventId,
+        title: newTitle,
+        description: trimTextArea(descInput),
+        duration: trimInput(durationInput),
+        location: trimTextArea(locationInput),
+        startTime: WLib.packDateEntry(startsAt.year, startsAt.month, startsAt.day, startsAt.hour, startsAt.minute),
+        lat: latlon[0].toString(),
+        lon: latlon[1].toString());
       APIResponseBase response = await RpcLib.command('EventSave', saveArgs);
       if (response.isOK) {
         if (isNewEvent) Messages.criticalMessage('The event will be reviewed and posted later');

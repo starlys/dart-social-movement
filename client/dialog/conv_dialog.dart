@@ -32,7 +32,7 @@ class ConvDialog extends DialogBox {
     bool isNew = _convId == null;
     bool isSpawning = _fromConvId != null;
     if (!isNew)
-      _convRules = await RpcLib.convGetRules(new ConvGetRulesRequest(convId: _convId);
+      _convRules = await RpcLib.convGetRules(ConvGetRulesRequest(convId: _convId));
     else
       _convRules = new ConvGetRulesResponse(postMaxSize: 5000, userDailyMax: 3); //defaults
 
@@ -57,15 +57,15 @@ class ConvDialog extends DialogBox {
       //note on project and event IDs - when spawning a conv, the server method
       // is designed to look up the project and event IDs and ignore what's
       // passed in, so these can be null in that case
-      ConvSaveRequest req = new ConvSaveRequest()
-        ..convId = _convId
-        ..projectId = _projectId
-        ..eventId = _eventId
-        ..fromConvId = _fromConvId
-        ..openingPostId = _openingPostId
-        ..title = trimInput(titleInput)
-        ..postMaxSize = postMaxSizeInput.valueAsNumber
-        ..userDailyMax = userDailyMaxInput.valueAsNumber;
+      ConvSaveRequest req = ConvSaveRequest(
+        convId: _convId,
+        projectId: _projectId,
+        eventId: _eventId,
+        fromConvId: _fromConvId,
+        openingPostId: _openingPostId,
+        title:  trimInput(titleInput),
+        postMaxSize: postMaxSizeInput.valueAsNumber,
+        userDailyMax: userDailyMaxInput.valueAsNumber);
       APIResponseBase response = await RpcLib.command('ConvSave', req);
       if (response.isOK) {
         hide(response.newId);
@@ -76,5 +76,4 @@ class ConvDialog extends DialogBox {
       hide(null);
     });
   }
-
 }

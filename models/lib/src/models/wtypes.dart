@@ -240,7 +240,7 @@ abstract class _ConvPostSaveRequest extends Model {
 abstract class _ConvPostImageSaveRequest extends Model {
   _APIRequestBase get base;
   int get convId;
-  String get text;
+  String get ptext;
   List<int> get imageBytes;
 }
 

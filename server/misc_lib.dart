@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:crypto/crypto.dart' show sha256;
-import 'package:postgres/postgres.dart';
+import 'package:postgres/postgres.dart'; 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/models.dart';
@@ -70,23 +70,22 @@ class MiscLib {
 
   ///get all project manager user Ids for a project
   static Future<List<int>> getProjectManagers(PostgreSQLConnection db, int projectId) async {
-    var managerRows = await query
-    List<Row> managerRows = await db.query('select xuser_id from project_xuser where project_id=${projectId} and kind=\'M\'').toList();
-    return managerRows.map((row) => row[0]).toList();
+    var managerRows = await query(db, 'select xuser_id from project_xuser where project_id=${projectId} and kind=\'M\'', null);
+    return managerRows.map((row) => row['xuser_id']).toList();
   }
 
   //get the password hash for the given raw password
   static String passwordHash(String s) {
     if (s == null) return '';
-    List<int> pwBytes = sha256.convert(UTF8.encode(s)).bytes;
-    String hashed = BASE64.encode(pwBytes);
+    List<int> pwBytes = sha256.convert(utf8.encode(s)).bytes;
+    String hashed = base64.encode(pwBytes);
     return hashed;
   }
 
   //Get distinct items based on a map function. The map should return a
   // simple type that is checked for equality.
   static List distinct(List i, Function map) {
-    Set set = new Set();
+    final set = new Set();
     return i.where((e) {
       var key = map(e);
       bool isNew = !set.contains(key);
@@ -97,9 +96,9 @@ class MiscLib {
 
   ///get a list of all non-deleted user ids
   static Future<List<int>> getAllUserIds(PostgreSQLConnection db) async {
-    List<int> userIds = new List<int>();
-    await for (Row row in db.query('select id from xuser where status=\'A\''))
-      userIds.add(row[0]);
+    final userIds = new List<int>();
+    final rows = await query(db, 'select id from xuser where status=\'A\'', null);
+    for (final row in rows) userIds.add(row['id']);
     return userIds;
   }
 
@@ -107,8 +106,8 @@ class MiscLib {
   static Future touchUser(PostgreSQLConnection db, int userId) async {
     DateTime now = WLib.utcNow();
     DateTime recent = now.subtract(new Duration(minutes:10));
-    await db.execute('update xuser set last_activity=@t2 where id=${userId} and last_activity<@t1',
-      {'t1': recent, 't2': now});
+    await db.query('update xuser set last_activity=@t2 where id=${userId} and last_activity<@t1',
+      substitutionValues: {'t1': recent, 't2': now});
   }
 
   ///get a binary file via http

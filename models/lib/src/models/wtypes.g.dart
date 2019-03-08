@@ -1,9 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-//import 'package:angel_model/angel_model.dart';
-//import 'package:angel_serialize/angel_serialize.dart';
 
 part of 'wtypes.dart';
-//import 'wtypes.dart';
 
 // **************************************************************************
 // JsonModelGenerator

@@ -122,6 +122,16 @@ abstract class _ConvQueryConvItemResponse extends Model {
   int get convId;
   String get hitText; //title text surrounding the match phrase
   List<_ConvQueryPostItemResponse> get posts; //null if none
+
+  ///sort posts by latest first, given a map of times indexed by post id
+  void sortByDate(Map<String, DateTime> postCreatedAt) {
+    posts.sort((_ConvQueryPostItemResponse a, _ConvQueryPostItemResponse b) {
+      DateTime aDate = postCreatedAt[a.postId];
+      DateTime bDate = postCreatedAt[b.postId];
+      if (aDate == null || bDate == null) return 1; //shouldn't happen
+      return bDate.compareTo(aDate);
+    });
+  }
 }
 
 //entry in ConvQueryConvItemResponse

@@ -9,18 +9,17 @@ import 'query_clause_builder.dart';
 import 'proposal_lib.dart';
 import 'permissions.dart';
 import 'clean_deleter.dart';
-import 'models/models.dart';
+import '../models/models.dart';
 import 'api_globals.dart';
 import 'authenticator.dart';
 import 'database.dart';
 import 'image_lib.dart';
 import 'config_settings.dart';
-import 'models/models.dart';
 
 ///exposed public API methods
 @Expose("/servant/v2")
 class ServantController extends Controller {
-  @Expose(method: 'POST', as: 'CategoryQuery')
+  @Expose('CategoryQuery', method: 'POST', as: 'CategoryQuery')
   Future<CategoryQueryResponse> categoryQuery(RequestContext req, ResponseContext resp) async {
     await req.parseBody();
     CategoryQueryRequest args = //deserialize here

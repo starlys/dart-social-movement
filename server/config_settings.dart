@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:safe_config/safe_config.dart';
 
 class ConfigSettings_AmazonS3 {
@@ -10,7 +11,8 @@ class ConfigSettings_Smtp {
   String host, port, user, password, from;
 }
 class ConfigSettings_Database {
-  String connection, connection_dev;
+  String host, dbname, user, password;
+  int port;
 }
 class ConfigSettings_Deletion {
   int conv_days;
@@ -29,7 +31,7 @@ class ConfigSettings_Operation {
 }
 
 class ConfigSettings extends Configuration {
- 	ApplicationConfiguration(String fileName) : super.fromFile(File(fileName));
+ 	ConfigSettings(String fileName) : super.fromFile(File(fileName));
 
   String dev;
   String homeUrl;
@@ -41,6 +43,7 @@ class ConfigSettings extends Configuration {
   ConfigSettings_AmazonS3Bucket amazonS3Post;
   ConfigSettings_Smtp smtp;
   ConfigSettings_Database database;
+  ConfigSettings_Database database_dev;
   ConfigSettings_Deletion deletion;
   ConfigSettings_SiteAdmin site_admin;
   ConfigSettings_Spam spam;

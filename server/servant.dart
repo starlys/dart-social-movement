@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:angel_framework/angel_framework.dart';
+//import 'package:angel_framework/angel_framework.dart';
 import 'misc_lib.dart';
 import 'date_lib.dart';
 import 'diff_lib.dart';
@@ -14,88 +14,63 @@ import 'api_globals.dart';
 import 'authenticator.dart';
 import 'database.dart';
 import 'image_lib.dart';
-import 'config_settings.dart';
-
-///exposed public API methods
-@Expose("/servant/v2")
-class ServantController extends Controller {
-  @Expose('CategoryQuery', method: 'POST', as: 'CategoryQuery')
-  Future<CategoryQueryResponse> categoryQuery(RequestContext req, ResponseContext resp) async {
-    await req.parseBody();
-    CategoryQueryRequest args = //deserialize here
-    var ctrlr = Servant();
-    resp.serializer = x; //serialize using mautogen code
-    return ctrlr.categoryQuery(args);
-  }
-}
+//import 'config_settings.dart';
 
 ///implementation of exposed public API methods
 class Servant {
 
-  ///bounce back the given code/message
-  /// verify with: http://localhost:8083/servant/v1/HelloWorld?errorCode=x&errorMessage=y
-  @Expose(method: 'GET')
-  APIResponseBase helloWorld({String errorCode, String errorMessage}) {
-    return new APIResponseBase()
-      ..ok = 'Y'
-      ..errorCode = errorCode
-      ..errorMessage = errorMessage;
-  }
+  static APIResponseBase dbBase(DatabaseResult r) => 
+    APIResponseBase(ok: r.ok ? 'Y' : 'N', errorCode: r.errorCode, errorMessage: r.errorMessage);
+
+  static APIResponseBase okBase({int newId: null}) => 
+    APIResponseBase(ok: 'Y', newId: newId);
 
   //check credentials, and return some extra info if valid
-  @Expose(method: 'POST', as: 'Authenticate')
   Future<AuthenticateResponse> authenticate(APIRequestBase args) async {
-    AuthenticateResponse r = new AuthenticateResponse();
     AuthInfo ai = await Authenticator.authenticateForAPI(args);
 
     //require login
-    Authenticator.ensureLoggedIn(ai, r.base);
-    if (!r.base.isOK) return r;
+    final authFail = Authenticator.ensureLoggedIn(ai);
+    if (authFail != null) return AuthenticateResponse(base: authFail);
 
-    //fill in response
-    r.userId = ai.id;
-    r.publicName = ai.publicName;
-    r.isSiteAdmin = ai.isSiteAdmin ? 'Y' : 'N';
-    r.nick = ai.nick;
-    return r;
+    //response
+    return AuthenticateResponse(base: okBase(),
+      userId: ai.id, 
+      publicName: ai.publicName, 
+      isSiteAdmin: ai.isSiteAdmin ? 'Y' : 'N', 
+      nick: ai.nick);
   }
 
-  //get all categories matching kind; no authentication
-  @Expose(method: 'POST', as: 'CategoryQuery')
-  Future<CategoryQueryResponse> categoryQuery(RequestContext req) async {
-    await req.parseBody();
-    CategoryQueryRequest args = //deserialize here
-    CategoryQueryResponse r = new CategoryQueryResponse();
-    await Database.safely('CategoryQuery', r.base, (db) async {
-      r.categories = new List<CategoryItemResponse>();
-      await for (Row row in db.query('select * from category where kind=@k order by title',
-        {'k': args.kind})) {
-        var item = new CategoryItemResponse()
-          ..id = row.id
-          ..parentId = row.parent_id
-          ..title = row.title
-          ..description = row.description;
-        r.categories.add(item);
+  ///get all categories matching kind; no authentication
+  Future<CategoryQueryResponse> categoryQuery(CategoryQueryRequest args) async {
+    final cats = List<CategoryItemResponse>();
+    final dbresult = await Database.safely('CategoryQuery', (db) async {
+      final rows = await MiscLib.query(db, 'select * from category where kind=@k order by title',
+        {'k': args.kind});
+      for (final row in rows) {
+        var item = new CategoryItemResponse(
+          iid: row['id'], 
+          parentId: row['parent_id'], 
+          title: row['title'],
+          description: row['description']);
+        cats.add(item);
       }
     });
-    return r;
+    return CategoryQueryResponse(base: dbBase(dbresult), categories: cats);
   }
 
-  //save a category (new, edited, or reparented)
-  @Expose(method: 'POST', as: 'CategorySave')
+  ///save a category (new, edited, or reparented)
   Future<APIResponseBase> categorySave(CategorySaveRequest args) async {
-    APIResponseBase r = new APIResponseBase();
-
     //must be site admin
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
-    Authenticator.ensureSiteAdmin(ai, r);
-    if (!r.isOK) return r;
+    final authFail = Authenticator.ensureSiteAdmin(ai);
+    if (authFail != null) return authFail;
 
-    await Database.safely('CategorySave', r, (db) async {
+    final dbresult = await Database.safely('CategorySave', (db) async {
       //get referenced parent in sister mode
       int parentOfRef = null;
       if (args.referenceMode == 'S'){
-        parentOfRef = await MiscLib.queryScalar(db, 'select parent_id from category where id=${args.referenceId}');
+        parentOfRef = await MiscLib.queryScalar(db, 'select parent_id from category where id=${args.referenceId}', null);
       }
 
       //create or update
@@ -105,17 +80,17 @@ class Servant {
         if (args.referenceMode == 'C') sql += ',parent_id=${args.referenceId}';
         if (args.referenceMode == 'S') sql += ',parent_id=${parentOfRef}'; //null ok
         sql += ' where id=${args.catId}';
-        await db.execute(sql, {'k':args.kind, 't':args.title, 'd':args.description});
+        await db.execute(sql, substitutionValues: {'k':args.kind, 't':args.title, 'd':args.description});
       } else {
         //create
         String sql = 'insert into category(parent_id,kind,title,description)values(@p,@k,@t,@d)';
         int parentId = null;
         if (args.referenceMode == 'C') parentId = args.referenceId;
         if (args.referenceMode == 'S') parentId = parentOfRef;
-        await db.execute(sql, {'p':parentId, 'k':args.kind, 't':args.title, 'd':args.description});
+        await db.execute(sql, substitutionValues: {'p':parentId, 'k':args.kind, 't':args.title, 'd':args.description});
       }
     });
-    return r;
+    return dbBase(dbresult);
   }
 
   //delete a category and relink all references

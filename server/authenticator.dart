@@ -87,22 +87,16 @@ class Authenticator {
     return ai;
   }
 
-  ///populate an api response to be invalid if ai is null
-  static void ensureLoggedIn(AuthInfo ai, APIResponseBase r) {
-    if (ai == null) {
-      r.ok = 'N';
-      r.errorCode = 'auth';
-      r.errorMessage = 'You must be logged in to do this action.';
-    }
+  ///return an invalid api response if ai is null, else return null
+  static APIResponseBase ensureLoggedIn(AuthInfo ai) {
+    if (ai == null) return APIResponseBase(ok: 'N', errorCode: 'auth', errorMessage: 'You must be logged in to do this action.');
+    return null;
   }
 
-  ///populate an api response to be invalid if ai indicates a non-site-admin user
-  static void ensureSiteAdmin(AuthInfo ai, APIResponseBase r) {
-    if (ai == null || !ai.isSiteAdmin) {
-      r.ok = 'N';
-      r.errorCode = 'auth';
-      r.errorMessage = 'You must be a site administrator in to do this action.';
-    }
+  ///return an invalid api response if ai indicates a non-site-admin user, else return null
+  static APIResponseBase ensureSiteAdmin(AuthInfo ai) {
+    if (ai == null || !ai.isSiteAdmin) return APIResponseBase(ok: 'N', errorCode: 'auth', errorMessage: 'You must be a site administrator in to do this action.');
+    return null;
   }
 
   ///set expiration date

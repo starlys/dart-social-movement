@@ -46,8 +46,8 @@ class ConvLib {
     return returnConvs;
   }
 
-  //find titles and posts matching the search term, and populate r
-  static Future<ConvQueryResponse> find(PostgreSQLConnection db, int userId, String searchTerm) async {
+  ///find titles and posts matching the search term
+  static Future<List<ConvQueryConvItemResponse>> find(PostgreSQLConnection db, int userId, String searchTerm) async {
     final retConvs = new List<ConvQueryConvItemResponse>();
 
     //find up to 25 title matches, sort by quality
@@ -108,20 +108,20 @@ class ConvLib {
       retConvs.removeWhere((e) => e.convId == invisibleId);
     }
 
-    return ConvQueryResponse(convs: retConvs);
+    return retConvs;
   }
 
-  //load conv_post rows. Returns rows matching each of the given bool flags,
-  // eliminating duplicates. First:first post; betweenTimes:between time1 and time2,
-  // but not including posts *at* those times; afterTime2:including and later
-  // than time2; all:all posts.
-  // ConvId and userId must be set; projectId can be null.
-  // Output cols are
-  // * everything from conv_post
-  // * xuser: nick, avatar_no
-  // * blocking_kind: xuser_xuser.kind by this user about the author, or null
-  // * blocked_kind: xuser_xuser.kind by the author about this user, or null
-  // * spam_count from the author's project_xuser record or null (if author has left project)
+  ///load conv_post rows. Returns rows matching each of the given bool flags,
+  /// eliminating duplicates. First:first post; betweenTimes:between time1 and time2,
+  /// but not including posts *at* those times; afterTime2:including and later
+  /// than time2; all:all posts.
+  /// ConvId and userId must be set; projectId can be null.
+  /// Output cols are
+  /// * everything from conv_post
+  /// * xuser: nick, avatar_no
+  /// * blocking_kind: xuser_xuser.kind by this user about the author, or null
+  /// * blocked_kind: xuser_xuser.kind by the author about this user, or null
+  /// * spam_count from the author's project_xuser record or null (if author has left project)
   static Future<List<Map<String, dynamic>>> selectPosts(PostgreSQLConnection db, int convId, int userId, int projectId,
     {bool first:false, bool betweenTimes:false,
     bool afterTime2:false, bool all:false,
@@ -167,8 +167,8 @@ class ConvLib {
       return combined;
   }
 
-  //determine the collapse mode and position; postRow must have come from selectPosts method
-  static CollapseInfo setCollapseInfo(Map<String, dynamic> postRow, bool isManager) {
+  ///determine the collapse mode and position; postRow must have come from selectPosts method
+  static CollapseInfo buildCollapseInfo(Map<String, dynamic> postRow, bool isManager) {
     //return from the first test that passes (most aggregious test first)
     final p = CollapseInfo();
 
@@ -224,8 +224,8 @@ class ConvLib {
     return id;
   }
 
-  //write one conv_xuser record (attempts update, then insert)
-  //NOTE like argument is only honored for inserts
+  ///write one conv_xuser record (attempts update, then insert)
+  ///NOTE like argument is only honored for inserts
   static Future writeConvUser(PostgreSQLConnection db, int convId, int userId, String status, String like) async {
     int count = await db.execute('update conv_xuser set status=@s where conv_id=${convId} and xuser_id=${userId}',
       substitutionValues: {'s': status});
@@ -236,9 +236,9 @@ class ConvLib {
     }
   }
 
-  //write a project_xuser record (insert only), and auto-vote for all the
-  // existing managers in the project. Also for democratic projects, save a
-  // notification about the auto-vote status
+  ///write a project_xuser record (insert only), and auto-vote for all the
+  /// existing managers in the project. Also for democratic projects, save a
+  /// notification about the auto-vote status
   static Future insertProjectUser(PostgreSQLConnection db, int projectId, int userId, String kind) async {
     //join project
     await db.execute('insert into project_xuser(project_id,xuser_id,kind,spam_count)'
@@ -264,7 +264,7 @@ class ConvLib {
     }
   }
 
-  //join a user to a conv; it is presumed that the permissions have already been checked
+  ///join a user to a conv; it is presumed that the permissions have already been checked
   static Future join(PostgreSQLConnection db, int userId, int convId, JoinInfo permissions) async {
     //get conv info
     final convRow = await MiscLib.queryRowChecked(db, 'select project_id,event_id from conv where id=${convId}', 'Conversation does not exist', null);

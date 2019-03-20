@@ -18,10 +18,10 @@ class ClientStore {
   static String get password => _store['password'];
   static void set password(String name) { _store['password'] = name; }
 
-  static double get lat => double.parse(_store['lat'] ?? '0', (bad) => 0.0);
+  static double get lat => double.tryParse(_store['lat'] ?? '0') ?? 0.0;
   static void set lat(double d) { _store['lat'] = d.toString(); }
 
-  static double get lon => double.parse(_store['lon'] ?? '0', (bad) => 0.0);
+  static double get lon => double.tryParse(_store['lon'] ?? '0') ?? 0.0;
   static void set lon(double d) { _store['lon'] = d.toString(); }
 
   ///use local storage to send a message to other winodw;

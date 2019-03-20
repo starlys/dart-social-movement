@@ -35,9 +35,7 @@ class UserDialog extends DialogBox {
   Future build() async {
     //get user info or blank data for defaults
     bool isNewUser = userId == 0;
-    var userGetArgs = new UserGetRequest()
-      ..userId = userId
-      ..includeEditing = 'Y';
+    var userGetArgs = new UserGetRequest(userId: userId, includeEditing: 'Y');
     UserGetResponse user = await RpcLib.userGet(userGetArgs);
 
     //if new user GetDoc with special code UA

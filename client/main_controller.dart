@@ -206,14 +206,15 @@ class MainController {
 
       //set popup sizes
       String popupmax = HtmlLib.asPx(mh - 70);
-      $('#mystuff1').first.style.maxHeight = popupmax;
-      $('#menu1').first.style.maxHeight = popupmax;
-      $('#mystuff2').first.style.maxHeight = popupmax;
-      $('#menu2').first.style.maxHeight = popupmax;
+      final $ = document.querySelector;
+      $('#mystuff1').style.maxHeight = popupmax;
+      $('#menu1').style.maxHeight = popupmax;
+      $('#mystuff2').style.maxHeight = popupmax;
+      $('#menu2').style.maxHeight = popupmax;
 
       //position popupconnector vertically (it gets horz position elsewhere)
-      var btnrect = $('#button-menu').first.getBoundingClientRect();
-      $('#popupconnector').first.style
+      var btnrect = $('#button-menu').getBoundingClientRect();
+      $('#popupconnector').style
         ..bottom = HtmlLib.asPx(wh - btnrect.top - 1);
 
       if (modeChanged) {

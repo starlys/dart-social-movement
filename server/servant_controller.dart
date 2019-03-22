@@ -178,172 +178,227 @@ class ServantController extends Controller {
     return EventQueryResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('EventGet', method: 'POST')
+  Future eventGet(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = EventRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().eventGet(args);
+    return EventGetResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('EventSave', method: 'POST')
+  Future eventSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = EventSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().eventSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('EventDelete', method: 'POST')
+  Future eventDelete(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = EventRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().eventDelete(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('EventUserSave', method: 'POST')
+  Future eventUserSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = EventUserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().eventUserSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProjectQuery', method: 'POST')
+  Future projectQuery(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProjectQueryRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().projectQuery(args);
+    return ProjectQueryResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProjectGet', method: 'POST')
+  Future projectGet(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProjectGetRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().projectGet(args);
+    return ProjectGetResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProjectSave', method: 'POST')
+  Future projectSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProjectSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().projectSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProjectUserQuery', method: 'POST')
+  Future projectUserQuery(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProjectUserQueryRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().projectUserQuery(args);
+    return ProjectUserQueryResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProjectUserSave', method: 'POST')
+  Future projectUserSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProjectUserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().projectUserSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProjectUserUserSave', method: 'POST')
+  Future projectUserUserSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProjectUserUserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().projectUserUserSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProposalQuery', method: 'POST')
+  Future proposalQuery(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProposalQueryRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().proposalQuery(args);
+    return ProposalQueryResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProposalGet', method: 'POST')
+  Future proposalGet(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProposalGetRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().proposalGet(args);
+    return ProposalGetResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProposalSave', method: 'POST')
+  Future proposalSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProposalSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().proposalSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProposalDelete', method: 'POST')
+  Future proposalDelete(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProposalGetRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().proposalDelete(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ProposalUserSave', method: 'POST')
+  Future proposalUserSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ProposalUserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().proposalUserSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('PushQueueGet', method: 'POST')
+  Future pushQueueGet(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = PushQueueGetRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().pushQueueGet(args);
+    return PushQueueGetResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ResourceQuery', method: 'POST')
+  Future resourceQuery(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ResourceQueryRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().resourceQuery(args);
+    return ResourceQueryResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ResourceGet', method: 'POST')
+  Future resourceGet(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ResourceGetRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().resourceGet(args);
+    return ResourceGetResponseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ResourceSave', method: 'POST')
+  Future resourceSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ResourceSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().resourceSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ResourceTriage', method: 'POST')
+  Future resourceTriage(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ResourceTriageRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().resourceTriage(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
-  @Expose('$', method: 'POST')
-  Future $(RequestContext req) async {
+  @Expose('ResourceUserSave', method: 'POST')
+  Future resourceUserSave(RequestContext req) async {
     await req.parseBody();
-    final args = $RequestSerializer.fromMap(req.bodyAsMap);
-    final result = await Servant().$(args);
-    return $ResponseSerializer.toMap(result);
+    final args = ResourceUserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().resourceUserSave(args);
+    return APIResponseBaseSerializer.toMap(result);
   }
   
+  @Expose('UserQuery', method: 'POST')
+  Future userQuery(RequestContext req) async {
+    await req.parseBody();
+    final args = UserQueryRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userQuery(args);
+    return UserQueryResponseSerializer.toMap(result);
+  }
+  
+  @Expose('UserGet', method: 'POST')
+  Future userGet(RequestContext req) async {
+    await req.parseBody();
+    final args = UserGetRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userGet(args);
+    return UserGetResponseSerializer.toMap(result);
+  }
+  
+  @Expose('UserSave', method: 'POST')
+  Future userSave(RequestContext req) async {
+    await req.parseBody();
+    final args = UserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userSave(args);
+    return APIResponseBaseSerializer.toMap(result);
+  }
+  
+  @Expose('UserAvatarSave', method: 'POST')
+  Future userAvatarSave(RequestContext req) async {
+    await req.parseBody();
+    final args = UserAvatarSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userAvatarSave(args);
+    return APIResponseBaseSerializer.toMap(result);
+  }
+  
+  @Expose('UserNotifySave', method: 'POST')
+  Future UserNotifySave(RequestContext req) async {
+    await req.parseBody();
+    final args = UserNotifySaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userNotifySave(args);
+    return APIResponseBaseSerializer.toMap(result);
+  }
+  
+  @Expose('UserRecoverPassword', method: 'POST')
+  Future userRecoverPassword(RequestContext req) async {
+    await req.parseBody();
+    final args = UserRecoverPasswordRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userRecoverPassword(args);
+    return APIResponseBaseSerializer.toMap(result);
+  }
+  
+  @Expose('UserUserSave', method: 'POST')
+  Future userUserSave(RequestContext req) async {
+    await req.parseBody();
+    final args = UserUserSaveRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().userUserSave(args);
+    return APIResponseBaseSerializer.toMap(result);
+  }
 }

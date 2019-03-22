@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-//import 'package:angel_framework/angel_framework.dart';
 import 'misc_lib.dart';
 import 'date_lib.dart';
 import 'diff_lib.dart';
@@ -14,7 +13,6 @@ import 'api_globals.dart';
 import 'authenticator.dart';
 import 'database.dart';
 import 'image_lib.dart';
-//import 'config_settings.dart';
 
 ///implementation of exposed public API methods
 class Servant {
@@ -950,12 +948,12 @@ class Servant {
 
       final rows = await MiscLib.query(db, sql, builder.paramsMap);
 
-      //fill in r.events
+      //fill in events
       for (final row in rows) {
         var item = new EventItemResponse(iid: row['id'], title: row['title'],
           startTime: DateLib.formatDateTime(row['start_time'], tzName),
           creatorId: row['created_by'],
-          creatorNick: row['nick'];
+          creatorNick: row['nick']);
         events.add(item);
       }
     });
@@ -963,68 +961,86 @@ class Servant {
   }
 
   ///get single event
-  @Expose(method: 'POST', as: 'EventGet')
   Future<EventGetResponse> eventGet(EventRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     String tzName = null;
     if (ai != null) tzName = ai.timeZoneName;
+
+    //declare return values
+    String retTitle, retDescription, retLocation, retDuration, retCreatorNick, retCreatorAvatarUrl, retLat, retLon,
+      retStartTimeU, retStartTimeR, retCreatedAtR;
+    int retCreatorId;
+    bool retIsCreator;
+    final retUsers = new List<EventGetUserResponse>();
+    final retConvs = new List<EventGetConvResponse>();
 
     final dbresult = await Database.safely('EventGet', (db) async {
       //load from event and xuser
       String sql = 'select event.*, xuser.nick, xuser.avatar_no'
         ' from event inner join xuser on event.created_by=xuser.id'
         ' where event.id=${args.eventId}';
-      Row eventRow = await MiscLib.queryRowChecked(db, sql, 'Event does not exist');
-      r
-        ..title = eventRow.title
-        ..description = eventRow.description
-        ..duration = eventRow.duration
-        ..location = eventRow.location
-        ..creatorId = eventRow.created_by
-        ..creatorNick = eventRow.nick
-        ..creatorAvatarUrl = ImageLib.getAvatarUrl(eventRow.created_by, eventRow.avatar_no)
-        ..lat = eventRow.lat.toString()
-        ..lon = eventRow.lon.toString()
-        ;
-      DateTime startTime = eventRow.start_time;
-      r.startTimeU = DateLib.packUtcDateEntry(startTime, tzName);
-      r.startTimeR = DateLib.formatDateTime(startTime, tzName);
-      DateTime createTime = eventRow.created_at;
-      r.createdAtR = DateLib.formatDateTime(createTime, tzName);
-      r.isCreator = (ai != null && ai.id == r.creatorId) ? 'Y' : 'N';
+      final eventRow = await MiscLib.queryRowChecked(db, sql, 'Event does not exist', null);
+      retTitle = eventRow['title'];
+      retDescription = eventRow['description'];
+      retDuration = eventRow['duration'];
+      retLocation = eventRow['location'];
+      retCreatorId = eventRow['created_by'];
+      retCreatorNick = eventRow['nick'];
+      retCreatorAvatarUrl = ImageLib.getAvatarUrl(retCreatorId, eventRow['avatar_no']);
+      retLat = eventRow['lat'].toString();
+      retLon = eventRow['lon'].toString();
+      DateTime startTime = eventRow['start_time'];
+      retStartTimeU = DateLib.packUtcDateEntry(startTime, tzName);
+      retStartTimeR = DateLib.formatDateTime(startTime, tzName);
+      DateTime createTime = eventRow['created_at'];
+      retCreatedAtR = DateLib.formatDateTime(createTime, tzName);
+      retIsCreator = ai != null && ai.id == retCreatorId;
 
       //load from event_xuser
-      List<Row> userRows = await MiscLib.query(db, 'select xuser_id,nick,avatar_no,public_name,event_xuser.status,event_xuser.status_desc from event_xuser inner join xuser on event_xuser.xuser_id=xuser.id where event_xuser.event_id=${args.eventId}').toList();
-      r.users = new List<EventGetUserResponse>();
-      for (Row row in userRows) {
-        var item = new EventGetUserResponse()
-          ..userId = row.xuser_id
-          ..nick = row.nick
-          ..publicName = row.public_name
-          ..avatarUrl = ImageLib.getAvatarUrl(row.xuser_id, row.avatar_no)
-          ..status = row.status
-          ..statusDesc = row.status_desc;
-        r.users.add(item);
+      final userRows = await MiscLib.query(db, 'select xuser_id,nick,avatar_no,public_name,event_xuser.status,event_xuser.status_desc from event_xuser inner join xuser on event_xuser.xuser_id=xuser.id where event_xuser.event_id=${args.eventId}', null);
+      for (final row in userRows) {
+        var item = new EventGetUserResponse(
+          userId: row['xuser_id'],
+          nick: row['nick'],
+          publicName: row['public_name'],
+          avatarUrl: ImageLib.getAvatarUrl(row['xuser_id'], row['avatar_no']),
+          status: row['status'],
+          statusDesc: row['status_desc']);
+        retUsers.add(item);
       }
 
       //load from convs linked to event
-      List<Row> convRows = await MiscLib.query(db, 'select id,open,title,last_activity from conv where event_id=${args.eventId}').toList();
-      r.convs = new List<EventGetConvResponse>();
-      for (Row row in convRows) {
-        var item = new EventGetConvResponse()
-          ..id = row.id
-          ..open = row.open
-          ..title = row.title
-          ..lastActivity = WLib.dateTimeToWire(row.last_activity);
-        r.convs.add(item);
+      final convRows = await MiscLib.query(db, 'select id,open,title,last_activity from conv where event_id=${args.eventId}', null);
+      for (final row in convRows) {
+        var item = new EventGetConvResponse(
+          iid: row['id'],
+          open: row['open'],
+          title: row['title'],
+          lastActivity: WLib.dateTimeToWire(row['last_activity']));
+        retConvs.add(item);
       }
 
     });
-    return dbBase(dbresult);
+    return EventGetResponse(base: dbBase(dbresult),
+      title: retTitle,
+      description: retDescription,
+      location: retLocation,
+      duration: retDuration,
+      creatorId: retCreatorId,
+      creatorNick: retCreatorNick,
+      creatorAvatarUrl: retCreatorAvatarUrl,
+      lat: retLat,
+      lon: retLon,
+      startTimeU: retStartTimeU,
+      startTimeR: retStartTimeR,
+      isCreator: retIsCreator ? 'Y' : 'N',
+      createdAtR: retCreatedAtR,
+      users: retUsers,
+      convs: retConvs
+    );
   }
 
   ///create or update event
-  @Expose(method: 'POST', as: 'EventSave')
   Future<APIResponseBase> eventSave(EventSaveRequest args) async {
     assert(args.eventId != null);
     double lat = double.parse(args.lat);
@@ -1033,7 +1049,7 @@ class Servant {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('EventSave', (db) async {
       DateTime startTimeUtc = DateLib.unpackConvertDateEntry(args.startTime, ai.timeZoneName);
@@ -1046,28 +1062,29 @@ class Servant {
 
       else {//existing event
         //get some existing values
-        Row eventRow = await MiscLib.queryRowChecked(db, 'select created_by,start_time from event where id=${args.eventId}', 'Event does not exist');
-        bool startChanged = startTimeUtc.millisecondsSinceEpoch != eventRow.start_time.millisecondsSinceEpoch;
+        final eventRow = await MiscLib.queryRowChecked(db, 'select created_by,start_time from event where id=${args.eventId}', 'Event does not exist', null);
+        bool startChanged = startTimeUtc.millisecondsSinceEpoch != eventRow['start_time'].millisecondsSinceEpoch;
 
         //must be the owner to update
-        if (eventRow.created_by != ai.id)
+        if (eventRow['created_by'] != ai.id)
           throw new Exception('Only the creator of an event can update it');
 
         //save changes
         await db.execute('update event set title=@t,description=@d,start_time=@s,duration=@du,'
           'lat=${args.lat},lon=${args.lon},location=@lo'
           ' where id=${args.eventId}',
-          {'t': args.title, 'd': args.description, 's': startTimeUtc, 'du': args.duration,
+          substitutionValues: {'t': args.title, 'd': args.description, 's': startTimeUtc, 'du': args.duration,
           'lo': args.location});
 
         //if start time changed, notify everyone of the change
         if (startChanged) {
           String body = 'The event "${args.title}" changed to a new time. It now starts at ';
           String sql = 'select xuser.id,timezone from event_xuser inner join xuser on event_xuser.xuser_id=xuser.id where event_xuser.event_id=${args.eventId} and event_xuser.status=\'A\'';
-          await for(Row userRow in MiscLib.query(db, sql)) {
+          final userRows = await MiscLib.query(db, sql, null);
+          for(final userRow in userRows) {
             try {
-              String formattedStartTime = DateLib.formatDateTime(startTimeUtc, userRow.timezone)
-                + ' (shown in your time zone: ${userRow.timezone})';
+              String formattedStartTime = DateLib.formatDateTime(startTimeUtc, userRow['timezone'])
+                + ' (shown in your time zone: ${userRow['timezone']})';
               await MiscLib.notify(db, userRow[0], body + formattedStartTime,
                 linkText: args.title, linkKey: 'event/${args.eventId}');
             } catch (ex) {} //on tz conversion error, don't notify that one person
@@ -1079,21 +1096,20 @@ class Servant {
   }
 
   ///delete event
-  @Expose(method: 'POST', as: 'EventDelete')
   Future<APIResponseBase> eventDelete(EventRequest args) async {
     assert(args.eventId != null);
 
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('EventDelete', (db) async {
       //get some existing values
-      Row eventRow = await MiscLib.queryRowChecked(db, 'select created_by,start_time from event where id=${args.eventId}', 'Event does not exist');
+      final eventRow = await MiscLib.queryRowChecked(db, 'select created_by,start_time from event where id=${args.eventId}', 'Event does not exist', null);
 
       //must be the owner to delete
-      if (eventRow.created_by != ai.id)
+      if (eventRow['created_by'] != ai.id)
         throw new Exception('Only the creator of an event can delete it');
 
       //delete
@@ -1103,41 +1119,40 @@ class Servant {
   }
 
   ///for an event save whether the authenticated user is coming or not
-  @Expose(method: 'POST', as: 'EventUserSave')
   Future<APIResponseBase> eventUserSave(EventUserSaveRequest args) async {
     assert(args.eventId != null);
 
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('EventUserSave', (db) async {
       //update or create record
       var params = {'s': args.status, 'sd': args.statusDesc};
       int count = await db.execute('update event_xuser set status=@s, status_desc=@sd where event_id=${args.eventId} and xuser_id=${ai.id}',
-        params);
+        substitutionValues: params);
       if (count == 0) {
         await db.execute('insert into event_xuser(event_id,xuser_id,status,status_desc)values(${args.eventId},${ai.id},@s,@sd)',
-          params);
+          substitutionValues: params);
       }
     });
     return dbBase(dbresult);
   }
 
   ///get all projects matching criteria
-  @Expose(method: 'POST', as: 'ProjectQuery')
   Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
 
+    final projects = new List<ProjectQueryItem>();
     final dbresult = await Database.safely('ProjectQuery', (db) async {
       //build query: note 2 versions of sql for logged in and not logged in
-      QueryClauseBuilder builder = new QueryClauseBuilder();
+      final builder = QueryClauseBuilder();
       builder.add('project.kind=\'P\'');
       if (args.catId != null) builder.add('category_id=${args.catId}');
       if (args.title != null) builder.add('lower(title) like @t', name:'t', value: '%${args.title.toLowerCase()}%');
       if (builder.count < 2) throw new Exception('must search on at least one criterion');
-      String sql = 'select id,title,leadership,privacy,important_count,\'N\',description from project'
+      String sql = 'select id,title,leadership,privacy,important_count,\'N\' as kind,description from project'
         ' where ${builder.whereClause} limit 100';
       if (ai != null) {
         sql = 'select id,title,leadership,privacy,important_count,project_xuser.kind,description from project'
@@ -1145,13 +1160,13 @@ class Servant {
           ' where ${builder.whereClause} limit 100';
       }
 
-      List<Row> rows = await MiscLib.query(db, sql, builder.paramsMap).toList();
+      final rows = await MiscLib.query(db, sql, builder.paramsMap);
 
       //define converting a row to a sortable value
-      int rowToSortValue(r) {
+      int rowToSortValue(Map<String, dynamic> r) {
         //combine kind and important into a number with higher negative values = better
-        int importants = r[4];
-        String kind = r[5]; //note if not logged in, kind is always 'N'
+        int importants = r['important_count'];
+        String kind = r['kind']; //note if not logged in, kind is always 'N'
         int big = 0 - max(importants, 9999);
         if (kind == 'M') big -= 30000;
         else if (kind == 'A') big -= 20000;
@@ -1160,86 +1175,93 @@ class Servant {
       };
 
       //sort by kind(manager,active,other), subsort by important_count
-      rows.sort((Row a, Row b) {
+      rows.sort((Map<String, dynamic> a, Map<String, dynamic> b) {
         return rowToSortValue(a).compareTo(rowToSortValue(b));
       });
 
-      //fill in r.projects
-      r.projects = new List<ProjectQueryItem>();
-      for (Row row in rows) {
-        var item = new ProjectQueryItem()
-          ..projectId = row[0]
-          ..title = row[1]
-          ..leadership = row[2]
-          ..privacy = row[3]
-          ..description = row[6];
-        r.projects.add(item);
+      //fill in projects
+      for (final row in rows) {
+        var item = new ProjectQueryItem(
+          projectId: row['id'],
+          title: row['title'],
+          leadership: row['leadership'],
+          privacy: row['privacy'],
+          description: row['desciption']);
+        projects.add(item);
       }
     });
-    return dbBase(dbresult);
+    return ProjectQueryResponse(base: dbBase(dbresult), projects: projects);
   }
 
   ///get one project for display, with related proposals, convs, docs
-  @Expose(method: 'POST', as: 'ProjectGet')
   Future<ProjectGetResponse> projectGet(ProjectGetRequest args) async {
     //allow not logged in (but if logged in, behaves better)
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     String tzName = ai != null ? ai.timeZoneName : null;
 
+    //declare return values
+    String retActive, retLeadership, retPrivacy, retTitle, retDescription, retUserKind;
+    int retCategoryId;
+    var retProposals = List<ProjectProposalItem>();
+    var retConvs = List<ProjectConvItem>();
+    var retDocs = List<ProjectDocItem>();
+
     final dbresult = await Database.safely('ProjectGet', (db) async {
       //load project info
-      Row projectRow = await MiscLib.queryRowChecked(db, 'select active,leadership,privacy,title,description,category_id from project where id=${args.projectId}', 'Project does not exist');
-      r.active = projectRow.active;
-      r.leadership = projectRow.leadership;
-      r.privacy = projectRow.privacy;
-      r.title = projectRow.title;
-      r.description = projectRow.description;
-      r.categoryId = projectRow.category_id;
+      final projectRow = await MiscLib.queryRowChecked(db, 'select active,leadership,privacy,title,description,category_id from project where id=${args.projectId}', 'Project does not exist', null);
+      retActive = projectRow['active'];
+      retLeadership = projectRow['leadership'];
+      retPrivacy = projectRow['privacy'];
+      retTitle = projectRow['title'];
+      retDescription = projectRow['description'];
+      retCategoryId = projectRow['category_id'];
 
       //load this user's status in project (if logged in)
-      r.userKind = 'N';
+      retUserKind = 'N';
       if (ai != null) {
-        r.userKind = await Permissions.getProjectUserKind(db, ai.id, args.projectId);
+        retUserKind = await Permissions.getProjectUserKind(db, ai.id, args.projectId);
       }
-      bool isJoined = r.userKind == 'M' || r.userKind == 'A' || r.userKind == 'V' || r.userKind == 'O';
-      bool canViewDetails = isJoined || (r.privacy == 'P' || r.privacy == 'A');
+      bool isJoined = retUserKind == 'M' || retUserKind == 'A' || retUserKind == 'V' || retUserKind == 'O';
+      bool canViewDetails = isJoined || (retPrivacy == 'P' || retPrivacy == 'A');
 
       //hide some things if not allowed
       if (!canViewDetails) {
-        r.description = '';
+        retDescription = '';
       }
 
       //load child records
-      r.proposals = await MiscLib.query(db, 'select id,active,title,created_at from proposal where project_id=${args.projectId} order by created_at desc')
-        .map((row) => new ProjectProposalItem()
-        ..id = row.id
-        ..active = row.active
-        ..title = row.title
-        ..createdAt = DateLib.formatDateTime(row.created_at, tzName)
-        ).toList();
-      r.convs = await MiscLib.query(db, 'select id,open,title,last_activity from conv where project_id=${args.projectId} order by last_activity desc')
-        .map((row) => new ProjectConvItem()
-        ..id = row.id
-        ..open = row.open
-        ..title = row.title
-        ..lastActivity = DateLib.formatDateTime(row.last_activity, tzName)
-        ).toList();
-      r.docs = await MiscLib.query(db, 'select id,title from doc where project_id=${args.projectId} order by title')
-        .map((row) => new ProjectDocItem()
-        ..id = row.id
-        ..title = row.title
-        ).toList();
+      retProposals = (await MiscLib.query(db, 'select id,active,title,created_at from proposal where project_id=${args.projectId} order by created_at desc', null))
+        .map((row) => new ProjectProposalItem(iid: row['id'], active: row['active'], title: row['title'],
+        createdAtR: DateLib.formatDateTime(row['created_at'], tzName)
+        ));
+      retConvs = (await MiscLib.query(db, 'select id,open,title,last_activity from conv where project_id=${args.projectId} order by last_activity desc', null))
+        .map((row) => new ProjectConvItem(iid: row['id'], open: row['open'], title: row['title'],
+        lastActivity: DateLib.formatDateTime(row['last_activity'], tzName)
+        ));
+      retDocs = (await MiscLib.query(db, 'select id,title from doc where project_id=${args.projectId} order by title', null))
+        .map((row) => new ProjectDocItem(iid: row['id'], title: row['title']
+        ));
     });
-    return dbBase(dbresult);
+    return ProjectGetResponse(base: dbBase(dbresult),
+      active: retActive,
+      leadership: retLeadership,
+      privacy: retPrivacy,
+      title: retTitle,
+      description: retDescription,
+      categoryId: retCategoryId,
+      userKind: retUserKind,
+      proposals: retProposals,
+      convs: retConvs,
+      docs: retDocs
+    );
   }
 
   ///create or update project
-  @Expose(method: 'POST', as: 'ProjectSave')
   Future<APIResponseBase> projectSave(ProjectSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ProjectSave', (db) async {
       //new project
@@ -1256,42 +1278,46 @@ class Servant {
 
         //cannot change democratic projects to fixed
         if (args.leadership == 'F') {
-          String oldleadership = await MiscLib.queryScalar(db, 'select leadership from project where id=${args.projectId}');
+          String oldleadership = await MiscLib.queryScalar(db, 'select leadership from project where id=${args.projectId}', null);
           if (oldleadership == 'D') throw new Exception('Cannot change a democratic project to fixed leadership.');
         }
 
         //save changes
         await db.execute('update project set leadership=@l,privacy=@p,category_id=${args.categoryId},title=@t,description=@d'
           ' where id=${args.projectId}',
-          {'l':args.leadership, 'p':args.privacy, 't':args.title, 'd':args.description});
+          substitutionValues: {'l':args.leadership, 'p':args.privacy, 't':args.title, 'd':args.description});
       }
     });
     return dbBase(dbresult);
   }
 
   ///get info about users in a project
-  @Expose(method: 'POST', as: 'ProjectUserQuery')
   Future<ProjectUserQueryResponse> projectUserQuery(ProjectUserQueryRequest args) async {
     final int pageSize = 100;
 
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return ProjectUserQueryResponse(base: authFail);
+
+    //declare return variables
+    String retProjectTitle;
+    bool retEditable;
+    final retUsers = new List<ProjectUserItem>();
 
     final dbresult = await Database.safely('ProjectUserQuery', (db) async {
       //get project info
-      Row projectRow = await MiscLib.queryRowChecked(db, 'select privacy,leadership,title from project where id=${args.projectId}', 'Project does not exist');
-      String privacy = projectRow.privacy;
+      final projectRow = await MiscLib.queryRowChecked(db, 'select privacy,leadership,title from project where id=${args.projectId}', 'Project does not exist', null);
+      String privacy = projectRow['privacy'];
       bool isPrivate = privacy == 'I' || privacy == 'R';
-      r.projectTitle = projectRow.title;
+      retProjectTitle = projectRow['title'];
 
       //determine rights; must be joined to view private project members
       String userKind = await Permissions.getProjectUserKind(db, ai.id, args.projectId);
       bool isJoined = Permissions.isProjectUserKindIn(userKind);
       bool isManager = Permissions.isProjectUserKindIn(userKind, testForManager: true);
       if (isPrivate && !isJoined) throw new Exception('Only members can query users in private projects');
-      r.editable = isManager && projectRow.leadership == 'F' ? 'Y': 'N';
+      retEditable = isManager && projectRow['leadership'] == 'F';
 
       //construct optional where clause and params
       Map<String, dynamic> params = new Map<String, dynamic>();
@@ -1311,37 +1337,45 @@ class Servant {
         ' order by nick limit ${pageSize} offset ${startAtRow}';
 
       //loop results
-      r.users = new List<ProjectUserItem>();
-      await for (Row row in MiscLib.query(db, sql, params)) {
-        if (row.kind == 'N') continue; //as if never joined
-        ProjectUserItem u = new ProjectUserItem()
-          ..userId = row.xuser_id
-          ..kind = row.kind
-          ..nick = row.nick
-          ..publicName = row.public_name
-          ..voteKind = row.votekind;
-        u.avatarUrl = ImageLib.getAvatarUrl(u.userId, row.avatar_no);
-        RestrictionInfo spamInfo = Permissions.spamCountToRestrictions(ApiGlobals.config, row.spam_count);
+      final userRows = await MiscLib.query(db, sql, params);
+      for (final row in userRows) {
+        if (row['kind'] == 'N') continue; //as if never joined
+        String throttle = '';
+        RestrictionInfo spamInfo = Permissions.spamCountToRestrictions(ApiGlobals.configSettings, row['spam_count']);
         if (spamInfo.restrictionLevel > 0) {
-          u.throttle = 'User may post every ${spamInfo.restDays} days (max ${spamInfo.charLimit} chars)';
+          throttle = 'User may post every ${spamInfo.restDays} days (max ${spamInfo.charLimit} chars)';
         }
-        r.users.add(u);
+        final int rowUserId = row['xuser_id'];
+        final u = ProjectUserItem(
+          userId: rowUserId,
+          kind: row['kind'],
+          nick: row['nick'],
+          publicName: row['public_name'],
+          voteKind: row['votekind'],
+          avatarUrl: ImageLib.getAvatarUrl(rowUserId, row['avatar_no']),
+          throttle: throttle
+        );
+        retUsers.add(u);
       }
-
-      //assume that if the query yielded 100 rows, there are probably more
-      r.completeLoad = r.users.length < pageSize ? 'Y' : 'N';
     });
-    return dbBase(dbresult);
+
+    //assume that if the query yielded 100 rows, there are probably more
+    bool completeLoad = retUsers.length < pageSize;
+
+    return ProjectUserQueryResponse(base: dbBase(dbresult),
+      projectTitle: retProjectTitle,
+      editable: retEditable ? 'Y': 'N',
+      users: retUsers,
+      completeLoad: completeLoad ? 'Y' : 'N'
+    );
   }
 
   ///quit or downgrade own role in project, or change another member's role
-  @Expose(method: 'POST', as: 'ProjectUserSave')
   Future<APIResponseBase> projectUserSave(ProjectUserSaveRequest args) async {
-
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ProjectUserSave', (db) async {
       //collect rights and current role
@@ -1356,7 +1390,7 @@ class Servant {
       //general role update function
       Future writeRole(String kind) async {
           await db.execute('update project_xuser set kind=@k where project_id=${args.projectId} and xuser_id=${args.userId}',
-            {'k':kind});
+            substitutionValues: {'k':kind});
       }
 
       //general rights check function
@@ -1400,7 +1434,7 @@ class Servant {
 
       //if we downgraded a manager, check if there are any managers left
       if (aboutUserKind == 'M') {
-        int numManagers = await MiscLib.queryScalar(db, 'select count(*) from project_xuser where project_id=${args.projectId} and kind=\'M\'') ?? 0;
+        int numManagers = await MiscLib.queryScalar(db, 'select count(*) from project_xuser where project_id=${args.projectId} and kind=\'M\'', null) ?? 0;
         if (numManagers == 0) {
           //no managers left, so make project democratic;
           //the worker process will eventually assign leaders and notify them
@@ -1411,13 +1445,12 @@ class Servant {
     return dbBase(dbresult);
   }
 
-  //record a vote for/against another user taking leadership in a project
-  @Expose(method: 'POST', as: 'ProjectUserUserSave')
+  ///record a vote for/against another user taking leadership in a project
   Future<APIResponseBase> projectUserUserSave(ProjectUserUserSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ProjectUserUserSave', (db) async {
       //check current user is joined to project
@@ -1429,18 +1462,19 @@ class Servant {
 
       //store vote
       int count = await db.execute('update project_xuser_xuser set kind=@k where project_id=${args.projectId} and owner_id=${ai.id} and about_id=${args.aboutId}',
-        {'k': args.kind});
+        substitutionValues: {'k': args.kind});
       if (count == 0) {
         await db.execute('insert into project_xuser_xuser(project_id,owner_id,about_id,kind)values(${args.projectId},${ai.id},${args.aboutId},@k)',
-          {'k': args.kind});
+          substitutionValues: {'k': args.kind});
       }
     });
     return dbBase(dbresult);
   }
 
-  //get all proposals matching inputs; no authentication
-  @Expose(method: 'POST', as: 'ProposalQuery')
+  ///get all proposals matching inputs; no authentication
   Future<ProposalQueryResponse> proposalQuery(ProposalQueryRequest args) async {
+      final items = new List<ProposalQueryItem>();
+
     final dbresult = await Database.safely('ProposalQuery', (db) async {
       //build query
       QueryClauseBuilder where = new QueryClauseBuilder();
@@ -1460,90 +1494,112 @@ class Servant {
       }
 
       //load matching rows
-      List<Row> proposalRows = await MiscLib.query(db, 'select id,title,kind from proposal where ${where.whereClause} order by created_at',
-        where.paramsMap).toList();
-      r.items = new List<ProposalQueryItem>();
-      for (Row row in proposalRows) {
-        var item = new ProposalQueryItem()
-          ..id = row.id
-          ..title = row.title
-          ..kind = row.kind;
-        r.items.add(item);
+      final proposalRows = await MiscLib.query(db, 'select id,title,kind from proposal where ${where.whereClause} order by created_at',
+        where.paramsMap);
+      for (final row in proposalRows) {
+        var item = new ProposalQueryItem(iid: row['id'], title: row['title'], kind: row['kind']);
+        items.add(item);
       }
     });
-    return dbBase(dbresult);
+    return ProposalQueryResponse(base: dbBase(dbresult), items: items);
   }
 
-  //get details on one proposal
-  @Expose(method: 'POST', as: 'ProposalGet')
+  ///get details on one proposal
   Future<ProposalGetResponse> proposalGet(ProposalGetRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);//null ok
+
+    //declare return values
+    String retKind, retActive, retEligible, retTitle, retTimeout, retSummary, retSummaryHtml,
+      retDtext, retDeleteTime, retCreatedByNick, retCreatedByAvatarUrl, retMyEligible, retStatusDescription;
+    int retWinningOption, retCreatedBy, retProjectId, retDocId, retMyVote;
+    final retOptions = new List<ProposalOptionItem>();
+
     final dbresult = await Database.safely('ProposalGet', (db) async {
       //get row
-      Row row = await MiscLib.queryRowChecked(db, 'select * from proposal where id=${args.proposalId}', 'Proposal does not exist');
+      final row = await MiscLib.queryRowChecked(db, 'select * from proposal where id=${args.proposalId}', 'Proposal does not exist', null);
 
       //convert to output format
-      r.kind = row.kind;
-      r.active = row.active;
-      r.eligible = row.eligible;
-      r.title = row.title;
-      r.summary = row.summary;
-      r.summaryHtml = row.summary_html;
-      r.dtext = row.dtext;
-      r.timeout = WLib.dateTimeToWire(row.timeout);
-      r.deleteTime = WLib.dateTimeToWire(row.delete_time);
-      r.winningOption = row.winning_option;
-      r.createdBy = row.created_by;
-      r.projectId = row.project_id;
-      r.docId = row.doc_id;
+      retKind = row['kind'];
+      retActive = row['active'];
+      retEligible = row['eligible'];
+      retTitle = row['title'];
+      retSummary = row['summary'];
+      retSummaryHtml = row['summary_html'];
+      retDtext = row['dtext'];
+      retTimeout = WLib.dateTimeToWire(row['timeout']);
+      retDeleteTime = WLib.dateTimeToWire(row['delete_time']);
+      retWinningOption = row['winning_option'];
+      retCreatedBy = row['created_by'];
+      retProjectId = row['project_id'];
+      retDocId = row['doc_id'];
 
       //get info on creator
-      Row userRow = await MiscLib.userRowForAvatars(db, r.createdBy);
-      r.createdByNick = userRow.nick;
-      r.createdByAvatarUrl = ImageLib.getAvatarUrl(r.createdBy, userRow.avatar_no);
+      final userRow = await MiscLib.userRowForAvatars(db, retCreatedBy);
+      retCreatedByNick = userRow['nick'];
+      retCreatedByAvatarUrl = ImageLib.getAvatarUrl(retCreatedBy, userRow['avatar_no']);
 
       //unpack options and votes maps
-      r.options = new List<ProposalOptionItem>();
-      Map<String, String> optionsMap = row.options;
-      Map<String, int> countMap = row.vote_counts;
+      Map<String, String> optionsMap = row['options'];
+      Map<String, int> countMap = row['vote_counts'];
       optionsMap.forEach((opt, desc) {
         int optN = int.parse(opt);
-        var item = new ProposalOptionItem() ..optionNo = optN ..optionDesc = desc ..voteCount = 0;
+        int voteCount = 0;
         if (countMap != null && countMap.containsKey(opt))
-          item.voteCount = countMap[opt];
-        r.options.add(item);
+          voteCount = countMap[opt];
+        var item = new ProposalOptionItem(optionNo: optN, optionDesc: desc, voteCount: voteCount);
+        retOptions.add(item);
       });
 
       //load this user's vote and eligibility
-      r.myEligible = 'N';
+      retMyEligible = 'N';
       if (ai != null) {
         bool canVote = await ProposalLib.isEligibleToVote(db, ai.id, ai.isSiteAdmin, row);
         if (canVote) {
-          r.myEligible = 'Y';
-          r.myVote = await MiscLib.queryScalar(db, 'select vote from proposal_xuser where proposal_id=${args.proposalId} and xuser_id=${ai.id}');
+          retMyEligible = 'Y';
+          retMyVote = await MiscLib.queryScalar(db, 'select vote from proposal_xuser where proposal_id=${args.proposalId} and xuser_id=${ai.id}', null);
         }
       }
 
       //format description of voting period
-      if (r.active == 'Y')
-        r.statusDescription = 'Voting is open until ' + DateLib.formatSoonDate(row.timeout);
-      else if (row.delete_time != null)
-        r.statusDescription = 'Voting closed; proposal to be deleted on ' + DateLib.formatSoonDate(row.delete_time);
+      if (retActive == 'Y')
+        retStatusDescription = 'Voting is open until ' + DateLib.formatSoonDate(row['timeout']);
+      else if (row['delete_time'] != null)
+        retStatusDescription = 'Voting closed; proposal to be deleted on ' + DateLib.formatSoonDate(row['delete_time']);
       else
-        r.statusDescription = 'Voting closed';
+        retStatusDescription = 'Voting closed';
     });
-    return dbBase(dbresult);
+    return ProposalGetResponse(base: dbBase(dbresult),
+      kind:retKind,
+      winningOption: retWinningOption,
+      createdBy: retCreatedBy,
+      projectId: retProjectId,
+      docId: retDocId,
+      active: retActive,
+      eligible: retEligible,
+      title: retTitle,
+      timeout: retTimeout,
+      myVote: retMyVote,
+      summary: retSummary,
+      summaryHtml: retSummaryHtml,
+      dtext: retDtext,
+      deleteTime: retDeleteTime,
+      createdByNick: retCreatedByNick,
+      createdByAvatarUrl: retCreatedByAvatarUrl,
+      options: retOptions,
+      myEligible: retMyEligible,
+      statusDescription: retStatusDescription
+    );
   }
 
   ///create new proposal (use only for the proposal kinds that users create directly);
   /// for PROJ type only, returns newId
-  @Expose(method: 'POST', as: 'ProposalSave')
   Future<APIResponseBase> proposalSave(ProposalSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
+    int newId;
     final dbresult = await Database.safely('ProposalSave', (db) async {
       //call methods in proposalLib based on the kind
       if (args.kind == 'PROJ') {
@@ -1551,28 +1607,27 @@ class Servant {
         if (!isJoined) throw new Exception('Only project members can create a proposal');
         int proposalId = await ProposalLib.proposeInProject(db, ai.id, args.projectId, args.eligible, args.title,
           args.summary, args.options, args.days);
-        r.newId = proposalId;
+        newId = proposalId;
       }
       else if (args.kind == 'SYS') {
-        await ProposalLib.proposeSystemChange(ApiGlobals.config, db, ai.id, args.title, args.summary, args.options);
+        await ProposalLib.proposeSystemChange(ApiGlobals.configSettings, db, ai.id, args.title, args.summary, args.options);
       }
     });
-    return dbBase(dbresult);
+    return dbBase(dbresult, newId: newId);
   }
 
   ///delete proposal
-  @Expose(method: 'POST', as: 'ProposalDelete')
   Future<APIResponseBase> proposalDelete(ProposalGetRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ProposalDelete', (db) async {
       //get info on proposal to check rights
-      Row row = await MiscLib.queryRowChecked(db, 'select created_by,kind from proposal where id=${args.proposalId}', 'Proposal does not exist');
-      if (ai.id != row.created_by) throw new Exception('You can only delete your own proposal');
-      String kind = row.kind;
+      final row = await MiscLib.queryRowChecked(db, 'select created_by,kind from proposal where id=${args.proposalId}', 'Proposal does not exist', null);
+      if (ai.id != row['created_by']) throw new Exception('You can only delete your own proposal');
+      String kind = row['kind'];
       bool canDeleteKind = kind == 'PROJ' || kind == 'ROOT' || kind == 'SYS';
       if (!canDeleteKind) throw new Exception('You cannot delete that kind of proposal');
 
@@ -1583,16 +1638,15 @@ class Servant {
   }
 
   ///record vote for proposal
-  @Expose(method: 'POST', as: 'ProposalUserSave')
   Future<APIResponseBase> proposalUserSave(ProposalUserSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ProposalUserSave', (db) async {
       //check eligibility
-      Row proposalRow = await MiscLib.queryRowChecked(db, 'select kind,created_by,project_id,eligible from proposal where id=${args.proposalId}', 'Proposal does not exist');
+      final proposalRow = await MiscLib.queryRowChecked(db, 'select kind,created_by,project_id,eligible from proposal where id=${args.proposalId}', 'Proposal does not exist', null);
       bool canVote = await ProposalLib.isEligibleToVote(db, ai.id, ai.isSiteAdmin, proposalRow);
       if (!canVote) throw new Exception('You are not eligible to vote on this proposal');
 
@@ -1604,68 +1658,69 @@ class Servant {
 
   ///get all 3 kinds of push queue items: notifications, unreads, and
   /// suggestions. May return error code 'FREQ' if too frequent
-  @Expose(method: 'POST', as: 'PushQueueGet')
   Future<PushQueueGetResponse> pushQueueGet(PushQueueGetRequest args) async {
      bool isFull = args.depth == 'F';
 
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return PushQueueGetResponse(base: authFail);
 
     //prevent frequent calling for same nick on multiple windows or machines
     if (ai.lastPushQueueGetUtc.add(new Duration(seconds:30)).isAfter(WLib.utcNow())) {
-      r.base.errorCode = 'FREQ';
-      r.base.errorMessage = 'PushQueueGet requests are too frequent';
-      r.base.ok = 'N';
-      r.fullModeStatus = 'T';
-      return dbBase(dbresult);
+      return PushQueueGetResponse(
+        base: APIResponseBase(errorCode: 'FREQ', errorMessage: 'PushQueueGet requests are too frequent', ok: 'N'),
+        fullModeStatus: 'T'
+      );
     }
     ai.lastPushQueueGetUtc = WLib.utcNow();
-    r.items = new List<PushQueueItem>();
+    final items = new List<PushQueueItem>();
 
     final dbresult = await Database.safely('PushQueueGet', (db) async {
       //load all notifications
-      List<Row> notifRows = await MiscLib.query(db, 'select id,body,link_text,link_key from xuser_notify where xuser_id=${ai.id} order by created_at').toList();
-      for (Row row in notifRows) {
-        var i = new PushQueueItem() ..kind = 'N'
-          ..why = 'G'
-          ..sid = row.id
-          ..text = row.body
-          ..linkText = row.link_text
-          ..linkPaneKey = row.link_key;
-        r.items.add(i);
+      final notifRows = await MiscLib.query(db, 'select id,body,link_text,link_key from xuser_notify where xuser_id=${ai.id} order by created_at', null);
+      for (final row in notifRows) {
+        var i = new PushQueueItem(
+          kind: 'N', 
+          why: 'G', 
+          sid: row['id'], 
+          text: row['body'], 
+          linkText: row['link_text'], 
+          linkPaneKey: row['link_key']);
+        items.add(i);
       }
 
       //load all unreads
-      List<Row> convRows = await MiscLib.query(db, 'select conv.id as c_id,conv.title as c_title, project_xuser.kind as p_kind,'
+      final convRows = await MiscLib.query(db, 'select conv.id as c_id,conv.title as c_title, project_xuser.kind as p_kind,'
         ' event.created_by as e_created_by,conv_xuser.status'
         ' from ((conv inner join conv_xuser on conv.id=conv_xuser.conv_id)'
         ' left join project_xuser on conv.project_id=project_xuser.project_id and project_xuser.xuser_id=${ai.id})'
         ' left join event on conv.event_id=event.id'
-        ' where conv_xuser.position_flag=\'U\' and conv_xuser.status=\'J\' and conv_xuser.xuser_id=${ai.id}').toList();
+        ' where conv_xuser.position_flag=\'U\' and conv_xuser.status=\'J\' and conv_xuser.xuser_id=${ai.id}', null);
 
       //sort unreads by projects I manage, events I posted, all others
       // (subsorted by conv.id, which is the order of when conversations started)
-      int compareConvRows(Row a, Row b) {
-         bool aManager = a.p_kind == 'M', bManager = b.p_kind == 'M';
+      int compareConvRows(Map<String, dynamic> a, Map<String, dynamic> b) {
+         bool aManager = a['p_kind'] == 'M', bManager = b['p_kind'] == 'M';
          if (aManager && !bManager) return 1;
          if (bManager && !aManager) return -1;
-         bool aMyEvent = a.e_created_by == ai.id, bMyEvent = b.e_created_by == ai.id;
+         bool aMyEvent = a['e_created_by'] == ai.id, bMyEvent = b['e_created_by'] == ai.id;
          if (aMyEvent && !bMyEvent) return 1;
          if (bMyEvent && !aMyEvent) return -1;
-         return a.c_id.compareTo(b.c_id);
+         return a['c_id'].compareTo(b['c_id']);
       }
       convRows.sort(compareConvRows);
 
       //copy unreads to output
-      for (Row row in convRows) {
-        var i = new PushQueueItem() ..kind = 'U'
-          ..why = 'G'
-          ..iid = row.c_id
-          ..linkText = row.c_title
-          ..linkPaneKey = 'conv/' + row.c_id.toString();
-        r.items.add(i);
+      for (final row in convRows) {
+        var i = new PushQueueItem(
+          kind: 'U', 
+          why: 'G', 
+          iid: row['c_id'], 
+          linkText: row['c_title'], 
+          linkPaneKey: 'conv/' + row['c_id'].toString()
+        );
+        items.add(i);
       }
 
       //load suggestions less often
@@ -1674,15 +1729,15 @@ class Servant {
 
         //load proposals user is eligible to vote on but has not voted on
         DateTime now = WLib.utcNow();
-        List<Row> proposalRows = await MiscLib.query(db, 'select id,kind,eligible,title,project_id,'
+        final proposalRows = await MiscLib.query(db, 'select id,kind,eligible,title,project_id,'
           'created_by,'
           '(select vote from proposal_xuser where proposal_id=proposal.id and xuser_id=${ai.id}) as vote'
           ' from proposal where active=\'Y\' and timeout>@now',
-          {'now': now}).toList();
+          {'now': now});
         int includedNEW = 0; //count of kind=NEW records included
-        for (Row row in proposalRows) {
+        for (final row in proposalRows) {
           //skip if already voted
-          if (row.vote != null) continue;
+          if (row['vote'] != null) continue;
 
           //eligible?
           bool isEligible = await ProposalLib.isEligibleToVote(db, ai.id, ai.isSiteAdmin, row);
@@ -1690,55 +1745,58 @@ class Servant {
 
           //for kind=NEW only include up to 5 to spread the load among site
           // admins
-          if (row.kind == 'NEW') {
+          if (row['kind'] == 'NEW') {
             if (includedNEW >= 5) continue;
             ++includedNEW;
           }
 
           //convert to output
-          var i = new PushQueueItem() ..kind = 'S'
-            ..why = 'V'
-            ..iid = row.id
-            ..linkText = row.title
-            ..linkPaneKey = 'proposal/' + row.id.toString();
-          r.items.add(i);
+          var i = new PushQueueItem(
+            kind: 'S', 
+            why: 'V', 
+            iid: row['id'], 
+            linkText: row['title'], 
+            linkPaneKey: 'proposal/' + row['id'].toString()
+          );
+          items.add(i);
         }
 
         //load invited, recommended, and bookmarked convs
-        List<Row> suggestRows = await MiscLib.query(db, 'select conv.id as c_id,conv.title as c_title,conv_xuser.status,conv_xuser.bookmarked'
+        final suggestRows = await MiscLib.query(db, 'select conv.id as c_id,conv.title as c_title,conv_xuser.status,conv_xuser.bookmarked'
           ' from conv inner join conv_xuser on conv.id=conv_xuser.conv_id'
           ' where conv_xuser.xuser_id=${ai.id}'
-          ' and (conv_xuser.status=\'I\' or conv_xuser.status=\'R\' or bookmarked=\'Y\')').toList();
+          ' and (conv_xuser.status=\'I\' or conv_xuser.status=\'R\' or bookmarked=\'Y\')', null);
 
         //copy invited, recommended, and bookmarked convs to output in separate
         // groups to maintain ordering
-        void copy1(Row row, String kind, String why) {
-          var i = new PushQueueItem()
-            ..kind = kind
-            ..why = why
-            ..iid = row.c_id
-            ..linkText = row.c_title
-            ..linkPaneKey = 'conv/' + row.c_id.toString();
-          r.items.add(i);
+        void copy1(Map<String, dynamic> row, String kind, String why) {
+          var i = new PushQueueItem(
+            kind: kind,
+            why: why, 
+            iid: row['c_id'], 
+            linkText: row['c_title'], 
+            linkPaneKey: 'conv/' + row['c_id'].toString()
+          );
+          items.add(i);
         }
-        for (Row row in suggestRows.where((r) => r.status == 'I')) //invited
+        for (final row in suggestRows.where((r) => r['status'] == 'I')) //invited
           copy1(row, 'S', 'I');
-        for (Row row in suggestRows.where((r) => r.status == 'R')) //recommended
+        for (final row in suggestRows.where((r) => r['status'] == 'R')) //recommended
           copy1(row, 'S', 'R');
-        for (Row row in suggestRows.where((r) => r.bookmarked == 'Y')) //bookmarked
+        for (final row in suggestRows.where((r) => r['bookmarked'] == 'Y')) //bookmarked
           copy1(row, 'B', 'G');
 
       }//if full
     });
-    return dbBase(dbresult);
+    return PushQueueGetResponse(base: dbBase(dbresult), items: items);
   }
 
-  //get all resources matching criteria
-  @Expose(method: 'POST', as: 'ResourceQuery')
+  ///get all resources matching criteria
   Future<ResourceQueryResponse> resourceQuery(ResourceQueryRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     bool isSiteAdmin = ai != null && ai.isSiteAdmin;
 
+    final items = new List<ResourceItem>();
     final dbresult = await Database.safely('ResourceQuery', (db) async {
       //sort order: mine first, then sorted by importance
       String sortClause = 'important_count desc';
@@ -1751,75 +1809,91 @@ class Servant {
       //if (builder.count < 1) throw new Exception('must search on at least one criterion');
       if (!isSiteAdmin) builder.add('visible=\'Y\'');
       String sql = 'select id,title,description,url from resource where ${builder.whereClause} order by ${sortClause} limit 100';
-      List<Row> rows = await MiscLib.query(db, sql, builder.paramsMap).toList();
+      final rows = await MiscLib.query(db, sql, builder.paramsMap);
 
       //fill in r.items
-      r.items = new List<ResourceItem>();
-      for (Row row in rows) {
-        var item = new ResourceItem()
-          ..id = row.id
-          ..title = row.title
-          ..description = row.description
-          ..url = row.url;
-        r.items.add(item);
+      for (final row in rows) {
+        var item = new ResourceItem(
+          id: row['id'],
+          title: row['title'],
+          description: row['description'],
+          url: row['url']);
+        items.add(item);
       }
     });
-    return dbBase(dbresult);
+
+    return ResourceQueryResponse(base: dbBase(dbresult), items: items);
   }
 
   ///get one resource
-  @Expose(method: 'POST', as: 'ResourceGet')
   Future<ResourceGetResponse> resourceGet(ResourceGetRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     bool isSiteAdmin = ai != null && ai.isSiteAdmin;
-    r.isSiteAdmin = isSiteAdmin ? 'Y' : 'N';
+
+    //declare return variables
+    int retCategoryId, retUserId, retImportantCount;
+    String retTitle, retDescription, retCreatedAt, retVisible, retKind, retUrl, retNick, retUserKind;
+    bool retIsCreator;
 
     final dbresult = await Database.safely('ResourceGet', (db) async {
       //load from resource
       String sql = 'select category_id,title,url,important_count,description,kind,created_at,visible,xuser_id'
         ',(select nick from xuser where id=resource.xuser_id) as nick'
         ' from resource where id=${args.id}';
-      Row resourceRow = await MiscLib.queryRowChecked(db, sql, 'Resource does not exist');
-      r.categoryId = resourceRow.category_id;
-      r.userId = resourceRow.xuser_id;
-      r.importantCount = resourceRow.important_count;
-      r.title = resourceRow.title;
-      r.description = resourceRow.description;
-      r.createdAt = DateLib.formatDateTime(resourceRow.created_at);
-      r.visible = resourceRow.visible;
-      r.kind = resourceRow.kind;
-      r.url = resourceRow.url;
-      r.isCreator = (ai != null && r.userId == ai.id) ? 'Y' : 'N';
-      r.nick = resourceRow.nick;
+      final resourceRow = await MiscLib.queryRowChecked(db, sql, 'Resource does not exist', null);
+      retCategoryId = resourceRow['category_id'];
+      retUserId = resourceRow['xuser_id'];
+      retImportantCount = resourceRow['important_count'];
+      retTitle = resourceRow['title'];
+      retDescription = resourceRow['description'];
+      retCreatedAt = DateLib.formatDateTime(resourceRow['created_at']);
+      retVisible = resourceRow['visible'];
+      retKind = resourceRow['kind'];
+      retUrl = resourceRow['url'];
+      retIsCreator = (ai != null && retUserId == ai.id);
+      retNick = resourceRow['nick'];
 
       //load from resource_xuser
-      r.userKind = null; //meaning, there is no record
+      retUserKind = null; //meaning, there is no record
       if (ai != null) {
         String sql = 'select kind from resource_xuser where resource_id=${args.id} and xuser_id=${ai.id}';
-        r.userKind = await MiscLib.queryScalar(db, sql); //may be null
+        retUserKind = await MiscLib.queryScalar(db, sql, null); //may be null
       }
     });
-    return dbBase(dbresult);
+    return ResourceGetResponse(base: dbBase(dbresult),
+      isSiteAdmin: isSiteAdmin ? 'Y' : 'N',
+      categoryId: retCategoryId,
+      userId: retUserId,
+      importantCount: retImportantCount,
+      title: retTitle,
+      description: retDescription,
+      createdAtR: retCreatedAt,
+      visible: retVisible,
+      kind: retKind,
+      url: retUrl,
+      isCreator: retIsCreator ? 'Y' : 'N',
+      nick: retNick,
+      userKind: retUserKind
+    );
   }
 
   ///save a resource
-  @Expose(method: 'POST', as: 'ResourceSave')
   Future<APIResponseBase> resourceSave(ResourceSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ResourceSave', (db) async {
       //for new resources, store proposal and exit
       bool isNew = args.id == 0;
       if (isNew) {
         await ProposalLib.proposeNewResource(db, ai.id, args.kind, args.title, args.description, args.url, args.categoryId);
-        return dbBase(dbresult);
+        return;
       }
 
       //get owner of resource being modified
-      int ownerId = await MiscLib.queryScalar(db, 'select xuser_id from resource where id=${args.id}');
+      int ownerId = await MiscLib.queryScalar(db, 'select xuser_id from resource where id=${args.id}', null);
 
       //rights: must be owner or site admin to edit existing
       bool canEdit = ai.isSiteAdmin || ownerId == ai.id;
@@ -1827,13 +1901,12 @@ class Servant {
 
       //save changes
       await db.execute('update resource set title=@t, description=@d, kind=@k, url=@u where id=${args.id}',
-        {'t': args.title, 'd': args.description, 'k': args.kind, 'u': args.url});
+        substitutionValues: {'t': args.title, 'd': args.description, 'k': args.kind, 'u': args.url});
     });
     return dbBase(dbresult);
   }
 
   ///save a resource
-  @Expose(method: 'POST', as: 'ResourceTriage')
   Future<APIResponseBase> resourceTriage(ResourceTriageRequest args) async {
     //must be site admin
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
@@ -1842,11 +1915,11 @@ class Servant {
 
     final dbresult = await Database.safely('ResourceTriage', (db) async {
       //fail if visible
-      String visible = await MiscLib.queryScalar(db, 'select visible from resource where id=${args.id}');
+      String visible = await MiscLib.queryScalar(db, 'select visible from resource where id=${args.id}', null);
       if (visible != 'N') throw new Exception('Only invisible resources can be reset or deleted.');
 
       //delete?
-      if (args.mode == 'D') await CleanDeleter.deleteResource(db, args.id);
+      if (args.mode == 'D') await CleanDeleter.deleteResource(db, args.iid);
 
       //reset?
       if (args.mode == 'R') {
@@ -1858,12 +1931,11 @@ class Servant {
   }
 
   ///record votes for/against a resource
-  @Expose(method: 'POST', as: 'ResourceUserSave')
   Future<APIResponseBase> resourceUserSave(ResourceUserSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('ResourceUserSave', (db) async {
       //remove rec if kind is null
@@ -1873,10 +1945,10 @@ class Servant {
 
       else { //nonnull
         int count = await db.execute('update resource_xuser set processed=\'N\', kind=@k where resource_id=${args.id} and xuser_id=${ai.id}',
-          {'k': args.kind});
+          substitutionValues: {'k': args.kind});
         if (count == 0) {
           await db.execute('insert into resource_xuser(resource_id,xuser_id,kind,processed)values(${args.id},${ai.id},@k,\'N\')',
-            {'k': args.kind});
+            substitutionValues: {'k': args.kind});
         }
       }
     });
@@ -1884,8 +1956,8 @@ class Servant {
   }
 
   ///get all users matching criteria
-  @Expose(method: 'POST', as: 'UserQuery')
   Future<UserQueryResponse> userQuery(UserQueryRequest args) async {
+    final users = new List<UserQueryItem>();
     final dbresult = await Database.safely('UserQuery', (db) async {
       String whereClause = '';
       Map<String, dynamic> params = new Map<String, dynamic>();
@@ -1895,25 +1967,37 @@ class Servant {
         params['nick'] = param1;
         params['name'] = param1;
       }
-      r.users = new List<UserQueryItem>();
-      await for (Row row in MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser ${whereClause} order by last_activity desc limit 100', params)) {
-        var item = new UserQueryItem()
-          ..id = row.id
-          ..nick = row.nick
-          ..kind = row.kind
-          ..publicName = row.public_name
-          ..avatarUrl = ImageLib.getAvatarUrl(row.id, row.avatar_no);
-        r.users.add(item);
+      final rows = await MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser ${whereClause} order by last_activity desc limit 100', params);
+      for (final row in rows) {
+        var item = new UserQueryItem(
+          id: row['id'],
+          nick: row['nick'],
+          kind: row['kind'],
+          publicName: row['public_name'],
+          avatarUrl: ImageLib.getAvatarUrl(row['id'], row['avatar_no'])
+        );
+        users.add(item);
       }
     });
-    return dbBase(dbresult);
+
+    return UserQueryResponse(base: dbBase(dbresult), users: users);
   }
 
   ///get a user
-  @Expose(method: 'POST', as: 'UserGet')
   Future<UserGetResponse> userGet(UserGetRequest args) async {
+    //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
-    if (!r.base.isOK) return dbBase(dbresult);
+    final authFail = Authenticator.ensureLoggedIn(ai);
+    if (authFail != null) return UserGetResponse(base: authFail);
+
+    //declare return variables
+    String retKind, retNick, retStatus, retEmail, retPublicName, retIsSiteAdmin, retPrefEmailNotify,
+      retTimeZone, retAvatarUrl, retUserUserKind;
+    List<String> retAllTimeZones;
+    Map<String, String> retPublicLinks;
+    final retEvents = new List<APIResponseAssociation>();
+    final retProjects = new List<APIResponseAssociation>();
+    final retResources = new List<APIResponseAssociation>();
 
     final dbresult = await Database.safely('UserGet', (db) async {
       bool aboutMe = ai != null && args.userId == ai.id; //request is for this authenticated user?
@@ -1921,63 +2005,76 @@ class Servant {
 
       //init blank data for editing
       if (args.includeEditing == 'Y') {
-        r.allTimeZones = DateLib.allTimeZoneNames().toList();
-        r.kind = 'V';
+        retAllTimeZones = DateLib.allTimeZoneNames().toList();
+        retKind = 'V';
       }
 
       //load user
       if (doLoad) {
-        Row userRow = await MiscLib.queryRowChecked(db, 'select status,nick,email,kind,site_admin,public_name,pref_email_notify,public_links,timezone,avatar_no from xuser where id=${args.userId}', 'User does not exist');
-        r..nick = userRow.nick
-          ..status = userRow.status
-          ..email = userRow.email
-          ..kind = userRow.kind
-          ..isSiteAdmin = userRow.site_admin
-          ..publicName = userRow.public_name
-          ..prefEmailNotify = userRow.pref_email_notify
-          ..publicLinks = userRow.public_links
-          ..timeZone = userRow.timezone
-          ..avatarUrl = ImageLib.getAvatarUrl(args.userId, userRow.avatar_no);
+        final userRow = await MiscLib.queryRowChecked(db, 'select status,nick,email,kind,site_admin,public_name,pref_email_notify,public_links,timezone,avatar_no from xuser where id=${args.userId}', 'User does not exist', null);
+        retNick = userRow['nick'];
+        retStatus = userRow['status'];
+        retEmail = userRow['email'];
+        retKind = userRow['kind'];
+        retIsSiteAdmin = userRow['site_admin'];
+        retPublicName = userRow['public_name'];
+        retPrefEmailNotify = userRow['pref_email_notify'];
+        retPublicLinks = userRow['public_links'];
+        retTimeZone = userRow['timezone'];
+        retAvatarUrl = ImageLib.getAvatarUrl(args.userId, userRow['avatar_no']);
       }
 
       //if for another user
       if (!aboutMe) {
         //hide some things
-        r.prefEmailNotify = 'N';
-        r.email = '';
+        retPrefEmailNotify = 'N';
+        retEmail = '';
 
         //load this users vote for the other user
         if (ai != null)
-          r.userUserKind = await MiscLib.queryScalar(db, 'select kind from xuser_xuser where owner_id=${ai.id} and about_id=${args.userId}');
+          retUserUserKind = await MiscLib.queryScalar(db, 'select kind from xuser_xuser where owner_id=${ai.id} and about_id=${args.userId}', null);
       }
 
       //load all associated details
-      r.events = new List<APIResponseAssociation>();
-      r.projects = new List<APIResponseAssociation>();
-      r.resources = new List<APIResponseAssociation>();
       if (args.includeDetail == 'Y') {
         //events
-        List<Row> assocRows = await MiscLib.query(db, 'select id, title from event inner join event_xuser on event.id=event_xuser.event_id where event.start_time>@now and event_xuser.xuser_id=${args.userId} and event_xuser.status=\'A\' order by start_time',
-          {'now': WLib.utcNow()}).toList();
-        for (Row row in assocRows)
-          r.events.add(new APIResponseAssociation() ..linkPaneKey = 'event/${row.id}' ..linkText = row.title);
+        var assocRows = await MiscLib.query(db, 'select id, title from event inner join event_xuser on event.id=event_xuser.event_id where event.start_time>@now and event_xuser.xuser_id=${args.userId} and event_xuser.status=\'A\' order by start_time',
+          {'now': WLib.utcNow()});
+        for (final row in assocRows)
+          retEvents.add(new APIResponseAssociation(linkPaneKey: 'event/${row['id']}', linkText: row['title']));
 
         //projects
-        assocRows = await MiscLib.query(db, 'select id, title from project inner join project_xuser on project.id=project_xuser.project_id where project_xuser.xuser_id=${args.userId} and project_xuser.kind<>\'N\' order by title').toList();
-        for (Row row in assocRows)
-          r.projects.add(new APIResponseAssociation() ..linkPaneKey = 'project/${row.id}' ..linkText = row.title);
+        assocRows = await MiscLib.query(db, 'select id, title from project inner join project_xuser on project.id=project_xuser.project_id where project_xuser.xuser_id=${args.userId} and project_xuser.kind<>\'N\' order by title', null);
+        for (final row in assocRows)
+          retProjects.add(new APIResponseAssociation(linkPaneKey: 'project/${row['id']}', linkText: row['title']));
 
         //resources
-        assocRows = await MiscLib.query(db, 'select id, title from resource where xuser_id=${args.userId} and visible=\'Y\' order by important_count desc').toList();
-        for (Row row in assocRows)
-          r.resources.add(new APIResponseAssociation() ..linkPaneKey = 'resource/${row.id}' ..linkText = row.title);
+        assocRows = await MiscLib.query(db, 'select id, title from resource where xuser_id=${args.userId} and visible=\'Y\' order by important_count desc', null);
+        for (final row in assocRows)
+          retResources.add(new APIResponseAssociation(linkPaneKey: 'resource/${row['id']}', linkText: row['title']));
       }
     });
-    return dbBase(dbresult);
+
+    return UserGetResponse(base: dbBase(dbresult),
+      allTimeZones: retAllTimeZones,
+      kind: retKind,
+      nick: retNick,
+      status: retStatus,
+      email: retEmail,
+      publicName: retPublicName,
+      isSiteAdmin: retIsSiteAdmin,
+      prefEmailNotify: retPrefEmailNotify,
+      publicLinks: retPublicLinks,
+      timeZone: retTimeZone,
+      avatarUrl: retAvatarUrl,
+      userUserKind: retUserUserKind,
+      events: retEvents,
+      projects: retProjects,
+      resources: retResources
+    );
   }
 
   ///save/create a user
-  @Expose(method: 'POST', as: 'UserSave')
   Future<APIResponseBase> userSave(UserSaveRequest args) async {
     DateTime now = WLib.utcNow();
 
@@ -1985,8 +2082,8 @@ class Servant {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     bool isNewUser = args.isNew == 'Y';
     if (!isNewUser) {
-      Authenticator.ensureLoggedIn(ai, r);
-      if (!r.isOK) return dbBase(dbresult);
+      final authFail = Authenticator.ensureLoggedIn(ai);
+      if (authFail != null) return authFail;
     }
 
     final dbresult = await Database.safely('UserSave', (db) async {
@@ -2027,7 +2124,7 @@ class Servant {
         userId = ai.id;
         await db.execute('update xuser set kind=@kind,public_name=@name,public_links=@links,timezone=@tz,pref_email_notify=@pref1'
           ' where id=${userId}',
-          {'kind': args.kind, 'name': args.publicName, 'links': args.publicLinks,
+          substitutionValues: {'kind': args.kind, 'name': args.publicName, 'links': args.publicLinks,
           'tz': args.timeZone, 'pref1': args.prefEmailNotify});
         Authenticator.invalidate(ai.nick);
       }
@@ -2038,7 +2135,7 @@ class Servant {
         var rand = new Random();
         int code = 10000 + rand.nextInt(89999);
         var proposedEmail = {'email': args.email, 'code': code.toString()};
-        await db.execute('update xuser set proposed_email=@p where id=${userId}', {'p': proposedEmail});
+        await db.execute('update xuser set proposed_email=@p where id=${userId}', substitutionValues: {'p': proposedEmail});
 
         //email the code to args.email
         var settings = ApiGlobals.configSettings;
@@ -2054,19 +2151,18 @@ class Servant {
       //if password provided, update it
       if (args.savePW != null) {
         await db.execute('update xuser set password=@p where id=${userId}',
-          {'p': MiscLib.passwordHash(args.savePW)});
+          substitutionValues: {'p': MiscLib.passwordHash(args.savePW)});
       }
     });
     return dbBase(dbresult);
   }
 
   ///save a user avatar
-  @Expose(method: 'POST', as: 'UserAvatarSave')
   Future<APIResponseBase> userAvatarSave(UserAvatarSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('UserAvatarSave', (db) async {
       await ImageLib.saveAvatar(db, ai.id, args.imageBytes);
@@ -2075,30 +2171,28 @@ class Servant {
   }
 
   ///dismiss a notification
-  @Expose(method: 'POST', as: 'UserNotifySave')
   Future<APIResponseBase> userNotifySave(UserNotifySaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     final dbresult = await Database.safely('UserNotifySave', (db) async {
       await db.execute('delete from xuser_notify where xuser_id=${ai.id} and id=@i',
-        {'i':args.notifyId});
+        substitutionValues: {'i':args.notifyId});
     });
     return dbBase(dbresult);
   }
 
   ///recover a password (see args doc for the 2 modes)
-  @Expose(method: 'POST', as: 'UserRecoverPassword')
   Future<APIResponseBase> userRecoverPassword(UserRecoverPasswordRequest args) async {
     final dbresult = await Database.safely('UserRecoverPassword', (db) async {
       //get info from xuser for either mode
-      List<Row> userRows = await MiscLib.query(db, 'select id,recovery_code,email,proposed_email from xuser where lower(nick)=@n and status=\'A\'',
-        {'n': (args.recoveryNick ?? '').toLowerCase()}).toList();
+      final userRows = await MiscLib.query(db, 'select id,recovery_code,email,proposed_email from xuser where lower(nick)=@n and status=\'A\'',
+        {'n': (args.recoveryNick ?? '').toLowerCase()});
       if (userRows.length == 0) throw new Exception('No such user');
-      Row userRow = userRows[0];
-      int userId = userRow.id;
+      final userRow = userRows[0];
+      int userId = userRow['id'];
 
       //email mode
       if (args.mode == 'E') {
@@ -2106,12 +2200,12 @@ class Servant {
         Random rand = new Random();
         int code = 10000 + rand.nextInt(89999);
         await db.execute('update xuser set recovery_code=@c where id=${userId}',
-          {'c': code.toString()});
+          substitutionValues: {'c': code.toString()});
 
         //email it
-        String email1 = userRow.email ?? '';
+        String email1 = userRow['email'] ?? '';
         String email2 = null;
-        Map proposedEmail = userRow.proposed_email;
+        Map proposedEmail = userRow['proposed_email'];
         if (proposedEmail != null) email2 = proposedEmail['email'];
         List<String> allEmails = new List<String>();
         if (email1.length > 0) allEmails.add(email1);
@@ -2129,10 +2223,10 @@ class Servant {
         String err = WLib.passwordComplexityError(args.recoveryPassword);
         if (err != null)
           throw new Exception(err);
-        if (args.code == null || args.code != userRow.recovery_code)
+        if (args.code == null || args.code != userRow['recovery_code'])
           throw new Exception('Recovery code is not correct.');
         await db.execute('update xuser set password=@p where id=${userId}',
-          {'p': MiscLib.passwordHash(args.recoveryPassword)});
+          substitutionValues: {'p': MiscLib.passwordHash(args.recoveryPassword)});
         Authenticator.invalidate(args.recoveryNick);
       }
     });
@@ -2140,12 +2234,11 @@ class Servant {
   }
 
   ///save a user's opinion of another user
-  @Expose(method: 'POST', as: 'UserUserSave')
   Future<APIResponseBase> userUserSave(UserUserSaveRequest args) async {
     //must be logged in
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return SOMETHINGResponse(base: authFail);
+    if (authFail != null) return authFail;
 
     //validate
     bool ok = args.kind == 'B' || args.kind == 'F' || args.kind == null;
@@ -2153,9 +2246,11 @@ class Servant {
 
     final dbresult = await Database.safely('UserUserSave', (db) async {
       var params = {'k': args.kind};
-      int count = await db.execute('update xuser_xuser set kind=@k where owner_id=${ai.id} and about_id=${args.aboutId}', params);
+      int count = await db.execute('update xuser_xuser set kind=@k where owner_id=${ai.id} and about_id=${args.aboutId}', 
+        substitutionValues: params);
       if (count == 0)
-        await db.execute('insert into xuser_xuser(owner_id,about_id,kind)values(${ai.id},${args.aboutId},@k)', params);
+        await db.execute('insert into xuser_xuser(owner_id,about_id,kind)values(${ai.id},${args.aboutId},@k)', 
+          substitutionValues: params);
     });
     return dbBase(dbresult);
   }

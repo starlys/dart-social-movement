@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'config_settings.dart';
-import 'package:safe_config/safe_config.dart';
 
 ///wraps config file and watches for changes;
 ///note that this class prevents the app from ending

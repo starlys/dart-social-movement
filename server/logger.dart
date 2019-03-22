@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'config.dart';
+import 'config_loader.dart';
 import '../models/models.dart';
 
 ///error logger
@@ -24,7 +24,7 @@ class Logger{
       String dateS = nameFormatter.format(d);
       var fullFormatter = new DateFormat('y-MM-dd hh-mm-ss');
       String dateTimeS = fullFormatter.format(d);
-      String fullName = Config.rootPath() + '/' + namePrefix + dateS + '.txt';
+      String fullName = ConfigLoader.rootPath() + '/' + namePrefix + dateS + '.txt';
 
       //write message
       File f = new File(fullName);

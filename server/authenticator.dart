@@ -11,21 +11,13 @@ import '../models/models.dart';
 //import "package:memcache/memcache.dart";
 //import "package:memcache/src/memcache_native_connection.dart";
 
-///Centralizes access to credentials via memcached and database;
+///Centralizes access to credentials via cache and database;
 /// this is meant to be fast as the credentials are checked on every
 /// client request
 class Authenticator {
 
-  //static MemcachedClient _memcached;
-  //static MemCacheNativeConnection _memcached;
   static Map<String, AuthInfo> _recentAuth = new Map<String, AuthInfo>(); //indexed by uppercase nick!
   static int _putCount = 0; //num items added to _recent since last cleanup
-
-  ///set up credential caching system
-  static Future init() async {
-    //_memcached = await MemCacheNativeConnection.connect('127.0.0.1', 11211);
-    //_memcached = await MemcachedClient.connect([new SocketAddress('127.0.0.1', 11211)]);
-  }
 
   ///remove the given user id from the cache (for example, when they update their profile)
   static void invalidate(String nick) {
@@ -60,16 +52,16 @@ class Authenticator {
     ai = new AuthInfo();
     ai..nick = nick ..password = password;
     ai.passwordHash = MiscLib.passwordHash(password);
-    await Database.safely('x', null, (db) async {
-      List<Row> rows = await db.query('select id,nick,site_admin,public_name,timezone from xuser where status=\'A\' and lower(nick)=@n and password=@p',
-        {'n':nick.toLowerCase(), 'p':ai.passwordHash}).toList();
+    await Database.safely('x', (db) async {
+      final rows = await MiscLib.query(db, 'select id,nick,site_admin,public_name,timezone from xuser where status=\'A\' and lower(nick)=@n and password=@p',
+        {'n':nick.toLowerCase(), 'p':ai.passwordHash});
       if (rows.length > 0) {
-        Row row = rows[0];
-        ai..id = row.id
-          ..nick = row.nick //fixes capitalization compared to nick parameter
-          ..isSiteAdmin = row.site_admin == 'Y'
-          ..publicName = row.public_name
-          ..timeZoneName = row.timezone
+        final row = rows[0];
+        ai..id = row['id']
+          ..nick = row['nick'] //fixes capitalization compared to nick parameter
+          ..isSiteAdmin = row['site_admin'] == 'Y'
+          ..publicName = row['public_name']
+          ..timeZoneName = row['timezone']
           ..lastPushQueueGetUtc = WLib.utc1970();
       }
     });

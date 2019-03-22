@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart' as path;
+//import 'package:path/path.dart' as path;
 import 'package:quiver/async.dart';
 
 Logger logger = new Logger('S3Bucket');
@@ -12,7 +12,7 @@ class S3Bucket {
   String _userName;
   String _accessKeyId;
   List<int> _secretAccessKey;
-  final _hmacFactory;
+  final Function _hmacFactory;
   String _host;
   String bucket;
 
@@ -25,7 +25,7 @@ class S3Bucket {
   S3Bucket(String userName, String accessKeyId, String secretAccessKey,
                  String host, String bucket) :
     this.config(userName, accessKeyId, secretAccessKey, host, bucket,
-        () => new HMAC(new SHA1(), new Utf8Codec().encode(secretAccessKey)));
+        () => new Hmac(sha1, new Utf8Codec().encode(secretAccessKey)));
 
   S3Bucket subDir(String name) =>
       new S3Bucket.config(_userName, _accessKeyId, _secretAccessKey, _host,
@@ -36,7 +36,6 @@ class S3Bucket {
    */
   Future upload(List<int> data, String path, {ContentType contentType,
     int maxAge, int trials: 100}) {
-    // TODO use maxAge
     var ct = contentType == null ? '' : contentType.toString();
     return _repeatMoreTimes(() => _put(path, data, ct), trials);
   }
@@ -48,10 +47,10 @@ class S3Bucket {
         request.headers.date = now;
         Map amzHeaders = {};
         var contentType = '';
-        request.headers.add(HttpHeaders.ACCEPT_ENCODING, 'deflate');
+        request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
         String authorization = _getAuthorization(path, 'DELETE', '', contentType,
             now, bucket, amzHeaders: amzHeaders);
-        request.headers.add(HttpHeaders.AUTHORIZATION, authorization);
+        request.headers.add(HttpHeaders.authorizationHeader, authorization);
 
         return request.close();
     }).then((HttpClientResponse response) {
@@ -64,17 +63,17 @@ class S3Bucket {
         .then((HttpClientRequest request) {
       DateTime now = new DateTime.now();
       request.headers.date = now;
-      request.headers.add(HttpHeaders.CONTENT_TYPE, contentType);
-      request.headers.add(HttpHeaders.CONTENT_LENGTH, data.length);
-      request.headers.add(HttpHeaders.CONNECTION, 'keep-alive');
-      request.headers.add(HttpHeaders.CONNECTION, 'keep-alive');
+      request.headers.add(HttpHeaders.contentTypeHeader, contentType);
+      request.headers.add(HttpHeaders.contentLengthHeader, data.length);
+      request.headers.add(HttpHeaders.connectionHeader, 'keep-alive');
+      request.headers.add(HttpHeaders.connectionHeader, 'keep-alive');
       request.headers.add('x-amz-acl', 'public-read');
-      request.headers.add(HttpHeaders.ACCEPT_ENCODING, 'deflate');
+      request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
 
       var amzHeaders = {'x-amz-acl': 'public-read'};
       String authorization = _getAuthorization(path, 'PUT', '', contentType,
           now, bucket, amzHeaders: amzHeaders);
-      request.headers.add(HttpHeaders.AUTHORIZATION, authorization);
+      request.headers.add(HttpHeaders.authorizationHeader, authorization);
 
       request.add(data);
       return request.close();
@@ -87,7 +86,7 @@ class S3Bucket {
     if (response.statusCode == 200 || response.statusCode == 204)
       logger.fine('File $operation successful. Status code: ${response.statusCode}');
     else {
-      response.transform(UTF8.decoder).toList().then((data) {
+      response.transform(utf8.decoder).toList().then((data) {
           var message =
               'File $operation not successful!\n'
               'Status code: ${response.statusCode}\n'
@@ -99,7 +98,7 @@ class S3Bucket {
   }
 
   _repeatMoreTimes(Function toCall, num trials) {
-    var _toCall = (_) => toCall().then((_) => false).catchError((e, s) {
+    Function _toCall = (_) => toCall().then((_) => false).catchError((e, s) {
       if (e is SocketException || e is HttpException) {
         logger.fine('Repeating upload due to exception:\n$e');
         return new Future.delayed(new Duration(milliseconds: 100), () => true);
@@ -115,7 +114,6 @@ class S3Bucket {
   /*
    * subresources: {nameOfSubresource: value} if subresource doesn't have value,
    * then value = ""
-   * TODO: request specifies query for canonicalResource
    * */
   String _getAuthorization(String path, String httpVerb, String contentMD5,
                            String contentType, DateTime now, String bucket,
@@ -164,14 +162,16 @@ class S3Bucket {
                           "${date}\n"+
                           "$canonicalizedAmzHeaders"+
                           "$canonicalizedResource";
-    HMAC hmac = _hmacFactory();
+    Hmac hmac = _hmacFactory();
     Utf8Codec codec = new Utf8Codec();
     logger.fine("Signature:\n$stringToSign");
     logger.fine("...end of signature.");
     List<int> encodedToSign = codec.encode(stringToSign);
-    hmac.add(encodedToSign);
-    List<int> signed = hmac.close();
-    String signature = CryptoUtils.bytesToBase64(signed);
+    //hmac.add(encodedToSign);
+    List<int> signed = hmac.convert(encodedToSign).bytes;
+    //List<int> signed = hmac.close();
+    String signature = base64Encode(signed);
+    //String signature = CryptoUtils.bytesToBase64(signed);
     String authorization = "AWS $_accessKeyId:$signature";
     return authorization;
   }

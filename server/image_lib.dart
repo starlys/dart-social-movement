@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:image/image.dart';
-import 'amazon/amazon_s3.dart';
+import 'package:postgres/postgres.dart';
+import 'amazon/s3_bucket.dart';
 import 'config_settings.dart';
 import 'misc_lib.dart';
 
@@ -18,7 +19,7 @@ class ImageLib {
     String postBucketName = cfg.amazonS3Post.bucket;
 
     _avatarUrlBase = cfg.amazonS3Avatar.url;
-    _postUrlBase = cfg.samazonS3Post.url;
+    _postUrlBase = cfg.amazonS3Post.url;
 
     _avatarBucket = new S3Bucket('username', id, key, endpoint, avatarBucketName);
     _postBucket = new S3Bucket('username', id, key, endpoint, postBucketName);
@@ -26,7 +27,7 @@ class ImageLib {
 
   ///resize given image file to 100x100 and save as jpg in the user-avatar bucket; increment avatar_no;
   /// user record must already exist
-  static Future saveAvatar(Connection db, int userId, List<int> imageBytes) async {
+  static Future saveAvatar(PostgreSQLConnection db, int userId, List<int> imageBytes) async {
     //convert to 100x100
     Image img1 = decodeImage(imageBytes);
     Image img2 = copySquare(img1);
@@ -34,7 +35,7 @@ class ImageLib {
     imageBytes = encodeJpg(img3, quality: 92);
 
     //get and increment avatar_no
-    int avatarNo = await MiscLib.queryScalar(db, 'update xuser set avatar_no=avatar_no+1 where id=${userId} returning avatar_no');
+    int avatarNo = await MiscLib.queryScalar(db, 'update xuser set avatar_no=avatar_no+1 where id=${userId} returning avatar_no', null);
     if (avatarNo == null) throw new Exception('Cannot save avatar for missing user');
 
     //save to S3

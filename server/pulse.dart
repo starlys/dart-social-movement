@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-//import 'api_globals.dart';
-import 'config.dart';
+import 'config_loader.dart';
 
 ///handles trivial tasks in the API on a timer. For complex tasks, write the code in the
 /// worker app instead.
@@ -21,7 +20,7 @@ class Pulse {
 
   Future _timerTick() async {
     //exit app if stop file exists
-    File stopFile = new File(Config.rootPath() + '/stop.txt');
+    File stopFile = new File(ConfigLoader.rootPath() + '/stop.txt');
     if (await stopFile.exists()) {
       await writeAliveFile(false);
       _stopEvent();
@@ -39,7 +38,7 @@ class Pulse {
   ///write to api_alive.txt so the supervisor job can detect if this process is running
   Future writeAliveFile(bool makeExist) async {
     try {
-      File f = new File(Config.rootPath() + '/api_alive.txt');
+      File f = new File(ConfigLoader.rootPath() + '/api_alive.txt');
       if (makeExist){
         await f.writeAsString("!");
       } else {

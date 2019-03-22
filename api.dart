@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'server/api_globals.dart';
 import 'server/pulse.dart';
-import 'server/servant.dart';
+import 'server/servant_controller.dart';
 import 'server/config_loader.dart';
 import 'server/linkback.dart';
-import 'server/authenticator.dart';
 import 'server/date_lib.dart';
 import 'server/database.dart';
 import 'server/image_lib.dart';
@@ -20,7 +19,6 @@ main() async {
   //set up globals and other initializers
   ApiGlobals.configLoader.init();
   bool isDev = ApiGlobals.configLoader.isDev;
-  await Authenticator.init();
   await DateLib.init();
   ImageLib.init(ApiGlobals.configSettings);
 
@@ -64,7 +62,7 @@ main() async {
 
   //attach the link-back style requests to the router (these include any
   // methods not served in the RPC style, such as links sent by email)
-  angelApp.get('/linkback/ValidateEmail', (req, resp) => Linkback.validateEmail(req));
+  angelApp.get('/linkback/ValidateEmail', (req, resp) => Linkback.validateEmail(req, resp));
 
   //start listener
   HttpServer server = await angelHttp.startServer();

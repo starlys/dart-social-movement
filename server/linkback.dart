@@ -1,16 +1,17 @@
 import 'package:angel_framework/angel_framework.dart';
-import 'dart:io';
+import 'package:http_parser/http_parser.dart';
 import 'dart:async';
 import 'database.dart';
 import 'api_globals.dart';
+import 'misc_lib.dart';
 
 ///http handlers for hard links such as those included in emails
 class Linkback {
 
   //validate email address for user id; see xuser.proposed_email field for
   // explanation. Url is /linkback/ValidateEmail?id=1&code=abc
-  static Future validateEmail(RequestContext req) async {
-    await Database.safely('ValidateEmail', null, (db) async {
+  static Future validateEmail(RequestContext req, ResponseContext resp) async {
+    await Database.safely('ValidateEmail', (db) async {
 
       //get params
       Map params = req.uri.queryParameters;
@@ -23,10 +24,10 @@ class Linkback {
       String email = null, actualCode = null;
 
       //load proposed_email and unpack
-      Row row = await db.query('select proposed_email from xuser where id=@i',
-        {'i':id}).single;
+      final row = await MiscLib.queryRow(db, 'select proposed_email from xuser where id=@i',
+        {'i':id});
       if (row != null) {
-        Map proposedEmail = row[0];
+        Map proposedEmail = row['proposed_email'];
         if (proposedEmail != null) {
           email = proposedEmail['email'];
           actualCode = proposedEmail['code'];
@@ -38,7 +39,7 @@ class Linkback {
       if (ok) {
           if (code == actualCode) {
             try {
-              await db.execute('update xuser set proposed_email=null,email=@e where id=${id}', {'e': email});
+              await db.execute('update xuser set proposed_email=null,email=@e where id=${id}', substitutionValues: {'e': email});
             }
             catch (ex) {
               ok = false; //duplicate email
@@ -51,20 +52,20 @@ class Linkback {
 
       //compose html response
       String pageHtml = ok ? 'Email successfully updated.' : (finalMessage ?? 'Page called in error.');
-      await _commonResponse(req, pageHtml);
+      await _commonResponse(resp, pageHtml);
     });//safely
   }
 
   //writes content and closes req, where body is plain text or html;
   //this gets wrapped in html+body tags
-  static Future _commonResponse(HttpRequest req, String body) async {
-    String homeUrl = ApiGlobals.config.homeUrl;
-    String siteName = ApiGlobals.config.siteName;
+  static Future _commonResponse(ResponseContext resp, String body) async {
+    String homeUrl = ApiGlobals.configSettings.homeUrl;
+    String siteName = ApiGlobals.configSettings.siteName;
     String page = '<html><body>' + body
       + '<hr />Close this tab, or continue to <a href="${homeUrl}">${siteName}</a></body></html>';
 
-    req.response.headers.contentType = new ContentType('text', 'html');
-    req.response.write(page);
-    await req.response.close();
+    resp.contentType = MediaType('text', 'html');
+    resp.write(page);
+    await resp.close();
   }
 }

@@ -28,7 +28,7 @@ class ProjectTreePane extends BaseTreePane {
   Future insertDetails(Element detailBox, int catId) async {
     //get projects in this cat
     _projects = await RpcLib.projectQuery(
-      new ProjectQueryRequest() ..catId = catId);
+      new ProjectQueryRequest(catId: catId));
 
     //convert to html links
     detailBox.append(new HeadingElement.h3() ..text = 'Projects in this category');

@@ -41,11 +41,11 @@ class BaseTreePane extends BasePane {
 
     //load categories, which comes back as a flat list; then convert to
     //tree-shaped data
-    CategoryQueryResponse cats = await RpcLib.categoryQuery(new CategoryQueryRequest() ..kind = categoryKind);
+    CategoryQueryResponse cats = await RpcLib.categoryQuery(new CategoryQueryRequest(kind: categoryKind));
     _allCats = cats.categories;
     List<CategoryNode> convertImmediateChildren(int parentId) {
       return _allCats.where((c) => c.parentId == parentId)
-        .map((c) => new CategoryNode() ..title = c.title ..description = c.description ..id = c.id)
+        .map((c) => new CategoryNode() ..title = c.title ..description = c.description ..id = c.iid)
         .toList();
     }
     void buildRecur(CategoryNode node) {
@@ -114,8 +114,8 @@ class BaseTreePane extends BasePane {
     ConfirmDialog dialog = new ConfirmDialog('Delete category? Items at this level will be moved up a level', ConfirmDialog.YesNoOptions);
     int btnNo = await dialog.show();
     if (btnNo != 0) return;
-    CategoryDeleteRequest req = new CategoryDeleteRequest() ..catId = _selectedCatId ..kind = categoryKind;
-    APIResponseBase response = await RpcLib.command('CategoryDelete', req);
+    CategoryDeleteRequest req = new CategoryDeleteRequest(catId: _selectedCatId, kind: categoryKind);
+    APIResponseBase response = await RpcLib.categoryDelete(req);
     if (response.isOK) recreatePane();
   }
 
@@ -148,14 +148,14 @@ class BaseTreePane extends BasePane {
     if (moveMode == null) return;
 
     //save change
-    CategorySaveRequest req = new CategorySaveRequest()
-      ..catId = _selectedCatId
-      ..kind = categoryKind
-      ..referenceId = referenceCatId
-      ..referenceMode = moveMode
-      ..title = _selectedCat.title
-      ..description = _selectedCat.description;
-    APIResponseBase response = await RpcLib.command('CategorySave', req);
+    CategorySaveRequest req = new CategorySaveRequest(
+      catId: _selectedCatId,
+      kind: categoryKind,
+      referenceId: referenceCatId,
+      referenceMode: moveMode,
+      title: _selectedCat.title,
+      description: _selectedCat.description);
+    APIResponseBase response = await RpcLib.categorySave(req);
     if (response.isOK) recreatePane();
   }
 
@@ -180,11 +180,11 @@ class BaseTreePane extends BasePane {
 
     //save changes
     List<int> idsToMove = getContentIds(titlesToMove);
-    CategoryMoveContentsRequest req = new CategoryMoveContentsRequest()
-      ..catId = targetCatId
-      ..kind = categoryKind
-      ..relatedIds = idsToMove;
-    APIResponseBase response = await RpcLib.command('CategoryMoveContents', req);
+    CategoryMoveContentsRequest req = new CategoryMoveContentsRequest(
+      catId: targetCatId,
+      kind: categoryKind,
+      relatedIds: idsToMove);
+    APIResponseBase response = await RpcLib.categoryMoveContents(req);
     if (response.isOK) recreatePane();
   }
 

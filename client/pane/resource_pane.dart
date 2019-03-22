@@ -21,7 +21,7 @@ class ResourcePane extends BasePane {
 
     //get resource
     _resourceId = pk.part1AsInt;
-    ResourceGetResponse resource = await RpcLib.resourceGet(new ResourceGetRequest() ..id = _resourceId);
+    ResourceGetResponse resource = await RpcLib.resourceGet(new ResourceGetRequest(iid: _resourceId));
 
     //build pane - readonly info
     buildSkeletonHtml2(paneClass: 'resource', iconHoverText: 'Resource', iconName: 'paneresource', title: resource.title);
@@ -75,11 +75,11 @@ class ResourcePane extends BasePane {
     }
     if (loggedIn && resource.isSiteAdmin == 'Y' && resource.visible == 'N') {
       paneMenuBar.addButton('Delete', (e) async {
-        await RpcLib.command('ResourceTriage', new ResourceTriageRequest() ..id = _resourceId ..mode = 'D');
+        await RpcLib.resourceTriage(ResourceTriageRequest(iid: _resourceId, mode:'D'));
         PaneFactory.delete(this);
       });
       paneMenuBar.addButton('Reset To Visible', (e) async {
-        await RpcLib.command('ResourceTriage', new ResourceTriageRequest() ..id = _resourceId ..mode = 'R');
+        await RpcLib.resourceTriage(ResourceTriageRequest(iid: _resourceId, mode:'R'));
         recreatePane();
       });
     }
@@ -91,9 +91,9 @@ class ResourcePane extends BasePane {
     if (important) vote = 'I';
     else if (remove) vote = 'R';
     if (!Messages.checkLoggedIn()) return;
-    ResourceUserSaveRequest req = new ResourceUserSaveRequest()
-      ..id = _resourceId
-      ..kind = vote;
-    await RpcLib.command('ResourceUserSave', req);
+    ResourceUserSaveRequest req = new ResourceUserSaveRequest(
+      iid: _resourceId,
+      kind: vote);
+    await RpcLib.resourceUserSave(req);
   }
 }

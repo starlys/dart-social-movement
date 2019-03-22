@@ -1,5 +1,4 @@
 import 'dart:html';
-import 'package:dquery/dquery.dart';
 import 'main_controller.dart';
 import 'pane_factory.dart';
 import 'client_store.dart';
@@ -21,7 +20,7 @@ class MainMenuHandler {
 
     //create all items
     var $ = document.querySelector;
-    _panel = $('#menu2').first;
+    _panel = $('#menu2');
     int year = (new DateTime.now()).year;
 
     addHeading('Resources - books, web, etc.', 'HELPRES');

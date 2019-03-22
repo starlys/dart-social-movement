@@ -28,7 +28,7 @@ class ResourceTreePane extends BaseTreePane {
   Future insertDetails(Element detailBox, int catId) async {
     //get resources in this cat
     _resources = await RpcLib.resourceQuery(
-      new ResourceQueryRequest() ..categoryId = catId);
+      new ResourceQueryRequest(categoryId: catId));
 
     //convert to html links; also link directly to resource
     detailBox.append(new HeadingElement.h3() ..text = 'Resources in this category');
@@ -69,7 +69,7 @@ class ResourceTreePane extends BaseTreePane {
   List<int> getContentIds(List<String> contentTitles) {
     return contentTitles.map((s) {
       List<ResourceItem> matches = _resources.items.where((i) => i.title == s).toList();
-      if (matches.length > 0) return matches[0].id;
+      if (matches.length > 0) return matches[0].iid;
       return null;
     })
     .where((i) => i != null)

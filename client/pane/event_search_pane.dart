@@ -58,15 +58,14 @@ class EventSearchPane extends BasePane {
       //parse inputs
       DateTime today = new DateTime.now();
       DateTime dateTo = today.add(new Duration(days: int.parse(dateInput.value)));
-      EventQueryRequest req = new EventQueryRequest()
-        ..title = trimInput(titleInp)
-        ..dateFrom = WLib.packDateEntry(today.year, today.month, today.day, 0, 0)
-        ..dateTo = WLib.packDateEntry(dateTo.year, dateTo.month, dateTo.day, 0, 0);
-      if (locCheck.checked) {
-        req.miles = milesInp.valueAsNumber;
-        req.lat = ClientStore.lat.toString();
-        req.lon = ClientStore.lon.toString();
-      }
+      EventQueryRequest req = new EventQueryRequest(
+        title: trimInput(titleInp),
+        dateFrom: WLib.packDateEntry(today.year, today.month, today.day, 0, 0),
+        dateTo: WLib.packDateEntry(dateTo.year, dateTo.month, dateTo.day, 0, 0),
+        miles: locCheck.checked ? milesInp.valueAsNumber : 0,
+        lat: ClientStore.lat.toString(),
+        lon: ClientStore.lon.toString()
+      );
 
       //load
       _resultDiv.style.display = 'block';

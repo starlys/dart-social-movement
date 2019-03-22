@@ -19,9 +19,10 @@ class NodeSelectDialog extends DialogBox {
   Future build() async {
     //define handling node selection
     OutlineBuilder outline;
-    _nodeSelectHandler(Element node) {
+    Future _nodeSelectHandler(Element node) {
       int id = int.parse(OutlineBuilder.getId(node));
       hide(id);
+      return Future.value(null);
     }
 
     //main content - outline

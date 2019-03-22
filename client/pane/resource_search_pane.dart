@@ -39,7 +39,7 @@ class ResourceSearchPane extends BasePane {
     _resultDiv.style.display = 'block';
     _resultDiv.innerHtml = 'Loading...';
     ResourceQueryResponse response = await RpcLib.resourceQuery(
-      new ResourceQueryRequest() ..title = title ..kind = kind);
+      new ResourceQueryRequest(title: title, kind: kind));
     _resultDiv.innerHtml = '';
     for (ResourceItem res in response.items) {
       DivElement itemDiv = new DivElement() ..className = 'space1';

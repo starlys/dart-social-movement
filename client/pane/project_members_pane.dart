@@ -16,6 +16,8 @@ class ProjectMembersPane extends BasePane {
   ProjectUserQueryResponse _project;
   List<ProjectUserItem> _filteredUsers; //may be same list as _project.users
   int _pageNo = 0; //controls paging for loads
+  final _voteKindByUserId = Map<int, String>();
+  final _userKindByUserId = Map<int, String>();
 
   @override
   Future init(PaneKey pk) async {
@@ -106,7 +108,7 @@ class ProjectMembersPane extends BasePane {
 
     //make checkbox
     CheckboxInputElement chk = new CheckboxInputElement()
-      ..checked = user.voteKind == 'L'
+      ..checked = _voteKindByUserId[user.userId] == 'L'
       ..dataset['uid'] = user.userId.toString();
 
     //hook up check event
@@ -118,14 +120,14 @@ class ProjectMembersPane extends BasePane {
       String voteKind = chk2.checked ? 'L' : null;
 
       //save to server
-      ProjectUserUserSaveRequest req = new ProjectUserUserSaveRequest()
-        ..projectId = _projectId
-        ..aboutId = userId
-        ..kind = voteKind;
-      await RpcLib.command('ProjectUserUserSave', req);
+      final req = new ProjectUserUserSaveRequest(
+        projectId: _projectId,
+        aboutId: userId,
+        kind: voteKind);
+      await RpcLib.projectUserUserSave(req);
 
       //change in local data
-      user.voteKind = voteKind;
+      _voteKindByUserId[userId] =voteKind;
     });
 
     return chk;
@@ -144,7 +146,7 @@ class ProjectMembersPane extends BasePane {
     Globals.allProjectUserKinds.forEach((code, text) {
       sel.append(new OptionElement(value: code) ..text = text);
     });
-    sel ..value = user.kind ..dataset['uid'] = user.userId.toString();
+    sel ..value = _userKindByUserId[user.userId] ..dataset['uid'] = user.userId.toString();
 
     //hook up event
     sel.onChange.listen((e) async {
@@ -154,14 +156,14 @@ class ProjectMembersPane extends BasePane {
       String kind = sel2.value;
 
       //save to server
-      ProjectUserSaveRequest req = new ProjectUserSaveRequest()
-        ..projectId = _projectId
-        ..userId = userId
-        ..kind = kind;
-      await RpcLib.command('ProjectUserSave', req);
+      ProjectUserSaveRequest req = new ProjectUserSaveRequest(
+        projectId: _projectId,
+        userId: userId,
+        kind: kind);
+      await RpcLib.projectUserSave(req);
 
       //change in local data
-      user.kind = kind;
+      _userKindByUserId[userId] = kind;
 
       //rebuild the kind icon locally
       Element icon = sel2.parent.querySelector('img');
@@ -173,10 +175,14 @@ class ProjectMembersPane extends BasePane {
 
   ///set _project and _filteredusers based on arguments; caller should set _pageNo first
   Future _loadProject(String nameFilter) async {
-    ProjectUserQueryRequest req = new ProjectUserQueryRequest() ..projectId = _projectId
-      ..resultPage = _pageNo ..name = nameFilter;
+    ProjectUserQueryRequest req = new ProjectUserQueryRequest(projectId: _projectId,
+      resultPage: _pageNo, name: nameFilter);
     _project = await RpcLib.projectUserQuery(req);
     _filteredUsers = _project.users;
+    for (final user in _project.users) {
+      _voteKindByUserId[user.userId] = user.voteKind;
+      _userKindByUserId[user.userId] = user.kind;
+    }
   }
 
 }

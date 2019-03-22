@@ -30,16 +30,17 @@ class DocPane extends BasePane {
     await super.init(pk);
 
     //get doc
-    DocGetRequest req = new DocGetRequest();
     String docIdOrCode = pk.part1; //either an int or s=specialcode
-    if (docIdOrCode.startsWith('s=')) req.specialCode = docIdOrCode.substring(2);
-    else req.docId = int.parse(docIdOrCode);
+    bool isSpecialCode = docIdOrCode.startsWith('s=');
+    DocGetRequest req = new DocGetRequest(
+      specialCode: isSpecialCode ? docIdOrCode.substring(2) : null,
+      docId: isSpecialCode ? null : int.parse(docIdOrCode));
     _doc = await RpcLib.docGet(req);
 
     //build pane
     buildSkeletonHtml2(paneClass: 'doc', iconHoverText: 'Document', iconName: 'panedoc', title: _doc.title);
     clearLoadingMessage();
-    bodyElement.append(new DivElement() ..text = 'Created on ' + _doc.createdAt);
+    bodyElement.append(new DivElement() ..text = 'Created on ' + _doc.createdAtR);
     //rev deatils section here
     var converter = MarkdownGetSanitizingConverter();
     String docHtml = converter.makeHtml(_doc.body);
@@ -87,15 +88,15 @@ class DocPane extends BasePane {
         StringDialog titleDialog = new StringDialog('New Title', _doc.title, Globals.maxTitleLength);
         String title = await titleDialog.show();
         if (title != null) {
-          var req = new DocSaveRequest()
-            ..docId = _doc.docId
-            ..projectId = _doc.projectId
-            ..retitleMode = 'R'
-            ..title = title;
-          APIResponseBase resp = await RpcLib.command('DocSave', req);
+          var req = new DocSaveRequest(
+            docId: _doc.docId,
+            projectId: _doc.projectId,
+            retitleMode: 'R',
+            title: title);
+          APIResponseBase resp = await RpcLib.docSave(req);
           if (resp.ok == 'Y') {
             Messages.timed('Title changed.');
-            _doc.title = title;
+            //_doc.title = title;
             retitle(title);
           }
         }
@@ -109,23 +110,23 @@ class DocPane extends BasePane {
     bool ok = await titleDialog.show();
     if (!ok) return;
     String summary = titleDialog.description;
-    var req = new DocSaveRequest()
-      ..docId = _doc.docId
-      ..title = _doc.title
-      ..body = newbody
-      ..summary = summary;
-    APIResponseBase resp = await RpcLib.command('DocSave', req);
+    var req = new DocSaveRequest(
+      docId: _doc.docId,
+      title: _doc.title,
+      body: newbody,
+      summary: summary);
+    APIResponseBase resp = await RpcLib.docSave(req);
     if (resp.ok == 'Y') Messages.criticalMessage('Document changes awaiting review. Once they are approved as non-spam, all users will have the opportunity to vote on the changes.');
   }
 
   Future _saveProjectDocChanges(String newbody) async {
     //save to server
-    var req = new DocSaveRequest()
-      ..docId = _doc.docId
-      ..projectId = _doc.projectId
-      ..title = _doc.title
-      ..body = newbody;
-    APIResponseBase resp = await RpcLib.command('DocSave', req);
+    var req = new DocSaveRequest(
+      docId: _doc.docId,
+      projectId: _doc.projectId,
+      title: _doc.title,
+      body: newbody);
+    APIResponseBase resp = await RpcLib.docSave(req);
     if (resp.ok == 'Y') Messages.timed('Document saved.');
 
     //update the preview

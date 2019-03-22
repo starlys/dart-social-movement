@@ -20,9 +20,9 @@ class ProjectDialog extends DialogBox {
   Future build() async {
     //get project
     if (_projectId == 0)
-      project = new ProjectGetResponse() ..leadership = 'D';
+      project = new ProjectGetResponse(leadership: 'D');
     else
-      project = await RpcLib.projectGet(new ProjectGetRequest() ..projectId = _projectId);
+      project = await RpcLib.projectGet(new ProjectGetRequest(projectId: _projectId));
 
     //main content
     FormBuilder form = new FormBuilder(frame, 'Project');
@@ -52,15 +52,15 @@ class ProjectDialog extends DialogBox {
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('Save', (e) async {
       String leadershipCode = radioFixed.checked ? 'F' : 'D';
-      ProjectSaveRequest req = new ProjectSaveRequest()
-        ..projectId = _projectId
-        ..title = trimInput(titleInput)
-        ..description = trimTextArea(descrInput)
-        ..privacy = privacyInput.value
-        ..leadership = leadershipCode
-        ..categoryId = _categoryId;
+      ProjectSaveRequest req = new ProjectSaveRequest(
+        projectId: _projectId,
+        title: trimInput(titleInput),
+        description: trimTextArea(descrInput),
+        privacy: privacyInput.value,
+        leadership: leadershipCode,
+        categoryId: _categoryId);
 
-      APIResponseBase response = await RpcLib.command('ProjectSave', req);
+      APIResponseBase response = await RpcLib.projectSave(req);
       if (response.isOK) {
         hide(true);
         if (_projectId == 0) Messages.timed('Project will be reviewed for spam, then posted later.');

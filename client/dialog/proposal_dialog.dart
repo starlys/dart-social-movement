@@ -76,7 +76,7 @@ class ProposalDialog extends DialogBox {
         summary: trimTextArea(descInput),
         days: int.parse(daysInput.value),
         options: options);
-      APIResponseBase response = await RpcLib.command('ProposalSave', saveArgs);
+      APIResponseBase response = await RpcLib.proposalSave(saveArgs);
       if (response.isOK) {
         bool hasId = response.newId != null;
         hide(hasId ? response.newId : true); //true means "saved but we dont know the id"

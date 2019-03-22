@@ -84,7 +84,7 @@ class EventDialog extends DialogBox {
         startTime: WLib.packDateEntry(startsAt.year, startsAt.month, startsAt.day, startsAt.hour, startsAt.minute),
         lat: latlon[0].toString(),
         lon: latlon[1].toString());
-      APIResponseBase response = await RpcLib.command('EventSave', saveArgs);
+      APIResponseBase response = await RpcLib.eventSave(saveArgs);
       if (response.isOK) {
         if (isNewEvent) Messages.criticalMessage('The event will be reviewed and posted later');
         hide(true);

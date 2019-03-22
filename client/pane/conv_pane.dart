@@ -51,7 +51,7 @@ class ConvPane extends BasePane {
     await super.init(pk);
 
     //get conversation and posts
-    _conv = await RpcLib.convGet(new ConvGetRequest() ..convId = _convId ..mode = 'U');
+    _conv = await RpcLib.convGet(new ConvGetRequest(convId: _convId, mode: 'U'));
     _isJoined = _conv.isJoined == 'Y';
     _isManager = _conv.isManager == 'Y';
 
@@ -109,8 +109,8 @@ class ConvPane extends BasePane {
   void _tellServerReadPosition(DateTime readpos) {
     //NOTE this is not async!
     _resetReadDotImages(readpos);
-    RpcLib.command('ConvSetReadPosition', new ConvSetReadPositionRequest()
-      ..convId = _convId ..positionWDT = WLib.dateTimeToWire(readpos));
+    RpcLib.convSetReadPosition(ConvSetReadPositionRequest(
+      convId: _convId, positionWDT: WLib.dateTimeToWire(readpos)));
     Globals.doOnUserAction.remove(_autoReadPositionKey); //cancel auto-advance read position
   _autoReadPositionKey = null;
   }
@@ -247,7 +247,7 @@ class ConvPane extends BasePane {
     });
 
     //get more info about post from server
-    ConvPostGetResponse moreInfo = await RpcLib.convPostGet(new ConvPostGetRequest() ..postId = post.id);
+    ConvPostGetResponse moreInfo = await RpcLib.convPostGet(new ConvPostGetRequest(postId: post.id));
 
     //modify the box with the newly fetched info
     createdAtDiv.text = 'Posted on ' + moreInfo.createdAtReadable;
@@ -298,15 +298,13 @@ class ConvPane extends BasePane {
     bool isOwnPost = post.authorId == Globals.userId;
 
     //prep server request
-    ConvPostSaveRequest deleteReq = new ConvPostSaveRequest()
-      ..convId = _convId
-      ..postId = post.id;
-    if (isOwnPost)
-      deleteReq.delete = 'Y';
-    else {
-      deleteReq.censored = 'C';
-      deleteReq.ptext = 'Post deleted by: ' + Globals.nick;
-    }
+    ConvPostSaveRequest deleteReq = new ConvPostSaveRequest(
+      convId: _convId,
+      postId: post.id,
+      delete: isOwnPost ? 'Y' : 'N',
+      censored: isOwnPost ? '' : 'C',
+      ptext: isOwnPost ? null : 'Post deleted by: ' + Globals.nick
+      );
 
     //remove from DOM
     _removePostExpandBox();
@@ -316,7 +314,7 @@ class ConvPane extends BasePane {
     postEl.remove();
 
     //notify server
-    await RpcLib.command('ConvPostSave', deleteReq);
+    await RpcLib.convPostSave(deleteReq);
   }
 
   ///handle inappropriate checkbox
@@ -326,10 +324,10 @@ class ConvPane extends BasePane {
       StringDialog dlg = new StringDialog('Enter reason for flagging this post', '', 50);
       reason = await dlg.show();
     }
-    await RpcLib.command('ConvPostUserSave', new ConvPostUserSaveRequest()
-      ..postId = post.id
-      ..reason = reason
-      ..reaction = isChecked ? 'X' : ''
+    await RpcLib.convPostUserSave(ConvPostUserSaveRequest(
+      postId: post.id,
+      reason: reason,
+      reaction: isChecked ? 'X' : '')
     );
   }
 
@@ -367,11 +365,11 @@ class ConvPane extends BasePane {
       if (_conv.posts.length < 2) return;
       Element openingElement = expander.previousElementSibling;
       expander.remove();
-      ConvGetRequest req = new ConvGetRequest()
-        ..convId = _convId
-        ..mode = 'R'
-        ..rangeFromWDT = _conv.posts[0].createdAtWDT
-        ..rangeToWDT = _conv.posts[1].createdAtWDT;
+      ConvGetRequest req = new ConvGetRequest(
+        convId: _convId,
+        mode: 'R',
+        rangeFromWDT: _conv.posts[0].createdAtWDT,
+        rangeToWDT: _conv.posts[1].createdAtWDT);
       ConvGetResponse conv2 = await RpcLib.convGet(req);
       Element priorElement;
       for (ConvGetPostItem post in conv2.posts) {
@@ -458,16 +456,16 @@ class ConvPane extends BasePane {
   Future _savePost(String text, String tw) async {
     _resetReadDotImages(WLib.utcNow()); //server will mark all as read on post
     String lastPostWDT = _lastPost != null ? _lastPost.createdAtWDT : null;
-    APIResponseBase response = await RpcLib.command('ConvPostSave', new ConvPostSaveRequest()
-      ..convId = _convId
-      ..triggerWarning = tw
-      ..ptext = text
-      ..lastKnownWDT = lastPostWDT
+    APIResponseBase response = await RpcLib.convPostSave(ConvPostSaveRequest(
+      convId: _convId,
+      triggerWarning: tw,
+      ptext: text,
+      lastKnownWDT: lastPostWDT)
     );
     if (response.isOK) {
-      var item = new ConvGetPostItem() ..ptext = text
-        ..collapseMode = 'Normal' ..collapsePosition = 300
-        ..createdAtWDT = WLib.dateTimeToWire(WLib.utcNow());
+      var item = new ConvGetPostItem(ptext :text,
+        collapseMode :'Normal', collapsePosition: 300,
+        createdAtWDT :WLib.dateTimeToWire(WLib.utcNow()));
       _appendOnePost(item, false);
     }
   }
@@ -482,9 +480,9 @@ class ConvPane extends BasePane {
       if (_conv.like == 'I') imp.checked = true;
       paneMenuBar.addElement(impWrap);
       imp.onChange.listen((e) async {
-        ConvUserSaveRequest req = new ConvUserSaveRequest()
-          ..convId = _convId
-          ..like = (imp.checked ? 'I' : 'N');
+        ConvUserSaveRequest req = new ConvUserSaveRequest(
+          convId :_convId,
+          like :(imp.checked ? 'I' : 'N'));
         await RpcLib.convUserSave(req);
       });
 
@@ -499,11 +497,11 @@ class ConvPane extends BasePane {
       paneMenuBar.addElement(bmWrap);
       bm.onChange.listen((e) async {
         //update bookmarked items in my stuff
-        PushQueueItem it = new PushQueueItem()
-          ..kind = 'B' ..why = 'G'
-          ..iid = _convId
-          ..linkText = _conv.title
-          ..linkPaneKey = paneKey.full;
+        PushQueueItem it = new PushQueueItem(
+          kind :'B', why :'G',
+          iid :_convId,
+          linkText :_conv.title,
+          linkPaneKey :paneKey.full);
         if (bm.checked) {
           PushQueueHandler.itemsReceived(false, [it], 'B');
         } else {
@@ -511,9 +509,9 @@ class ConvPane extends BasePane {
         }
 
         //tell server
-        ConvUserSaveRequest req = new ConvUserSaveRequest()
-          ..convId = _convId
-          ..bookmarked = (bm.checked ? 'Y' : 'N');
+        ConvUserSaveRequest req = new ConvUserSaveRequest(
+          convId: _convId,
+          bookmarked: (bm.checked ? 'Y' : 'N'));
         await RpcLib.convUserSave(req);
       });
     }
@@ -522,8 +520,9 @@ class ConvPane extends BasePane {
     if (!_isJoined) {
       paneMenuBar.addButton('Join', (e) async {
         if (!Messages.checkLoggedIn()) return;
-        ConvUserSaveResponse response = await RpcLib.convUserSave(new ConvUserSaveRequest()
-          ..convId = _convId ..status = 'J');
+        ConvUserSaveResponse response = await RpcLib.convUserSave(new ConvUserSaveRequest(
+          convId: _convId, status: 'J')
+        );
         if (response.base.isOK) {
           recreatePane(); //reload whole pane now that we've joined
         }
@@ -537,8 +536,8 @@ class ConvPane extends BasePane {
     if (_isJoined) {
       paneMenuBar.addButton('Leave', (e) async {
         collapse();
-        await RpcLib.convUserSave(new ConvUserSaveRequest()
-          ..convId = _convId ..status = 'Q');
+        await RpcLib.convUserSave(new ConvUserSaveRequest(
+          convId :_convId, status :'Q'));
       });
     }
 

@@ -39,7 +39,7 @@ class LoginRecoveryDialog extends DialogBox {
         recoveryPassword: pw1,
         code: code,
         mode: 'V');
-      APIResponseBase response = await RpcLib.command('UserRecoverPassword', args);
+      APIResponseBase response = await RpcLib.userRecoverPassword(args);
       if (!response.isOK) {form.showError(response.errorMessage); return;}
 
       //success

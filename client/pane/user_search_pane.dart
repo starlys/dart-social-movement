@@ -31,7 +31,7 @@ class UserSearchPane extends BasePane {
     _resultsDiv.style.display = 'block';
     _resultsDiv.innerHtml = 'Loading...';
     UserQueryResponse response = await RpcLib.userQuery(
-      new UserQueryRequest() ..name = nick);
+      new UserQueryRequest(name: nick));
     _resultsDiv.innerHtml = '';
     for (UserQueryItem u in response.users) {
       DivElement d1 = new DivElement() ..className = 'avatar';

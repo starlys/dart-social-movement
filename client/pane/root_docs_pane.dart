@@ -14,7 +14,7 @@ class RootDocsPane extends BasePane {
     await super.init(pk);
 
     //get all root docs
-    DocQueryResponse docs = await RpcLib.docQuery(new DocQueryRequest() ..mode = 'R');
+    DocQueryResponse docs = await RpcLib.docQuery(new DocQueryRequest(mode: 'R'));
 
     //build pane
     buildSkeletonHtml2(paneClass: 'rootdocs', title: 'Documents', iconName: 'panedoc');

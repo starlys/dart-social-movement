@@ -1,7 +1,7 @@
 import 'dart:html';
 //import 'html_lib.dart';
 
-typedef void OutlineNodeHandler(Element);
+typedef OutlineNodeHandler = Future Functon(Element);
 
 ///manages creating outlines (trees) with expand/collapse and node
 /// selection

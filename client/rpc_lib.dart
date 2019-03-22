@@ -18,31 +18,30 @@ class RpcLib {
       serverBaseUrl = 'https://www.autistic.zone/servant/v1/';
   }
 
-  ///call a server method; returns a Map (see APIDeserializer for ideas on what to do with the
-  /// returned value)
-  static Future<Map<String,dynamic>> rpcAsMap(String method, dynamic args) async {
+  ///add credentials to a Map version of the request wire object, and return it as a json string
+  static String requestToJson(String method, Map<String,dynamic> requestMap) {
+    requestMap['base'] = { 'nick': Globals.nick, 'password': Globals.password };
+    return json.encode(requestMap);
+  }
+
+  ///make the RPC call and return the results as a Map
+  static Future<Map<String,dynamic>> rpcAsMap(String method, Map<String,dynamic> requestMap) async {
     String url = serverBaseUrl + method;
-
-    //seed map with credentials
-    Map<String, dynamic> argsmap = new Map<String, dynamic>();
-    argsmap['base'] = { 'nick': Globals.nick, 'password': Globals.password };
-
-    //add map values for the properties of args
-    APISerializer.membersToMap(args, argsmap);
+    String requestJson =requestToJson(method, requestMap);
 
     //send json request
-    String js = JSON.encode(argsmap);
     Map<String, String> requestHeaders = {
       'Content-Type': "application/json"
     };
-    HttpRequest hreq = await HttpRequest.request(url, method:'POST', //mimeType:'',
-      responseType : 'text',
-      requestHeaders : requestHeaders, sendData : js);
-    Map responseMap = JSON.decode(hreq.responseText);
+    HttpRequest hreq = await HttpRequest.request(url, method:'POST', 
+      responseType: 'json',
+      requestHeaders: requestHeaders, 
+      sendData: requestJson);
+    Map responseMap = json.decode(hreq.responseText);
     return responseMap;
   }
 
-  //slight rewrite of HttpRequest.postFormData to allow non-string values
+  ///slight rewrite of HttpRequest.postFormData to allow non-string values
   static Future<HttpRequest> postFormData(String url, Map<String, dynamic> data) {
     var parts = [];
     data.forEach((key, value) {
@@ -60,296 +59,289 @@ class RpcLib {
       requestHeaders : requestHeaders, sendData : formData);
   }
 
-  ///call any server command that returns a plain APIResponseBase
-  static Future<APIResponseBase> command(String command, dynamic req) async {
-    Map raw = await rpcAsMap(command, req);
-    APIResponseBase ret = new APIResponseBase();
-    ret.deserialize(raw);
-    Messages.showAPIError(ret);
-    return ret;
-  }
-
-
   //Remainder of methods don't have comments; they all just wrap the
   //server methods of the same name. Ideally a tool would write this
   // automatically but the time it takes to find a mature library for this
   // is probably more than writing it all out!
-
+  //ALPHABETICAL LIST (at least the first word of each method)
 
   static Future<AuthenticateResponse> authenticate(APIRequestBase req) async {
-    var authRaw = await RpcLib.rpcAsMap('Authenticate', req);
-    AuthenticateResponse auth = new AuthenticateResponse();
-    APIDeserializer.deserialize(authRaw, auth, auth.base);
-    return auth;
-  }
-  static Future<UserGetResponse> userGet(UserGetRequest req) async {
-    Map raw = await rpcAsMap('UserGet', req);
-    UserGetResponse ret = new UserGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.allTimeZones = raw['allTimeZones'];
-    ret.publicLinks = raw['publicLinks'];
-
-    //associatios
-    ret.events = new List<APIResponseAssociation>();
-    ret.projects = new List<APIResponseAssociation>();
-    ret.resources = new List<APIResponseAssociation>();
-    for (Map m in raw['events']) {
-      var c = new APIResponseAssociation();
-      APIDeserializer.deserialize(m, c, null);
-      ret.events.add(c);
-    }
-    for (Map m in raw['projects']) {
-      var c = new APIResponseAssociation();
-      APIDeserializer.deserialize(m, c, null);
-      ret.projects.add(c);
-    }
-    for (Map m in raw['resources']) {
-      var c = new APIResponseAssociation();
-      APIDeserializer.deserialize(m, c, null);
-      ret.resources.add(c);
-    }
-
-    return ret;
+    final requestMap = APIRequestBaseSerializer.toMap(req);
+    var responseMap = await RpcLib.rpcAsMap('Authenticate', requestMap);
+    final response = AuthenticateResponseSerializer.fromMap(responseMap);
+    return response;
   }
   static Future<CategoryQueryResponse> categoryQuery(CategoryQueryRequest req) async {
-    Map raw = await rpcAsMap('CategoryQuery', req);
-    CategoryQueryResponse ret = new CategoryQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.categories = new List<CategoryItemResponse>();
-    for (Map m in raw['categories']) {
-      var c = new CategoryItemResponse();
-      APIDeserializer.deserialize(m, c, null);
-      ret.categories.add(c);
-    }
-    return ret;
+    final requestMap = CategoryQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('CategoryQuery', requestMap);
+    final response = CategoryQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
-  static Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest req) async {
-    Map raw = await rpcAsMap('ProjectQuery', req);
-    ProjectQueryResponse ret = new ProjectQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.projects = new List<ProjectQueryItem>();
-    for (Map m in raw['projects']) {
-      var c = new ProjectQueryItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.projects.add(c);
-    }
-    return ret;
+  static Future<APIResponseBase> categoryMoveContents(CategoryMoveContentsRequest req) async {
+    final requestMap = CategoryMoveContentsRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('CategoryMoveContents', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
-  static Future<ProjectUserQueryResponse> projectUserQuery(ProjectUserQueryRequest req) async {
-    Map raw = await rpcAsMap('ProjectUserQuery', req);
-    ProjectUserQueryResponse ret = new ProjectUserQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.users = new List<ProjectUserItem>();
-    for (Map m in raw['users']) {
-      var c = new ProjectUserItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.users.add(c);
-    }
-    return ret;
+  static Future<APIResponseBase> categorySave(CategorySaveRequest req) async {
+    final requestMap = CategorySaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('CategorySave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
-  static Future<ProjectGetResponse> projectGet(ProjectGetRequest req) async {
-    Map raw = await rpcAsMap('ProjectGet', req);
-    ProjectGetResponse ret = new ProjectGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.proposals = new List<ProjectProposalItem>();
-    for (Map m in raw['proposals']) {
-      var c = new ProjectProposalItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.proposals.add(c);
-    }
-    ret.convs = new List<ProjectConvItem>();
-    for (Map m in raw['convs']) {
-      var c = new ProjectConvItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.convs.add(c);
-    }
-    ret.docs = new List<ProjectDocItem>();
-    for (Map m in raw['docs']) {
-      var c = new ProjectDocItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.docs.add(c);
-    }
-    return ret;
-  }
-  static Future<ProposalQueryResponse> proposalQuery(ProposalQueryRequest req) async {
-    Map raw = await rpcAsMap('ProposalQuery', req);
-    ProposalQueryResponse ret = new ProposalQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.items = new List<ProposalQueryItem>();
-    for (Map m in raw['items']) {
-      var c = new ProposalQueryItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.items.add(c);
-    }
-    return ret;
-  }
-  static Future<ProposalGetResponse> proposalGet(ProposalGetRequest req) async {
-    Map raw = await rpcAsMap('ProposalGet', req);
-    ProposalGetResponse ret = new ProposalGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.options = new List<ProposalOptionItem>();
-    for (Map m in raw['options']) {
-      var c = new ProposalOptionItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.options.add(c);
-    }
-    return ret;
+  static Future<APIResponseBase> categoryDelete(CategoryDeleteRequest req) async {
+    final requestMap = CategoryDeleteRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('CategoryDelete', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
   static Future<ConvQueryResponse> convQuery(ConvQueryRequest req) async {
-    Map raw = await rpcAsMap('ConvQuery', req);
-    ConvQueryResponse ret = new ConvQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.convs = new List<ConvQueryConvItemResponse>();
-    for (Map m1 in raw['convs']) {
-      var c = new ConvQueryConvItemResponse();
-      APIDeserializer.deserialize(m1, c, null);
-      ret.convs.add(c);
-      c.posts = new List<ConvQueryPostItemResponse>();
-      if (m1['posts'] != null) {
-        for (Map m2 in m1['posts']) {
-          var p = new ConvQueryPostItemResponse();
-          APIDeserializer.deserialize(m2, p, null);
-          c.posts.add(p);
-        }
-      }
-    }
-    return ret;
+    final requestMap = ConvQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvQuery', requestMap);
+    final response = ConvQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<ConvGetResponse> convGet(ConvGetRequest req) async {
-    Map raw = await rpcAsMap('ConvGet', req);
-    ConvGetResponse ret = new ConvGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.posts = new List<ConvGetPostItem>();
-    for (Map m in raw['posts']) {
-      var c = new ConvGetPostItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.posts.add(c);
-    }
-    return ret;
+    final requestMap = ConvGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvGet', requestMap);
+    final response = ConvGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> convSetReadPosition(ConvSetReadPositionRequest req) async {
+    final requestMap = ConvSetReadPositionRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvSetReadPosition', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
   static Future<ConvPostGetResponse> convPostGet(ConvPostGetRequest req) async {
-    Map raw = await rpcAsMap('ConvPostGet', req);
-    ConvPostGetResponse ret = new ConvPostGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    return ret;
+    final requestMap = ConvPostGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvPostGet', requestMap);
+    final response = ConvPostGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> convSave(ConvSaveRequest req) async {
+    final requestMap = ConvSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> convPostSave(ConvPostSaveRequest req) async {
+    final requestMap = ConvPostSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvPostSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> convPostUserSave(ConvPostUserSaveRequest req) async {
+    final requestMap = ConvPostUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvPostUserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> convPostImageSave(ConvPostImageSaveRequest req) async {
+    final requestMap = ConvPostImageSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvPostImageSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
   static Future<ConvGetRulesResponse> convGetRules(ConvGetRulesRequest req) async {
-    Map raw = await rpcAsMap('ConvGetRules', req);
-    ConvGetRulesResponse ret = new ConvGetRulesResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    return ret;
+    final requestMap = ConvGetRulesRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvGetRules', requestMap);
+    final response = ConvGetRulesResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<ConvUserSaveResponse> convUserSave(ConvUserSaveRequest req) async {
-    Map raw = await rpcAsMap('ConvUserSave', req);
-    ConvUserSaveResponse ret = new ConvUserSaveResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    return ret;
+    final requestMap = ConvUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ConvUserSave', requestMap);
+    final response = ConvUserSaveResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<DocQueryResponse> docQuery(DocQueryRequest req) async {
-    Map raw = await rpcAsMap('DocQuery', req);
-    DocQueryResponse ret = new DocQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.docs = new List<DocQueryItem>();
-    for (Map m in raw['docs']) {
-      var c = new DocQueryItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.docs.add(c);
-    }
-    return ret;
+    final requestMap = DocQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('DocQuery', requestMap);
+    final response = DocQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<DocGetResponse> docGet(DocGetRequest req) async {
-    //print('DocGet called for ${req.docId}');
-    Map raw = await rpcAsMap('DocGet', req);
-    DocGetResponse ret = new DocGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.verList = new List<DocGetVersionItem>();
-    for (Map m in raw['verList']) {
-      var c = new DocGetVersionItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.verList.add(c);
-    }
-    return ret;
+    final requestMap = DocGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('DocGet', requestMap);
+    final response = DocGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> docSave(DocSaveRequest req) async {
+    final requestMap = DocSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('DocSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
   static Future<EventQueryResponse> eventQuery(EventQueryRequest req) async {
-    Map raw = await rpcAsMap('EventQuery', req);
-    EventQueryResponse ret = new EventQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.events = new List<EventItemResponse>();
-    for (Map m in raw['events']) {
-      var c = new EventItemResponse();
-      APIDeserializer.deserialize(m, c, null);
-      ret.events.add(c);
-    }
-    return ret;
+    final requestMap = EventQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('EventQuery', requestMap);
+    final response = EventQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<EventGetResponse> eventGet(EventRequest req) async {
-    Map raw = await rpcAsMap('EventGet', req);
-    EventGetResponse ret = new EventGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.users = new List<EventGetUserResponse>();
-    for (Map m in raw['users']) {
-      var c = new EventGetUserResponse();
-      APIDeserializer.deserialize(m, c, null);
-      ret.users.add(c);
-    }
-    ret.convs = new List<EventGetConvResponse>();
-    for (Map m in raw['convs']) {
-      var c = new EventGetConvResponse();
-      APIDeserializer.deserialize(m, c, null);
-      ret.convs.add(c);
-    }
-    return ret;
+    final requestMap = EventRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('EventGet', requestMap);
+    final response = EventGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> eventSave(EventSaveRequest req) async {
+    final requestMap = EventSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('EventSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest req) async {
+    final requestMap = ProjectQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProjectQuery', requestMap);
+    final response =ProjectQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<ProjectUserQueryResponse> projectUserQuery(ProjectUserQueryRequest req) async {
+    final requestMap = ProjectUserQueryRequestSerializer.toMap(req);
+    Map responseMap = await rpcAsMap('ProjectUserQuery', requestMap);
+    final response = ProjectUserQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<ProjectGetResponse> projectGet(ProjectGetRequest req) async {
+    final requestMap = ProjectGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProjectGet', requestMap);
+    final response = ProjectGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> projectSave(ProjectSaveRequest req) async {
+    final requestMap = ProjectSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProjectSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> projectUserSave(ProjectUserSaveRequest req) async {
+    final requestMap = ProjectUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProjectUserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> projectUserUserSave(ProjectUserUserSaveRequest req) async {
+    final requestMap = ProjectUserUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProjectUserUserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<ProposalQueryResponse> proposalQuery(ProposalQueryRequest req) async {
+    final requestMap = ProposalQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProposalQuery', requestMap);
+    final response = ProposalQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<ProposalGetResponse> proposalGet(ProposalGetRequest req) async {
+    final requestMap = ProposalGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProposalGet', requestMap);
+    final response = ProposalGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> proposalSave(ProposalSaveRequest req) async {
+    final requestMap = ProposalSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProposalSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
   }
   static Future<ResourceQueryResponse> resourceQuery(ResourceQueryRequest req) async {
-    Map raw = await rpcAsMap('ResourceQuery', req);
-    ResourceQueryResponse ret = new ResourceQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.items = new List<ResourceItem>();
-    for (Map m in raw['items']) {
-      var c = new ResourceItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.items.add(c);
-    }
-    return ret;
+    final requestMap = ResourceQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ResourceQuery', requestMap);
+    final response = ResourceQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<ResourceGetResponse> resourceGet(ResourceGetRequest req) async {
-    Map raw = await rpcAsMap('ResourceGet', req);
-    ResourceGetResponse ret = new ResourceGetResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    return ret;
+    final requestMap = ResourceGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ResourceGet', requestMap);
+    final response = ResourceGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
+  static Future<APIResponseBase> resourceTriage(ResourceTriageRequest req) async {
+    final requestMap = ResourceTriageRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ResourceTriage', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> resourceUserSave(ResourceUserSaveRequest req) async {
+    final requestMap = ResourceUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ResourceUserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<UserGetResponse> userGet(UserGetRequest req) async {
+    final requestMap = UserGetRequestSerializer.toMap(req);
+    Map responseMap = await rpcAsMap('UserGet', requestMap);
+    final response = UserGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
   static Future<UserQueryResponse> userQuery(UserQueryRequest req) async {
-    Map raw = await rpcAsMap('UserQuery', req);
-    UserQueryResponse ret = new UserQueryResponse();
-    APIDeserializer.deserialize(raw, ret, ret.base);
-    Messages.showAPIError(ret.base);
-    ret.users = new List<UserQueryItem>();
-    for (Map m in raw['users']) {
-      var c = new UserQueryItem();
-      APIDeserializer.deserialize(m, c, null);
-      ret.users.add(c);
-    }
-    return ret;
+    final requestMap = UserQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('UserQuery', requestMap);
+    final response = UserQueryResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
   }
-
-
-
+  static Future<APIResponseBase> userSave(UserSaveRequest req) async {
+    final requestMap = UserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('UserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> userAvatarSave(UserAvatarSaveRequest req) async {
+    final requestMap = UserAvatarSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('UserAvatarSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> userNotifySave(UserNotifySaveRequest req) async {
+    final requestMap = UserNotifySaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('UserNotifySave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> userRecoverPassword(UserRecoverPasswordRequest req) async {
+    final requestMap = UserRecoverPasswordRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('UserRecoverPassword', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
 }

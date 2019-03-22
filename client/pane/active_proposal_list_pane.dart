@@ -10,7 +10,7 @@ class ActiveProposalListPane extends ProposalListPane {
     Future load() async {
       paneClass = 'proposals-active';
       paneTitle = 'Active Proposals';
-      ProposalQueryRequest req = new ProposalQueryRequest() ..mode = 'A';
+      ProposalQueryRequest req = new ProposalQueryRequest(mode: 'A');
       proposals = await RpcLib.proposalQuery(req);
     }
 }

@@ -69,13 +69,13 @@ class ImageUploadDialog extends DialogBox {
       imageBytes: imageBytes,
       ptext: ptext,
       convId: _convId);
-    APIResponseBase response = await RpcLib.command('ConvPostImageSave', req);
+    APIResponseBase response = await RpcLib.convPostImageSave(req);
     return response.isOK;
   }
 
   Future<bool> _uploadAvatar(List<int> imageBytes) async {
     UserAvatarSaveRequest req = UserAvatarSaveRequest(imageBytes: imageBytes);
-    APIResponseBase response = await RpcLib.command('UserAvatarSave', req);
+    APIResponseBase response = await RpcLib.userAvatarSave(req);
     return response.isOK;
   }
 }

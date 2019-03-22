@@ -40,7 +40,7 @@ class UserDialog extends DialogBox {
 
     //if new user GetDoc with special code UA
     DocGetResponse userAgreement;
-    if (isNewUser) userAgreement = await RpcLib.docGet(new DocGetRequest() ..specialCode = 'UA');
+    if (isNewUser) userAgreement = await RpcLib.docGet(new DocGetRequest(specialCode: 'UA'));
 
     //main content - nick, pw, kind, prefs, timezone
     FormBuilder form = new FormBuilder(frame, 'User Account');
@@ -174,19 +174,19 @@ class UserDialog extends DialogBox {
       Map<String, String> linksMap = new Map<String, String>();
       links.forEach((st) { linksMap[st.name] = st.value; });
 
-      UserSaveRequest saveArgs = new UserSaveRequest()
-        ..isNew = isNewUser ? 'Y' : 'N'
-        ..saveNick = trimInput(nickInput)
-        ..savePW = trimInput(pw1Input)
-        ..kind = kindInput.value
-        ..email = trimInput(emailInput)
-        ..publicName = trimInput(publicNameInput)
-        ..prefEmailNotify = prefEmailNotifyChk.checked ? 'Y' : 'N'
-        ..timeZone = timeZoneInput.value
-        ..publicLinks = linksMap
-        ;
-      if (saveArgs.savePW.length == 0) saveArgs.savePW = null; //required by server to avoid updating
-      APIResponseBase response = await RpcLib.command('UserSave', saveArgs);
+      String savePW = trimInput(pw1Input);
+      if (savePW.length == 0) savePW = null; //required by server to avoid updating
+      UserSaveRequest saveArgs = new UserSaveRequest(
+        isNew: isNewUser ? 'Y' : 'N',
+        saveNick: trimInput(nickInput),
+        savePW: savePW,
+        kind: kindInput.value,
+        email: trimInput(emailInput),
+        publicName: trimInput(publicNameInput),
+        prefEmailNotify: prefEmailNotifyChk.checked ? 'Y' : 'N',
+        timeZone: timeZoneInput.value,
+        publicLinks: linksMap);
+      APIResponseBase response = await RpcLib.userSave(saveArgs);
       if (response.isOK) {
         //for new accounts force them to login (this makes sure they really know the pw and uses the code
         // for storing creds in local storage)
@@ -205,8 +205,8 @@ class UserDialog extends DialogBox {
         String word = await confirm.show();
         if (word != null && word.toLowerCase() == 'delete') {
           hide(true);
-          UserSaveRequest deleteArgs = new UserSaveRequest()..isDelete = 'Y';
-          RpcLib.command('UserSave', deleteArgs); //not awaited!
+          UserSaveRequest deleteArgs = new UserSaveRequest(isDelete: 'Y');
+          RpcLib.userSave(deleteArgs); //not awaited!
           onLogoutAccount();
         }
       });

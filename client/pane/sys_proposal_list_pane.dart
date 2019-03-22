@@ -16,7 +16,7 @@ class SysProposalListPane extends ProposalListPane {
     _year = paneKey.part1AsInt;
     paneClass = 'proposals-sys';
     paneTitle = 'Archive of System Proposals ${_year}';
-    ProposalQueryRequest req = new ProposalQueryRequest() ..mode = 'S' ..year = _year;
+    ProposalQueryRequest req = new ProposalQueryRequest(mode: 'S', year: _year);
     proposals = await RpcLib.proposalQuery(req);
   }
 

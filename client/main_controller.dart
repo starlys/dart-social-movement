@@ -150,7 +150,7 @@ class MainController {
   ///attempt login; return true on success
   static Future<bool> logIn(String nick, String password, bool notifyUser, bool savePW) async {
     //login
-    var req = new APIRequestBase() ..nick = nick ..password = password;
+    var req = new APIRequestBase(nick: nick, password: password);
     AuthenticateResponse auth = await RpcLib.authenticate(req);
 
     //if ok, store creds
@@ -191,7 +191,7 @@ class MainController {
     var delayed = () {
       //get sizes
       int wh = window.innerHeight,
-        hh = $('#header').height;
+        hh = querySelector('#header').clientHeight;
         //fh = $('#footer').height;
       int mh = wh - hh - 20;
       bool isLargeScreen = window.innerWidth > 1200;
@@ -249,15 +249,15 @@ class MainController {
   ///apply themes found in ClientStore
   static void applyThemes() {
     //remove existing themes
-    var page = $('#page');
-    for (String c in fontThemes.skip(1)) page.removeClass(c);
-    for (String c in colorThemes.skip(1)) page.removeClass(c);
+    var page = querySelector('#page');
+    for (String c in fontThemes.skip(1)) page.classes.remove(c);
+    for (String c in colorThemes.skip(1)) page.classes.remove(c);
 
     //add theme
     String fontTheme = ClientStore.fontTheme ?? '';
-    if (fontTheme.length > 0) page.addClass(fontTheme);
+    if (fontTheme.length > 0) page.classes.add(fontTheme);
     String colorTheme = ClientStore.colorTheme ?? '';
-    if (colorTheme.length > 0) page.addClass(colorTheme);
+    if (colorTheme.length > 0) page.classes.add(colorTheme);
   }
 
   ///change the URL fragment to the given pane Key
@@ -294,10 +294,10 @@ class MainController {
   static void setVisibility() {
     var $ = document.querySelector;
     Element logInOut = new ButtonElement() ..onClick.listen((e) => toggleLogin());
-    Element hello = $('#hello').first;
+    Element hello = $('#hello');
     hello.innerHtml = '';
     bool isLoggedIn = Globals.nick != null;
-    bool wasLoggedIn = $('#button-next').first.style.display != 'hidden';
+    bool wasLoggedIn = $('#button-next').style.display != 'hidden';
     bool changedStatus = wasLoggedIn != isLoggedIn;
     if (changedStatus) {
       hideMenuPanels();
@@ -305,14 +305,14 @@ class MainController {
     if (isLoggedIn) {
       logInOut.text = 'Log Out';
       hello.appendText('Hello ${Globals.publicName} ');
-      $('#button-next').show();
-      $('#button-mystuff').show();
+      $('#button-next').style.visibility = 'visible';
+      $('#button-mystuff').style.visibility = 'visible';
     } else {
       logInOut.text = 'Log In';
       hello.appendText('(not logged in) ');
-      $('#mystuff1').hide();
-      $('#button-next').hide();
-      $('#button-mystuff').hide();
+      $('#mystuff1').style.visibility = 'hidden';
+      $('#button-next').style.visibility = 'hidden';
+      $('#button-mystuff').style.visibility = 'hidden';
     }
     hello.append(logInOut);
     MainMenuHandler.setVisibility(isLoggedIn);
@@ -336,9 +336,9 @@ class MainController {
     bool wasShowing = Globals.myStuffShowing;
     hideMenuPanels();
     if (allowHide && wasShowing) return;
-    $('#mystuff1').show();
+    $('#mystuff1').style.visibility = 'visible';
     Globals.myStuffShowing = true;
-    _showPopupConnector($('#button-mystuff').first);
+    _showPopupConnector($('#button-mystuff'));
   }
 
   ///show menu panel
@@ -346,15 +346,15 @@ class MainController {
     bool wasShowing = Globals.menuShowing;
     hideMenuPanels();
     if (allowHide && wasShowing) return;
-    $('#menu1').show();
+    querySelector('#menu1').style.visibility = 'visible';
     Globals.menuShowing = true;
-    _showPopupConnector($('#button-menu').first);
+    _showPopupConnector(querySelector('#button-menu'));
   }
 
   //display a slice of color to connect the buttons with the popup panel
   static void _showPopupConnector(Element over) {
     var btnrect = over.getBoundingClientRect();
-    $('#popupconnector').first.style
+    querySelector('#popupconnector').style
       ..display = 'block'
       ..width = HtmlLib.asPx(btnrect.width - 2)
       ..left = HtmlLib.asPx(btnrect.left);

@@ -56,7 +56,7 @@ class LoginDialog extends DialogBox {
       UserRecoverPasswordRequest args = new UserRecoverPasswordRequest(
         recoveryNick: trimInput(nickInput),
         mode: 'E');
-      APIResponseBase response = await RpcLib.command('UserRecoverPassword', args);
+      APIResponseBase response = await RpcLib.userRecoverPassword(args);
       if (!response.isOK) {form.showError(response.errorMessage); return;}
 
       //hide this; show recovery dialog

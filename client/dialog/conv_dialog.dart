@@ -66,7 +66,7 @@ class ConvDialog extends DialogBox {
         title:  trimInput(titleInput),
         postMaxSize: postMaxSizeInput.valueAsNumber,
         userDailyMax: userDailyMaxInput.valueAsNumber);
-      APIResponseBase response = await RpcLib.command('ConvSave', req);
+      APIResponseBase response = await RpcLib.convSave(req);
       if (response.isOK) {
         hide(response.newId);
       }

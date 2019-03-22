@@ -41,8 +41,7 @@ class NotifyPane extends BasePane {
 
   ///send server message to dismiss notification
   void dismiss() {
-    var req = new UserNotifySaveRequest();
-    req.notifyId = _item.sid;
-    RpcLib.command('UserNotifySave', req);
+    var req = new UserNotifySaveRequest(notifyId: _item.sid);
+    RpcLib.userNotifySave(req);
   }
 }

@@ -46,7 +46,7 @@ class ConvSearchPane extends BasePane {
     _resultDiv.style.display = 'block';
     _resultDiv.innerHtml = 'Loading...';
     ConvQueryResponse response = await RpcLib.convQuery(
-      new ConvQueryRequest() ..term = _searchTerm);
+      new ConvQueryRequest(term: _searchTerm));
     changePaneKey(new PaneKey('convs/s=' + _searchTerm));
     _resultDiv.innerHtml = '<h2>Conversations</h2>';
     for (ConvQueryConvItemResponse conv in response.convs) {

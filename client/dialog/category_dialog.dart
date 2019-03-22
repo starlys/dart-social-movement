@@ -58,7 +58,7 @@ class CategoryDialog extends DialogBox {
         title: trimInput(titleInput),
         description: trimTextArea(descrInput));
 
-      APIResponseBase response = await RpcLib.command('CategorySave', req);
+      APIResponseBase response = await RpcLib.categorySave(req);
       if (response.isOK) {
         hide(true);
       }

@@ -34,7 +34,7 @@ class ProjectSearchPane extends BasePane {
     _resultDiv.style.display = 'block';
     _resultDiv.innerHtml = 'Loading...';
     ProjectQueryResponse response = await RpcLib.projectQuery(
-      new ProjectQueryRequest() ..title = title);
+      new ProjectQueryRequest(title: title));
     _resultDiv.innerHtml = '';
     for (ProjectQueryItem proj in response.projects) {
       DivElement itemDiv = new DivElement() ..className = 'space1';

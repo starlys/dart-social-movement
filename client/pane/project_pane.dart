@@ -28,7 +28,7 @@ class ProjectPane extends BasePane {
 
     //get project
     _projectId = pk.part1AsInt;
-    _project = await RpcLib.projectGet(new ProjectGetRequest() ..projectId = _projectId);
+    _project = await RpcLib.projectGet(new ProjectGetRequest(projectId: _projectId));
     bool canView = ['O','V','A','M'].contains(_project.userKind);
 
     //build pane - ID section
@@ -103,12 +103,12 @@ class ProjectPane extends BasePane {
     StringDialog dlg = new StringDialog('Document title', '', Globals.maxTitleLength);
     String title = await dlg.show();
     if (title == null || title.length == 0) return;
-    var req = new DocSaveRequest()
-      ..docId = 0
-      ..projectId = _projectId
-      ..body = ''
-      ..title = title;
-    APIResponseBase resp = await RpcLib.command('DocSave', req);
+    var req = new DocSaveRequest(
+      docId: 0,
+      projectId: _projectId,
+      body: '',
+      title: title);
+    APIResponseBase resp = await RpcLib.docSave(req);
     if (resp.ok == 'Y') {
       Messages.timed('Document created. Press Edit to start entering content.');
       PaneFactory.createFromString('doc/${resp.newId}');

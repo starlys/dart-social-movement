@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'server/config_settings.dart';
-import 'server/config_loader.dart';
+import '../server/config_settings.dart';
+import '../server/config_loader.dart';
 
 ///stores worker globals
 class Globals {

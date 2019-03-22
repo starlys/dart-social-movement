@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'globals.dart';
-import 'database.dart';
+import 'wdatabase.dart';
 import '../models/models.dart';
-import '../server/config_settings.dart';
 import '../server/config_loader.dart';
 import '../server/logger.dart';
 
@@ -35,25 +34,25 @@ class Controller {
     DateTime now = WLib.utcNow();
     if (now.isAfter(Globals.next30s)) {
       await writeAliveFile(true);
-      await Database.safely('findUnreads', Database.findUnreads);
+      await WDatabase.safely('findUnreads', WDatabase.findUnreads);
       Globals.next30s = WLib.utcNow().add(new Duration(seconds:30));
     } else if (now.isAfter(Globals.next1h)) {
-      await Database.safely('timeoutProposals', Database.timeoutProposals);
-      await Database.safely('calcReactions', Database.recalcReactions);
-      await Database.safely('countResourceVotes', Database.countResourceVotes);
-      await Database.safely('recommendConversations', Database.recommendConversations);
+      await WDatabase.safely('timeoutProposals', WDatabase.timeoutProposals);
+      await WDatabase.safely('calcReactions', WDatabase.recalcReactions);
+      await WDatabase.safely('countResourceVotes', WDatabase.countResourceVotes);
+      await WDatabase.safely('recommendConversations', WDatabase.recommendConversations);
       Globals.next1h = WLib.utcNow().add(new Duration(hours:1));
     } else if (now.isAfter(Globals.next24h)) {
-      await Database.safely('dailyDelete', Database.dailyDelete);
-      await Database.safely('assignProjectLeadership', Database.assignProjectLeadership);
-      await Database.safely('closeConversations', Database.closeConversations);
-      await Database.safely('hideResources', Database.hideResources);
-      await Database.safely('emailNotifications', Database.emailNotifications);
-      await Database.safely('countProjectImportance', Database.countProjectImportance);
+      await WDatabase.safely('dailyDelete', WDatabase.dailyDelete);
+      await WDatabase.safely('assignProjectLeadership', WDatabase.assignProjectLeadership);
+      await WDatabase.safely('closeConversations', WDatabase.closeConversations);
+      await WDatabase.safely('hideResources', WDatabase.hideResources);
+      await WDatabase.safely('emailNotifications', WDatabase.emailNotifications);
+      await WDatabase.safely('countProjectImportance', WDatabase.countProjectImportance);
       Globals.next24h = WLib.utcNow().add(new Duration(days:1));
     } else if (now.isAfter(Globals.next1week)) {
-      await Database.safely('weeklyDelete', Database.weeklyDelete);
-      await Database.safely('assignSiteLeadership', Database.assignSiteLeadership);
+      await WDatabase.safely('weeklyDelete', WDatabase.weeklyDelete);
+      await WDatabase.safely('assignSiteLeadership', WDatabase.assignSiteLeadership);
       Globals.next1week = WLib.utcNow().add(new Duration(days:7));
     }
   }
@@ -61,7 +60,7 @@ class Controller {
   ///write to worker_alive.txt so the supervisor can detect if this process is running
   Future writeAliveFile(bool makeExist) async {
     try {
-      File f = new File(Config.rootPath() + '/worker_alive.txt');
+      File f = new File(ConfigLoader.rootPath() + '/worker_alive.txt');
       if (makeExist){
         await f.writeAsString("!");
       } else {
@@ -74,7 +73,7 @@ class Controller {
 
     //for debugging also write *alive file with unique name for this process
     try {
-      File f = new File(Config.rootPath() + '/worker_alive' + Globals.logFileSuffix);
+      File f = new File(ConfigLoader.rootPath() + '/worker_alive' + Globals.logFileSuffix);
       if (makeExist){
         await f.writeAsString("!");
       } else {

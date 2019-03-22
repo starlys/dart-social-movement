@@ -64,7 +64,7 @@ abstract class Database {
   }
 
   ///get a pool item, immediately if possible, else waiting if necessary until one is released
-  static Future<DatabasePoolItem> _get() async {
+  static Future<DatabasePoolItem> getFromPool() async {
     var poolItem = _findAvailable();
     if (poolItem != null) {
       poolItem.inUse = true;
@@ -77,7 +77,7 @@ abstract class Database {
   }
 
   ///release a pool item, either to the next waiting caller or back to the pool
-  static void _release(DatabasePoolItem poolItem) {
+  static void releaseToPool(DatabasePoolItem poolItem) {
     //if no one needs this now
     if (waiters.length == 0) {
       poolItem.inUse = false;
@@ -91,7 +91,7 @@ abstract class Database {
   ///wrap a database operation in a db connection and catch errors.
   /// If r is given puts error messages there.
   static Future<DatabaseResult> safely(String taskDesc, WorkFunc f) async {
-    final poolItem = await _get();
+    final poolItem = await getFromPool();
     String randomFileName = ApiGlobals.random.nextInt(100000).toString();
     try {
       await _writeDebugTaskFile(true, taskDesc, randomFileName);
@@ -107,7 +107,7 @@ abstract class Database {
     }
     finally {
       await _writeDebugTaskFile(false, taskDesc, randomFileName);
-      _release(poolItem);
+      releaseToPool(poolItem);
     }
   }
 

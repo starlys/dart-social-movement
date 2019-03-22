@@ -6,7 +6,7 @@ main() {
   print("starting autzone worker");
 
   //set up globals
-  Globals.configSettings.init();
+  Globals.configLoader.init();
 
   Controller c = new Controller();
   c.start();

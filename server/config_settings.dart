@@ -8,7 +8,8 @@ class ConfigSettings_AmazonS3Bucket {
   String bucket, url;
 }
 class ConfigSettings_Smtp {
-  String host, port, user, password, from;
+  String host, user, password, from;
+  int port;
 }
 class ConfigSettings_Database {
   String host, dbname, user, password;

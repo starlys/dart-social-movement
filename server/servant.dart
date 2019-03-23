@@ -1814,7 +1814,7 @@ class Servant {
       //fill in r.items
       for (final row in rows) {
         var item = new ResourceItem(
-          id: row['id'],
+          iid: row['id'],
           title: row['title'],
           description: row['description'],
           url: row['url']);
@@ -1839,7 +1839,7 @@ class Servant {
       //load from resource
       String sql = 'select category_id,title,url,important_count,description,kind,created_at,visible,xuser_id'
         ',(select nick from xuser where id=resource.xuser_id) as nick'
-        ' from resource where id=${args.id}';
+        ' from resource where id=${args.iid}';
       final resourceRow = await MiscLib.queryRowChecked(db, sql, 'Resource does not exist', null);
       retCategoryId = resourceRow['category_id'];
       retUserId = resourceRow['xuser_id'];
@@ -1856,7 +1856,7 @@ class Servant {
       //load from resource_xuser
       retUserKind = null; //meaning, there is no record
       if (ai != null) {
-        String sql = 'select kind from resource_xuser where resource_id=${args.id} and xuser_id=${ai.id}';
+        String sql = 'select kind from resource_xuser where resource_id=${args.iid} and xuser_id=${ai.id}';
         retUserKind = await MiscLib.queryScalar(db, sql, null); //may be null
       }
     });
@@ -1886,21 +1886,21 @@ class Servant {
 
     final dbresult = await Database.safely('ResourceSave', (db) async {
       //for new resources, store proposal and exit
-      bool isNew = args.id == 0;
+      bool isNew = args.iid == 0;
       if (isNew) {
         await ProposalLib.proposeNewResource(db, ai.id, args.kind, args.title, args.description, args.url, args.categoryId);
         return;
       }
 
       //get owner of resource being modified
-      int ownerId = await MiscLib.queryScalar(db, 'select xuser_id from resource where id=${args.id}', null);
+      int ownerId = await MiscLib.queryScalar(db, 'select xuser_id from resource where id=${args.iid}', null);
 
       //rights: must be owner or site admin to edit existing
       bool canEdit = ai.isSiteAdmin || ownerId == ai.id;
       if (!canEdit) throw new Exception('Only the owner or site administrator can edit a resource');
 
       //save changes
-      await db.execute('update resource set title=@t, description=@d, kind=@k, url=@u where id=${args.id}',
+      await db.execute('update resource set title=@t, description=@d, kind=@k, url=@u where id=${args.iid}',
         substitutionValues: {'t': args.title, 'd': args.description, 'k': args.kind, 'u': args.url});
     });
     return dbBase(dbresult);
@@ -1915,7 +1915,7 @@ class Servant {
 
     final dbresult = await Database.safely('ResourceTriage', (db) async {
       //fail if visible
-      String visible = await MiscLib.queryScalar(db, 'select visible from resource where id=${args.id}', null);
+      String visible = await MiscLib.queryScalar(db, 'select visible from resource where id=${args.iid}', null);
       if (visible != 'N') throw new Exception('Only invisible resources can be reset or deleted.');
 
       //delete?
@@ -1923,8 +1923,8 @@ class Servant {
 
       //reset?
       if (args.mode == 'R') {
-        await db.execute('delete from resource_xuser where resource_id=${args.id} and kind=\'R\'');
-        await db.execute('update resource set visible=\'Y\' where id=${args.id}');
+        await db.execute('delete from resource_xuser where resource_id=${args.iid} and kind=\'R\'');
+        await db.execute('update resource set visible=\'Y\' where id=${args.iid}');
       }
     });
     return dbBase(dbresult);
@@ -1940,14 +1940,14 @@ class Servant {
     final dbresult = await Database.safely('ResourceUserSave', (db) async {
       //remove rec if kind is null
       if (args.kind == null) {
-        await db.execute('delete from resource_xuser where resource_id=${args.id} and xuser_id=${ai.id}');
+        await db.execute('delete from resource_xuser where resource_id=${args.iid} and xuser_id=${ai.id}');
       }
 
       else { //nonnull
-        int count = await db.execute('update resource_xuser set processed=\'N\', kind=@k where resource_id=${args.id} and xuser_id=${ai.id}',
+        int count = await db.execute('update resource_xuser set processed=\'N\', kind=@k where resource_id=${args.iid} and xuser_id=${ai.id}',
           substitutionValues: {'k': args.kind});
         if (count == 0) {
-          await db.execute('insert into resource_xuser(resource_id,xuser_id,kind,processed)values(${args.id},${ai.id},@k,\'N\')',
+          await db.execute('insert into resource_xuser(resource_id,xuser_id,kind,processed)values(${args.iid},${ai.id},@k,\'N\')',
             substitutionValues: {'k': args.kind});
         }
       }
@@ -1970,7 +1970,7 @@ class Servant {
       final rows = await MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser ${whereClause} order by last_activity desc limit 100', params);
       for (final row in rows) {
         var item = new UserQueryItem(
-          id: row['id'],
+          iid: row['id'],
           nick: row['nick'],
           kind: row['kind'],
           publicName: row['public_name'],

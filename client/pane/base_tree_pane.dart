@@ -81,7 +81,7 @@ class BaseTreePane extends BasePane {
     //get the category details
     String idS = OutlineBuilder.getId(node);
     _selectedCatId = int.parse(idS);
-    _selectedCat = _allCats.firstWhere((c) => c.id == _selectedCatId, orElse: () => null);
+    _selectedCat = _allCats.firstWhere((c) => c.iid == _selectedCatId, orElse: () => null);
     if (_selectedCat == null) return;
 
     //detail box contents
@@ -140,7 +140,7 @@ class BaseTreePane extends BasePane {
     NodeSelectDialog dlg = new NodeSelectDialog(_topCats, 'Choose the target category (where this category will move to)');
     int referenceCatId = await dlg.show();
     if (referenceCatId == null) return;
-    CategoryItemResponse referenceCat = _allCats.singleWhere((i) => i.id == referenceCatId);
+    CategoryItemResponse referenceCat = _allCats.singleWhere((i) => i.iid == referenceCatId);
 
     //ask user if sister or child
     CategoryMoveModeDialog dlg2 = new CategoryMoveModeDialog(_selectedCat.title, referenceCat.title);
@@ -170,7 +170,7 @@ class BaseTreePane extends BasePane {
     NodeSelectDialog dlg2 = new NodeSelectDialog(_topCats, 'Choose category for moved contents');
     int targetCatId = await dlg2.show();
     if (targetCatId == null) return;
-    CategoryItemResponse targetCat = _allCats.singleWhere((c) => c.id == targetCatId);
+    CategoryItemResponse targetCat = _allCats.singleWhere((c) => c.iid == targetCatId);
 
     //confirm move
     String confMsg = '${titlesToMove.length} items will be moved to the category "${targetCat.title}". Continue?';

@@ -77,7 +77,7 @@ class EventSearchPane extends BasePane {
         _resultDiv.append(itemDiv);
         itemDiv.appendText(event.startTime);
         itemDiv.appendText(' - ');
-        HtmlLib.appendLinkToPane(itemDiv, event.title, 'event/${event.id}', asDiv: false);
+        HtmlLib.appendLinkToPane(itemDiv, event.title, 'event/${event.iid}', asDiv: false);
       }
       if (response.events.length == 0) _resultDiv.innerHtml = '(none)';
     }

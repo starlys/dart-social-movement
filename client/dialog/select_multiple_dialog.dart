@@ -30,7 +30,7 @@ class SelectMultipleDialog extends DialogBox {
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('OK', (e) async {
       List<String> selected = new List<String>();
-      sel.querySelectorAll('option').forEach((OptionElement option) {
+      sel.querySelectorAll('option').cast<OptionElement>().forEach((OptionElement option) {
         if (option.selected) selected.add(option.value);
       });
       hide(selected);

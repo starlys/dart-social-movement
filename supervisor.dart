@@ -67,7 +67,7 @@ Future startBoth() async {
 Future startApi() async {
   log("supervisor: starting api");
   await writeDebugTaskFile(true, 'startApi');
-  await Process.start('dart', ['api.dart'], mode: ProcessStartMode.DETACHED);
+  await Process.start('dart', ['api.dart'], mode: ProcessStartMode.detached);
   await writeDebugTaskFile(false, 'startApi');
   sleep(new Duration(seconds: 2));
 }
@@ -75,7 +75,7 @@ Future startApi() async {
 Future startWorker() async {
   log("supervisor: starting worker");
   await writeDebugTaskFile(true, 'startWorker');
-  await Process.start('dart', ['worker.dart'], mode: ProcessStartMode.DETACHED);
+  await Process.start('dart', ['worker.dart'], mode: ProcessStartMode.detached);
   await writeDebugTaskFile(false, 'startWorker');
   sleep(new Duration(seconds: 2));
 }
@@ -107,7 +107,7 @@ Future timerTick() async {
     if (utcNow().isAfter(_nextMailUtc)) {
       await writeDebugTaskFile(true, 'sendmail');
       //log("supervisor: starting sendmail");
-      Process.start('dart', [rootPath() + '/sendmail.dart'], workingDirectory: rootPath(), mode: ProcessStartMode.DETACHED);
+      Process.start('dart', [rootPath() + '/sendmail.dart'], workingDirectory: rootPath(), mode: ProcessStartMode.detached);
       _nextMailUtc = utcNow().add(_mailInterval);
       await writeDebugTaskFile(false, 'sendmail');
     }

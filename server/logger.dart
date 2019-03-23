@@ -28,7 +28,7 @@ class Logger{
 
       //write message
       File f = new File(fullName);
-      IOSink wri = f.openWrite(mode:APPEND);
+      IOSink wri = f.openWrite(mode: FileMode.append);
       wri.writeln(dateTimeS + ':' + message);
       await wri.close();
     }

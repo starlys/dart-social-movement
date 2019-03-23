@@ -98,7 +98,7 @@ class ConvLib {
     //re-sort the posts within each conv by latest-first
     for (ConvQueryConvItemResponse title in retConvs) {
       if (title.posts == null) continue;
-      title.sortByDate(postCreatedAt);
+      ConvQueryConvItemResponseUtils.sortByDate(title, postCreatedAt);
     }
 
     //filter out the convs that the user doesn't have access to

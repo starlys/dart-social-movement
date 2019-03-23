@@ -20,7 +20,7 @@ class RootDocsPane extends BasePane {
     buildSkeletonHtml2(paneClass: 'rootdocs', title: 'Documents', iconName: 'panedoc');
     clearLoadingMessage();
     for (DocQueryItem item in docs.docs) {
-      HtmlLib.appendLinkToPane(bodyElement, item.title, 'doc/${item.id}');
+      HtmlLib.appendLinkToPane(bodyElement, item.title, 'doc/${item.iid}');
     }
   }
 

@@ -31,10 +31,11 @@ class WDatabase extends Database {
 
   ///wrap a database operation in a db connection and catch errors.
   /// If r is given puts error messages there.
-  static Future<DatabaseResult> safely(String taskDesc, WorkFunc f) async {
+  static Future<DatabaseResult> safely(String taskDesc, WorkFunc f, {String loggingFilePrefix}) async {
     final poolItem = await Database.getFromPool();
     try {
       await _writeDebugTaskFile(true, taskDesc);
+      if (loggingFilePrefix == null) loggingFilePrefix = 'worker';
       await f(poolItem.connection);
       return DatabaseResult() ..ok = true;
     }
@@ -42,7 +43,7 @@ class WDatabase extends Database {
       var ret = DatabaseResult() ..errorCode = 'DB' ..errorMessage = ex.toString() ..ok = false;
       if (ret.errorMessage.startsWith('Exception:')) ret.errorMessage = ret.errorMessage.substring(11);
       print(ex);
-      await Logger.logLimited('api', taskDesc + ', ' + ex.toString());
+      await Logger.logLimited(loggingFilePrefix, taskDesc + ', ' + ex.toString());
       return ret;
     }
     finally {
@@ -50,7 +51,6 @@ class WDatabase extends Database {
       Database.releaseToPool(poolItem);
     }
   }
-
   
   ///calculate site leadership (aka. site admins)
   static Future assignSiteLeadership(PostgreSQLConnection db) async {

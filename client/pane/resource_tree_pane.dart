@@ -40,7 +40,7 @@ class ResourceTreePane extends BaseTreePane {
         pdiv.append(link);
         //fails: pdiv.appendHtml('<a target="_blank" href="${re.url}"><img src="images/ext_link.png"/></a> ');
       }
-      HtmlLib.appendLinkToPane(pdiv, re.title, 'resource/${re.id}', asDiv: false);
+      HtmlLib.appendLinkToPane(pdiv, re.title, 'resource/${re.iid}', asDiv: false);
       detailBox.append(pdiv);
       //idea to put description here, but not sure if a good idea: HtmlLib.insertCollapsed1(pdiv, re.description);
     }

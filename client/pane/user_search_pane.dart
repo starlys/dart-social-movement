@@ -38,7 +38,7 @@ class UserSearchPane extends BasePane {
       _resultsDiv.append(d1);
       if (u.avatarUrl != null)
         d1.append(new ImageElement(src: u.avatarUrl));
-      HtmlLib.appendLinkToPane(d1, u.nick, 'user/${u.id}', asDiv: false);
+      HtmlLib.appendLinkToPane(d1, u.nick, 'user/${u.iid}', asDiv: false);
       d1.appendText(' (${u.publicName})');
     }
     if (response.users.length == 0) _resultsDiv.innerHtml = '(none)';

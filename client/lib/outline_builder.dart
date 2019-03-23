@@ -1,7 +1,6 @@
 import 'dart:html';
-//import 'html_lib.dart';
 
-typedef OutlineNodeHandler = Future Functon(Element);
+typedef Future<dynamic> OutlineNodeHandler(Element);
 
 ///manages creating outlines (trees) with expand/collapse and node
 /// selection
@@ -15,7 +14,7 @@ class OutlineBuilder {
   //an expansion div (.outline-childbox) containing its child nodes.
   //The caller can add other elements to the childbox
 
-  OutlineBuilder(this._parent, this._selectHandler) {}
+  OutlineBuilder(this._parent, OutlineNodeHandler this._selectHandler) {}
 
   //add a node to the outline; parentNode should be null to add to root,
   // or a value that was returned by add() for a child node

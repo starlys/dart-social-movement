@@ -7,12 +7,8 @@ part of 'wtypes.dart';
 // **************************************************************************
 
 @generatedSerializable
-class APIRequestBase extends _APIRequestBase {
-  APIRequestBase(
-      {this.id, this.nick, this.password, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class APIRequestBase implements _APIRequestBase {
+  const APIRequestBase({this.nick, this.password});
 
   @override
   final String nick;
@@ -20,38 +16,20 @@ class APIRequestBase extends _APIRequestBase {
   @override
   final String password;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  APIRequestBase copyWith(
-      {String id,
-      String nick,
-      String password,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  APIRequestBase copyWith({String nick, String password}) {
     return new APIRequestBase(
-        id: id ?? this.id,
-        nick: nick ?? this.nick,
-        password: password ?? this.password,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        nick: nick ?? this.nick, password: password ?? this.password);
   }
 
   bool operator ==(other) {
     return other is _APIRequestBase &&
-        other.id == id &&
         other.nick == nick &&
-        other.password == password &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.password == password;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, nick, password, createdAt, updatedAt]);
+    return hashObjects([nick, password]);
   }
 
   Map<String, dynamic> toJson() {
@@ -103,16 +81,8 @@ class APIResponseBase extends _APIResponseBase {
 }
 
 @generatedSerializable
-class APIResponseAssociation extends _APIResponseAssociation {
-  APIResponseAssociation(
-      {this.id,
-      this.linkText,
-      this.linkPaneKey,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class APIResponseAssociation implements _APIResponseAssociation {
+  const APIResponseAssociation({this.linkText, this.linkPaneKey});
 
   @override
   final String linkText;
@@ -120,38 +90,21 @@ class APIResponseAssociation extends _APIResponseAssociation {
   @override
   final String linkPaneKey;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  APIResponseAssociation copyWith(
-      {String id,
-      String linkText,
-      String linkPaneKey,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  APIResponseAssociation copyWith({String linkText, String linkPaneKey}) {
     return new APIResponseAssociation(
-        id: id ?? this.id,
         linkText: linkText ?? this.linkText,
-        linkPaneKey: linkPaneKey ?? this.linkPaneKey,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        linkPaneKey: linkPaneKey ?? this.linkPaneKey);
   }
 
   bool operator ==(other) {
     return other is _APIResponseAssociation &&
-        other.id == id &&
         other.linkText == linkText &&
-        other.linkPaneKey == linkPaneKey &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.linkPaneKey == linkPaneKey;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, linkText, linkPaneKey, createdAt, updatedAt]);
+    return hashObjects([linkText, linkPaneKey]);
   }
 
   Map<String, dynamic> toJson() {
@@ -160,19 +113,9 @@ class APIResponseAssociation extends _APIResponseAssociation {
 }
 
 @generatedSerializable
-class AuthenticateResponse extends _AuthenticateResponse {
-  AuthenticateResponse(
-      {this.id,
-      this.base,
-      this.publicName,
-      this.nick,
-      this.userId,
-      this.isSiteAdmin,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class AuthenticateResponse implements _AuthenticateResponse {
+  const AuthenticateResponse(
+      {this.base, this.publicName, this.nick, this.userId, this.isSiteAdmin});
 
   @override
   final _APIResponseBase base;
@@ -189,56 +132,32 @@ class AuthenticateResponse extends _AuthenticateResponse {
   @override
   final String isSiteAdmin;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   AuthenticateResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String publicName,
       String nick,
       int userId,
-      String isSiteAdmin,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String isSiteAdmin}) {
     return new AuthenticateResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         publicName: publicName ?? this.publicName,
         nick: nick ?? this.nick,
         userId: userId ?? this.userId,
-        isSiteAdmin: isSiteAdmin ?? this.isSiteAdmin,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        isSiteAdmin: isSiteAdmin ?? this.isSiteAdmin);
   }
 
   bool operator ==(other) {
     return other is _AuthenticateResponse &&
-        other.id == id &&
         other.base == base &&
         other.publicName == publicName &&
         other.nick == nick &&
         other.userId == userId &&
-        other.isSiteAdmin == isSiteAdmin &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.isSiteAdmin == isSiteAdmin;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      publicName,
-      nick,
-      userId,
-      isSiteAdmin,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, publicName, nick, userId, isSiteAdmin]);
   }
 
   Map<String, dynamic> toJson() {
@@ -247,12 +166,8 @@ class AuthenticateResponse extends _AuthenticateResponse {
 }
 
 @generatedSerializable
-class CategoryQueryRequest extends _CategoryQueryRequest {
-  CategoryQueryRequest(
-      {this.id, this.base, this.kind, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class CategoryQueryRequest implements _CategoryQueryRequest {
+  const CategoryQueryRequest({this.base, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -260,38 +175,20 @@ class CategoryQueryRequest extends _CategoryQueryRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  CategoryQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  CategoryQueryRequest copyWith({_APIRequestBase base, String kind}) {
     return new CategoryQueryRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _CategoryQueryRequest &&
-        other.id == id &&
         other.base == base &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, kind, createdAt, updatedAt]);
+    return hashObjects([base, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -300,17 +197,9 @@ class CategoryQueryRequest extends _CategoryQueryRequest {
 }
 
 @generatedSerializable
-class CategoryQueryResponse extends _CategoryQueryResponse {
-  CategoryQueryResponse(
-      {this.id,
-      this.base,
-      List<_CategoryItemResponse> categories,
-      this.createdAt,
-      this.updatedAt})
-      : this.categories = new List.unmodifiable(categories ?? []);
-
-  @override
-  final String id;
+class CategoryQueryResponse implements _CategoryQueryResponse {
+  const CategoryQueryResponse(
+      {this.base, List<_CategoryItemResponse> this.categories});
 
   @override
   final _APIResponseBase base;
@@ -318,40 +207,23 @@ class CategoryQueryResponse extends _CategoryQueryResponse {
   @override
   final List<_CategoryItemResponse> categories;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   CategoryQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_CategoryItemResponse> categories,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_CategoryItemResponse> categories}) {
     return new CategoryQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        categories: categories ?? this.categories,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, categories: categories ?? this.categories);
   }
 
   bool operator ==(other) {
     return other is _CategoryQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_CategoryItemResponse>(
                 const DefaultEquality<_CategoryItemResponse>())
-            .equals(other.categories, categories) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.categories, categories);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, categories, createdAt, updatedAt]);
+    return hashObjects([base, categories]);
   }
 
   Map<String, dynamic> toJson() {
@@ -360,17 +232,8 @@ class CategoryQueryResponse extends _CategoryQueryResponse {
 }
 
 @generatedSerializable
-class CategoryDeleteRequest extends _CategoryDeleteRequest {
-  CategoryDeleteRequest(
-      {this.id,
-      this.base,
-      this.catId,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class CategoryDeleteRequest implements _CategoryDeleteRequest {
+  const CategoryDeleteRequest({this.base, this.catId, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -381,41 +244,24 @@ class CategoryDeleteRequest extends _CategoryDeleteRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   CategoryDeleteRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int catId,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int catId, String kind}) {
     return new CategoryDeleteRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         catId: catId ?? this.catId,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _CategoryDeleteRequest &&
-        other.id == id &&
         other.base == base &&
         other.catId == catId &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, catId, kind, createdAt, updatedAt]);
+    return hashObjects([base, catId, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -424,21 +270,15 @@ class CategoryDeleteRequest extends _CategoryDeleteRequest {
 }
 
 @generatedSerializable
-class CategorySaveRequest extends _CategorySaveRequest {
-  CategorySaveRequest(
-      {this.id,
-      this.base,
+class CategorySaveRequest implements _CategorySaveRequest {
+  const CategorySaveRequest(
+      {this.base,
       this.catId,
       this.kind,
       this.referenceId,
       this.referenceMode,
       this.title,
-      this.description,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.description});
 
   @override
   final _APIRequestBase base;
@@ -461,64 +301,39 @@ class CategorySaveRequest extends _CategorySaveRequest {
   @override
   final String description;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   CategorySaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int catId,
       String kind,
       int referenceId,
       String referenceMode,
       String title,
-      String description,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String description}) {
     return new CategorySaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         catId: catId ?? this.catId,
         kind: kind ?? this.kind,
         referenceId: referenceId ?? this.referenceId,
         referenceMode: referenceMode ?? this.referenceMode,
         title: title ?? this.title,
-        description: description ?? this.description,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        description: description ?? this.description);
   }
 
   bool operator ==(other) {
     return other is _CategorySaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.catId == catId &&
         other.kind == kind &&
         other.referenceId == referenceId &&
         other.referenceMode == referenceMode &&
         other.title == title &&
-        other.description == description &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.description == description;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      catId,
-      kind,
-      referenceId,
-      referenceMode,
-      title,
-      description,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects(
+        [base, catId, kind, referenceId, referenceMode, title, description]);
   }
 
   Map<String, dynamic> toJson() {
@@ -527,19 +342,9 @@ class CategorySaveRequest extends _CategorySaveRequest {
 }
 
 @generatedSerializable
-class CategoryMoveContentsRequest extends _CategoryMoveContentsRequest {
-  CategoryMoveContentsRequest(
-      {this.id,
-      this.base,
-      this.catId,
-      this.kind,
-      List<int> relatedIds,
-      this.createdAt,
-      this.updatedAt})
-      : this.relatedIds = new List.unmodifiable(relatedIds ?? []);
-
-  @override
-  final String id;
+class CategoryMoveContentsRequest implements _CategoryMoveContentsRequest {
+  const CategoryMoveContentsRequest(
+      {this.base, this.catId, this.kind, List<int> this.relatedIds});
 
   @override
   final _APIRequestBase base;
@@ -553,46 +358,27 @@ class CategoryMoveContentsRequest extends _CategoryMoveContentsRequest {
   @override
   final List<int> relatedIds;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   CategoryMoveContentsRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int catId,
-      String kind,
-      List<int> relatedIds,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int catId, String kind, List<int> relatedIds}) {
     return new CategoryMoveContentsRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         catId: catId ?? this.catId,
         kind: kind ?? this.kind,
-        relatedIds: relatedIds ?? this.relatedIds,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        relatedIds: relatedIds ?? this.relatedIds);
   }
 
   bool operator ==(other) {
     return other is _CategoryMoveContentsRequest &&
-        other.id == id &&
         other.base == base &&
         other.catId == catId &&
         other.kind == kind &&
         const ListEquality<int>(const DefaultEquality<int>())
-            .equals(other.relatedIds, relatedIds) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.relatedIds, relatedIds);
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, catId, kind, relatedIds, createdAt, updatedAt]);
+    return hashObjects([base, catId, kind, relatedIds]);
   }
 
   Map<String, dynamic> toJson() {
@@ -601,18 +387,9 @@ class CategoryMoveContentsRequest extends _CategoryMoveContentsRequest {
 }
 
 @generatedSerializable
-class CategoryItemResponse extends _CategoryItemResponse {
-  CategoryItemResponse(
-      {this.id,
-      this.iid,
-      this.parentId,
-      this.title,
-      this.description,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class CategoryItemResponse implements _CategoryItemResponse {
+  const CategoryItemResponse(
+      {this.iid, this.parentId, this.title, this.description});
 
   @override
   final int iid;
@@ -626,45 +403,26 @@ class CategoryItemResponse extends _CategoryItemResponse {
   @override
   final String description;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   CategoryItemResponse copyWith(
-      {String id,
-      int iid,
-      int parentId,
-      String title,
-      String description,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int iid, int parentId, String title, String description}) {
     return new CategoryItemResponse(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         parentId: parentId ?? this.parentId,
         title: title ?? this.title,
-        description: description ?? this.description,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        description: description ?? this.description);
   }
 
   bool operator ==(other) {
     return other is _CategoryItemResponse &&
-        other.id == id &&
         other.iid == iid &&
         other.parentId == parentId &&
         other.title == title &&
-        other.description == description &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.description == description;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, iid, parentId, title, description, createdAt, updatedAt]);
+    return hashObjects([iid, parentId, title, description]);
   }
 
   Map<String, dynamic> toJson() {
@@ -673,12 +431,8 @@ class CategoryItemResponse extends _CategoryItemResponse {
 }
 
 @generatedSerializable
-class ConvQueryRequest extends _ConvQueryRequest {
-  ConvQueryRequest(
-      {this.id, this.base, this.term, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ConvQueryRequest implements _ConvQueryRequest {
+  const ConvQueryRequest({this.base, this.term});
 
   @override
   final _APIRequestBase base;
@@ -686,38 +440,20 @@ class ConvQueryRequest extends _ConvQueryRequest {
   @override
   final String term;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ConvQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String term,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ConvQueryRequest copyWith({_APIRequestBase base, String term}) {
     return new ConvQueryRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        term: term ?? this.term,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, term: term ?? this.term);
   }
 
   bool operator ==(other) {
     return other is _ConvQueryRequest &&
-        other.id == id &&
         other.base == base &&
-        other.term == term &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.term == term;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, term, createdAt, updatedAt]);
+    return hashObjects([base, term]);
   }
 
   Map<String, dynamic> toJson() {
@@ -726,17 +462,9 @@ class ConvQueryRequest extends _ConvQueryRequest {
 }
 
 @generatedSerializable
-class ConvQueryResponse extends _ConvQueryResponse {
-  ConvQueryResponse(
-      {this.id,
-      this.base,
-      List<_ConvQueryConvItemResponse> convs,
-      this.createdAt,
-      this.updatedAt})
-      : this.convs = new List.unmodifiable(convs ?? []);
-
-  @override
-  final String id;
+class ConvQueryResponse implements _ConvQueryResponse {
+  const ConvQueryResponse(
+      {this.base, List<_ConvQueryConvItemResponse> this.convs});
 
   @override
   final _APIResponseBase base;
@@ -744,40 +472,23 @@ class ConvQueryResponse extends _ConvQueryResponse {
   @override
   final List<_ConvQueryConvItemResponse> convs;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_ConvQueryConvItemResponse> convs,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_ConvQueryConvItemResponse> convs}) {
     return new ConvQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        convs: convs ?? this.convs,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, convs: convs ?? this.convs);
   }
 
   bool operator ==(other) {
     return other is _ConvQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_ConvQueryConvItemResponse>(
                 const DefaultEquality<_ConvQueryConvItemResponse>())
-            .equals(other.convs, convs) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.convs, convs);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, convs, createdAt, updatedAt]);
+    return hashObjects([base, convs]);
   }
 
   Map<String, dynamic> toJson() {
@@ -786,18 +497,9 @@ class ConvQueryResponse extends _ConvQueryResponse {
 }
 
 @generatedSerializable
-class ConvQueryConvItemResponse extends _ConvQueryConvItemResponse {
-  ConvQueryConvItemResponse(
-      {this.id,
-      this.convId,
-      this.hitText,
-      List<_ConvQueryPostItemResponse> posts,
-      this.createdAt,
-      this.updatedAt})
-      : this.posts = new List.unmodifiable(posts ?? []);
-
-  @override
-  final String id;
+class ConvQueryConvItemResponse implements _ConvQueryConvItemResponse {
+  const ConvQueryConvItemResponse(
+      {this.convId, this.hitText, List<_ConvQueryPostItemResponse> this.posts});
 
   @override
   final int convId;
@@ -808,43 +510,26 @@ class ConvQueryConvItemResponse extends _ConvQueryConvItemResponse {
   @override
   final List<_ConvQueryPostItemResponse> posts;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvQueryConvItemResponse copyWith(
-      {String id,
-      int convId,
-      String hitText,
-      List<_ConvQueryPostItemResponse> posts,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int convId, String hitText, List<_ConvQueryPostItemResponse> posts}) {
     return new ConvQueryConvItemResponse(
-        id: id ?? this.id,
         convId: convId ?? this.convId,
         hitText: hitText ?? this.hitText,
-        posts: posts ?? this.posts,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        posts: posts ?? this.posts);
   }
 
   bool operator ==(other) {
     return other is _ConvQueryConvItemResponse &&
-        other.id == id &&
         other.convId == convId &&
         other.hitText == hitText &&
         const ListEquality<_ConvQueryPostItemResponse>(
                 const DefaultEquality<_ConvQueryPostItemResponse>())
-            .equals(other.posts, posts) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.posts, posts);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, convId, hitText, posts, createdAt, updatedAt]);
+    return hashObjects([convId, hitText, posts]);
   }
 
   Map<String, dynamic> toJson() {
@@ -853,12 +538,8 @@ class ConvQueryConvItemResponse extends _ConvQueryConvItemResponse {
 }
 
 @generatedSerializable
-class ConvQueryPostItemResponse extends _ConvQueryPostItemResponse {
-  ConvQueryPostItemResponse(
-      {this.id, this.postId, this.hitText, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ConvQueryPostItemResponse implements _ConvQueryPostItemResponse {
+  const ConvQueryPostItemResponse({this.postId, this.hitText});
 
   @override
   final String postId;
@@ -866,38 +547,20 @@ class ConvQueryPostItemResponse extends _ConvQueryPostItemResponse {
   @override
   final String hitText;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ConvQueryPostItemResponse copyWith(
-      {String id,
-      String postId,
-      String hitText,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ConvQueryPostItemResponse copyWith({String postId, String hitText}) {
     return new ConvQueryPostItemResponse(
-        id: id ?? this.id,
-        postId: postId ?? this.postId,
-        hitText: hitText ?? this.hitText,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        postId: postId ?? this.postId, hitText: hitText ?? this.hitText);
   }
 
   bool operator ==(other) {
     return other is _ConvQueryPostItemResponse &&
-        other.id == id &&
         other.postId == postId &&
-        other.hitText == hitText &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.hitText == hitText;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, postId, hitText, createdAt, updatedAt]);
+    return hashObjects([postId, hitText]);
   }
 
   Map<String, dynamic> toJson() {
@@ -906,19 +569,9 @@ class ConvQueryPostItemResponse extends _ConvQueryPostItemResponse {
 }
 
 @generatedSerializable
-class ConvGetRequest extends _ConvGetRequest {
-  ConvGetRequest(
-      {this.id,
-      this.base,
-      this.convId,
-      this.mode,
-      this.rangeFromWDT,
-      this.rangeToWDT,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ConvGetRequest implements _ConvGetRequest {
+  const ConvGetRequest(
+      {this.base, this.convId, this.mode, this.rangeFromWDT, this.rangeToWDT});
 
   @override
   final _APIRequestBase base;
@@ -935,56 +588,32 @@ class ConvGetRequest extends _ConvGetRequest {
   @override
   final String rangeToWDT;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int convId,
       String mode,
       String rangeFromWDT,
-      String rangeToWDT,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String rangeToWDT}) {
     return new ConvGetRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         convId: convId ?? this.convId,
         mode: mode ?? this.mode,
         rangeFromWDT: rangeFromWDT ?? this.rangeFromWDT,
-        rangeToWDT: rangeToWDT ?? this.rangeToWDT,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        rangeToWDT: rangeToWDT ?? this.rangeToWDT);
   }
 
   bool operator ==(other) {
     return other is _ConvGetRequest &&
-        other.id == id &&
         other.base == base &&
         other.convId == convId &&
         other.mode == mode &&
         other.rangeFromWDT == rangeFromWDT &&
-        other.rangeToWDT == rangeToWDT &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.rangeToWDT == rangeToWDT;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      convId,
-      mode,
-      rangeFromWDT,
-      rangeToWDT,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, convId, mode, rangeFromWDT, rangeToWDT]);
   }
 
   Map<String, dynamic> toJson() {
@@ -993,16 +622,15 @@ class ConvGetRequest extends _ConvGetRequest {
 }
 
 @generatedSerializable
-class ConvGetResponse extends _ConvGetResponse {
-  ConvGetResponse(
-      {this.id,
-      this.base,
+class ConvGetResponse implements _ConvGetResponse {
+  const ConvGetResponse(
+      {this.base,
       this.isManager,
       this.isJoined,
       this.readPositionWDT,
       this.title,
       this.anySkipped,
-      List<_ConvGetPostItem> posts,
+      List<_ConvGetPostItem> this.posts,
       this.replyAllowed,
       this.replyAllowedDesc,
       this.replyMaxLength,
@@ -1010,13 +638,7 @@ class ConvGetResponse extends _ConvGetResponse {
       this.like,
       this.bookmarked,
       this.parentTitle,
-      this.parentPaneKey,
-      this.createdAt,
-      this.updatedAt})
-      : this.posts = new List.unmodifiable(posts ?? []);
-
-  @override
-  final String id;
+      this.parentPaneKey});
 
   @override
   final _APIResponseBase base;
@@ -1063,15 +685,8 @@ class ConvGetResponse extends _ConvGetResponse {
   @override
   final String parentPaneKey;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String isManager,
       String isJoined,
       String readPositionWDT,
@@ -1085,11 +700,8 @@ class ConvGetResponse extends _ConvGetResponse {
       String like,
       String bookmarked,
       String parentTitle,
-      String parentPaneKey,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String parentPaneKey}) {
     return new ConvGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         isManager: isManager ?? this.isManager,
         isJoined: isJoined ?? this.isJoined,
@@ -1104,14 +716,11 @@ class ConvGetResponse extends _ConvGetResponse {
         like: like ?? this.like,
         bookmarked: bookmarked ?? this.bookmarked,
         parentTitle: parentTitle ?? this.parentTitle,
-        parentPaneKey: parentPaneKey ?? this.parentPaneKey,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        parentPaneKey: parentPaneKey ?? this.parentPaneKey);
   }
 
   bool operator ==(other) {
     return other is _ConvGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.isManager == isManager &&
         other.isJoined == isJoined &&
@@ -1128,15 +737,12 @@ class ConvGetResponse extends _ConvGetResponse {
         other.like == like &&
         other.bookmarked == bookmarked &&
         other.parentTitle == parentTitle &&
-        other.parentPaneKey == parentPaneKey &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.parentPaneKey == parentPaneKey;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       isManager,
       isJoined,
@@ -1151,9 +757,7 @@ class ConvGetResponse extends _ConvGetResponse {
       like,
       bookmarked,
       parentTitle,
-      parentPaneKey,
-      createdAt,
-      updatedAt
+      parentPaneKey
     ]);
   }
 
@@ -1163,10 +767,9 @@ class ConvGetResponse extends _ConvGetResponse {
 }
 
 @generatedSerializable
-class ConvGetPostItem extends _ConvGetPostItem {
-  ConvGetPostItem(
-      {this.id,
-      this.iid,
+class ConvGetPostItem implements _ConvGetPostItem {
+  const ConvGetPostItem(
+      {this.iid,
       this.authorId,
       this.authorNick,
       this.avatarUrl,
@@ -1176,12 +779,7 @@ class ConvGetPostItem extends _ConvGetPostItem {
       this.ptext,
       this.imageUrl,
       this.collapseMode,
-      this.collapsePosition,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.collapsePosition});
 
   @override
   final String iid;
@@ -1216,15 +814,8 @@ class ConvGetPostItem extends _ConvGetPostItem {
   @override
   final int collapsePosition;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvGetPostItem copyWith(
-      {String id,
-      String iid,
+      {String iid,
       int authorId,
       String authorNick,
       String avatarUrl,
@@ -1234,11 +825,8 @@ class ConvGetPostItem extends _ConvGetPostItem {
       String ptext,
       String imageUrl,
       String collapseMode,
-      int collapsePosition,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      int collapsePosition}) {
     return new ConvGetPostItem(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         authorId: authorId ?? this.authorId,
         authorNick: authorNick ?? this.authorNick,
@@ -1249,14 +837,11 @@ class ConvGetPostItem extends _ConvGetPostItem {
         ptext: ptext ?? this.ptext,
         imageUrl: imageUrl ?? this.imageUrl,
         collapseMode: collapseMode ?? this.collapseMode,
-        collapsePosition: collapsePosition ?? this.collapsePosition,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        collapsePosition: collapsePosition ?? this.collapsePosition);
   }
 
   bool operator ==(other) {
     return other is _ConvGetPostItem &&
-        other.id == id &&
         other.iid == iid &&
         other.authorId == authorId &&
         other.authorNick == authorNick &&
@@ -1267,15 +852,12 @@ class ConvGetPostItem extends _ConvGetPostItem {
         other.ptext == ptext &&
         other.imageUrl == imageUrl &&
         other.collapseMode == collapseMode &&
-        other.collapsePosition == collapsePosition &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.collapsePosition == collapsePosition;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       iid,
       authorId,
       authorNick,
@@ -1286,9 +868,7 @@ class ConvGetPostItem extends _ConvGetPostItem {
       ptext,
       imageUrl,
       collapseMode,
-      collapsePosition,
-      createdAt,
-      updatedAt
+      collapsePosition
     ]);
   }
 
@@ -1298,12 +878,8 @@ class ConvGetPostItem extends _ConvGetPostItem {
 }
 
 @generatedSerializable
-class ConvGetRulesRequest extends _ConvGetRulesRequest {
-  ConvGetRulesRequest(
-      {this.id, this.base, this.convId, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ConvGetRulesRequest implements _ConvGetRulesRequest {
+  const ConvGetRulesRequest({this.base, this.convId});
 
   @override
   final _APIRequestBase base;
@@ -1311,38 +887,20 @@ class ConvGetRulesRequest extends _ConvGetRulesRequest {
   @override
   final int convId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ConvGetRulesRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int convId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ConvGetRulesRequest copyWith({_APIRequestBase base, int convId}) {
     return new ConvGetRulesRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        convId: convId ?? this.convId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, convId: convId ?? this.convId);
   }
 
   bool operator ==(other) {
     return other is _ConvGetRulesRequest &&
-        other.id == id &&
         other.base == base &&
-        other.convId == convId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.convId == convId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, convId, createdAt, updatedAt]);
+    return hashObjects([base, convId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -1351,18 +909,9 @@ class ConvGetRulesRequest extends _ConvGetRulesRequest {
 }
 
 @generatedSerializable
-class ConvGetRulesResponse extends _ConvGetRulesResponse {
-  ConvGetRulesResponse(
-      {this.id,
-      this.base,
-      this.postMaxSize,
-      this.userDailyMax,
-      this.title,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ConvGetRulesResponse implements _ConvGetRulesResponse {
+  const ConvGetRulesResponse(
+      {this.base, this.postMaxSize, this.userDailyMax, this.title});
 
   @override
   final _APIResponseBase base;
@@ -1376,45 +925,29 @@ class ConvGetRulesResponse extends _ConvGetRulesResponse {
   @override
   final String title;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvGetRulesResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       int postMaxSize,
       int userDailyMax,
-      String title,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String title}) {
     return new ConvGetRulesResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         postMaxSize: postMaxSize ?? this.postMaxSize,
         userDailyMax: userDailyMax ?? this.userDailyMax,
-        title: title ?? this.title,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        title: title ?? this.title);
   }
 
   bool operator ==(other) {
     return other is _ConvGetRulesResponse &&
-        other.id == id &&
         other.base == base &&
         other.postMaxSize == postMaxSize &&
         other.userDailyMax == userDailyMax &&
-        other.title == title &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.title == title;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, postMaxSize, userDailyMax, title, createdAt, updatedAt]);
+    return hashObjects([base, postMaxSize, userDailyMax, title]);
   }
 
   Map<String, dynamic> toJson() {
@@ -1423,10 +956,9 @@ class ConvGetRulesResponse extends _ConvGetRulesResponse {
 }
 
 @generatedSerializable
-class ConvSaveRequest extends _ConvSaveRequest {
-  ConvSaveRequest(
-      {this.id,
-      this.base,
+class ConvSaveRequest implements _ConvSaveRequest {
+  const ConvSaveRequest(
+      {this.base,
       this.convId,
       this.projectId,
       this.eventId,
@@ -1434,12 +966,7 @@ class ConvSaveRequest extends _ConvSaveRequest {
       this.openingPostId,
       this.title,
       this.postMaxSize,
-      this.userDailyMax,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.userDailyMax});
 
   @override
   final _APIRequestBase base;
@@ -1468,15 +995,8 @@ class ConvSaveRequest extends _ConvSaveRequest {
   @override
   final int userDailyMax;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int convId,
       int projectId,
       int eventId,
@@ -1484,11 +1004,8 @@ class ConvSaveRequest extends _ConvSaveRequest {
       String openingPostId,
       String title,
       int postMaxSize,
-      int userDailyMax,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      int userDailyMax}) {
     return new ConvSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         convId: convId ?? this.convId,
         projectId: projectId ?? this.projectId,
@@ -1497,14 +1014,11 @@ class ConvSaveRequest extends _ConvSaveRequest {
         openingPostId: openingPostId ?? this.openingPostId,
         title: title ?? this.title,
         postMaxSize: postMaxSize ?? this.postMaxSize,
-        userDailyMax: userDailyMax ?? this.userDailyMax,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        userDailyMax: userDailyMax ?? this.userDailyMax);
   }
 
   bool operator ==(other) {
     return other is _ConvSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.convId == convId &&
         other.projectId == projectId &&
@@ -1513,15 +1027,12 @@ class ConvSaveRequest extends _ConvSaveRequest {
         other.openingPostId == openingPostId &&
         other.title == title &&
         other.postMaxSize == postMaxSize &&
-        other.userDailyMax == userDailyMax &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.userDailyMax == userDailyMax;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       convId,
       projectId,
@@ -1530,9 +1041,7 @@ class ConvSaveRequest extends _ConvSaveRequest {
       openingPostId,
       title,
       postMaxSize,
-      userDailyMax,
-      createdAt,
-      updatedAt
+      userDailyMax
     ]);
   }
 
@@ -1542,12 +1051,8 @@ class ConvSaveRequest extends _ConvSaveRequest {
 }
 
 @generatedSerializable
-class ConvPostGetRequest extends _ConvPostGetRequest {
-  ConvPostGetRequest(
-      {this.id, this.base, this.postId, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ConvPostGetRequest implements _ConvPostGetRequest {
+  const ConvPostGetRequest({this.base, this.postId});
 
   @override
   final _APIRequestBase base;
@@ -1555,38 +1060,20 @@ class ConvPostGetRequest extends _ConvPostGetRequest {
   @override
   final String postId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ConvPostGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String postId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ConvPostGetRequest copyWith({_APIRequestBase base, String postId}) {
     return new ConvPostGetRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        postId: postId ?? this.postId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, postId: postId ?? this.postId);
   }
 
   bool operator ==(other) {
     return other is _ConvPostGetRequest &&
-        other.id == id &&
         other.base == base &&
-        other.postId == postId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.postId == postId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, postId, createdAt, updatedAt]);
+    return hashObjects([base, postId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -1595,21 +1082,15 @@ class ConvPostGetRequest extends _ConvPostGetRequest {
 }
 
 @generatedSerializable
-class ConvPostGetResponse extends _ConvPostGetResponse {
-  ConvPostGetResponse(
-      {this.id,
-      this.base,
+class ConvPostGetResponse implements _ConvPostGetResponse {
+  const ConvPostGetResponse(
+      {this.base,
       this.avatarUrl,
       this.createdAtReadable,
       this.reaction,
       this.throttleDescription,
       this.canCensor,
-      this.allReasons,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.allReasons});
 
   @override
   final _APIResponseBase base;
@@ -1632,63 +1113,45 @@ class ConvPostGetResponse extends _ConvPostGetResponse {
   @override
   final String allReasons;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvPostGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String avatarUrl,
       String createdAtReadable,
       String reaction,
       String throttleDescription,
       String canCensor,
-      String allReasons,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String allReasons}) {
     return new ConvPostGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         avatarUrl: avatarUrl ?? this.avatarUrl,
         createdAtReadable: createdAtReadable ?? this.createdAtReadable,
         reaction: reaction ?? this.reaction,
         throttleDescription: throttleDescription ?? this.throttleDescription,
         canCensor: canCensor ?? this.canCensor,
-        allReasons: allReasons ?? this.allReasons,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        allReasons: allReasons ?? this.allReasons);
   }
 
   bool operator ==(other) {
     return other is _ConvPostGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.avatarUrl == avatarUrl &&
         other.createdAtReadable == createdAtReadable &&
         other.reaction == reaction &&
         other.throttleDescription == throttleDescription &&
         other.canCensor == canCensor &&
-        other.allReasons == allReasons &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.allReasons == allReasons;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       avatarUrl,
       createdAtReadable,
       reaction,
       throttleDescription,
       canCensor,
-      allReasons,
-      createdAt,
-      updatedAt
+      allReasons
     ]);
   }
 
@@ -1698,22 +1161,16 @@ class ConvPostGetResponse extends _ConvPostGetResponse {
 }
 
 @generatedSerializable
-class ConvPostSaveRequest extends _ConvPostSaveRequest {
-  ConvPostSaveRequest(
-      {this.id,
-      this.base,
+class ConvPostSaveRequest implements _ConvPostSaveRequest {
+  const ConvPostSaveRequest(
+      {this.base,
       this.convId,
       this.postId,
       this.triggerWarning,
       this.ptext,
       this.censored,
       this.delete,
-      this.lastKnownWDT,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.lastKnownWDT});
 
   @override
   final _APIRequestBase base;
@@ -1739,26 +1196,16 @@ class ConvPostSaveRequest extends _ConvPostSaveRequest {
   @override
   final String lastKnownWDT;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvPostSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int convId,
       String postId,
       String triggerWarning,
       String ptext,
       String censored,
       String delete,
-      String lastKnownWDT,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String lastKnownWDT}) {
     return new ConvPostSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         convId: convId ?? this.convId,
         postId: postId ?? this.postId,
@@ -1766,14 +1213,11 @@ class ConvPostSaveRequest extends _ConvPostSaveRequest {
         ptext: ptext ?? this.ptext,
         censored: censored ?? this.censored,
         delete: delete ?? this.delete,
-        lastKnownWDT: lastKnownWDT ?? this.lastKnownWDT,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        lastKnownWDT: lastKnownWDT ?? this.lastKnownWDT);
   }
 
   bool operator ==(other) {
     return other is _ConvPostSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.convId == convId &&
         other.postId == postId &&
@@ -1781,15 +1225,12 @@ class ConvPostSaveRequest extends _ConvPostSaveRequest {
         other.ptext == ptext &&
         other.censored == censored &&
         other.delete == delete &&
-        other.lastKnownWDT == lastKnownWDT &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.lastKnownWDT == lastKnownWDT;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       convId,
       postId,
@@ -1797,9 +1238,7 @@ class ConvPostSaveRequest extends _ConvPostSaveRequest {
       ptext,
       censored,
       delete,
-      lastKnownWDT,
-      createdAt,
-      updatedAt
+      lastKnownWDT
     ]);
   }
 
@@ -1809,19 +1248,9 @@ class ConvPostSaveRequest extends _ConvPostSaveRequest {
 }
 
 @generatedSerializable
-class ConvPostImageSaveRequest extends _ConvPostImageSaveRequest {
-  ConvPostImageSaveRequest(
-      {this.id,
-      this.base,
-      this.convId,
-      this.ptext,
-      List<int> imageBytes,
-      this.createdAt,
-      this.updatedAt})
-      : this.imageBytes = new List.unmodifiable(imageBytes ?? []);
-
-  @override
-  final String id;
+class ConvPostImageSaveRequest implements _ConvPostImageSaveRequest {
+  const ConvPostImageSaveRequest(
+      {this.base, this.convId, this.ptext, List<int> this.imageBytes});
 
   @override
   final _APIRequestBase base;
@@ -1835,46 +1264,27 @@ class ConvPostImageSaveRequest extends _ConvPostImageSaveRequest {
   @override
   final List<int> imageBytes;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvPostImageSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int convId,
-      String ptext,
-      List<int> imageBytes,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int convId, String ptext, List<int> imageBytes}) {
     return new ConvPostImageSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         convId: convId ?? this.convId,
         ptext: ptext ?? this.ptext,
-        imageBytes: imageBytes ?? this.imageBytes,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        imageBytes: imageBytes ?? this.imageBytes);
   }
 
   bool operator ==(other) {
     return other is _ConvPostImageSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.convId == convId &&
         other.ptext == ptext &&
         const ListEquality<int>(const DefaultEquality<int>())
-            .equals(other.imageBytes, imageBytes) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.imageBytes, imageBytes);
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, convId, ptext, imageBytes, createdAt, updatedAt]);
+    return hashObjects([base, convId, ptext, imageBytes]);
   }
 
   Map<String, dynamic> toJson() {
@@ -1883,18 +1293,9 @@ class ConvPostImageSaveRequest extends _ConvPostImageSaveRequest {
 }
 
 @generatedSerializable
-class ConvPostUserSaveRequest extends _ConvPostUserSaveRequest {
-  ConvPostUserSaveRequest(
-      {this.id,
-      this.base,
-      this.postId,
-      this.reaction,
-      this.reason,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ConvPostUserSaveRequest implements _ConvPostUserSaveRequest {
+  const ConvPostUserSaveRequest(
+      {this.base, this.postId, this.reaction, this.reason});
 
   @override
   final _APIRequestBase base;
@@ -1908,45 +1309,26 @@ class ConvPostUserSaveRequest extends _ConvPostUserSaveRequest {
   @override
   final String reason;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvPostUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String postId,
-      String reaction,
-      String reason,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, String postId, String reaction, String reason}) {
     return new ConvPostUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         postId: postId ?? this.postId,
         reaction: reaction ?? this.reaction,
-        reason: reason ?? this.reason,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        reason: reason ?? this.reason);
   }
 
   bool operator ==(other) {
     return other is _ConvPostUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.postId == postId &&
         other.reaction == reaction &&
-        other.reason == reason &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.reason == reason;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, postId, reaction, reason, createdAt, updatedAt]);
+    return hashObjects([base, postId, reaction, reason]);
   }
 
   Map<String, dynamic> toJson() {
@@ -1955,17 +1337,8 @@ class ConvPostUserSaveRequest extends _ConvPostUserSaveRequest {
 }
 
 @generatedSerializable
-class ConvSetReadPositionRequest extends _ConvSetReadPositionRequest {
-  ConvSetReadPositionRequest(
-      {this.id,
-      this.base,
-      this.convId,
-      this.positionWDT,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ConvSetReadPositionRequest implements _ConvSetReadPositionRequest {
+  const ConvSetReadPositionRequest({this.base, this.convId, this.positionWDT});
 
   @override
   final _APIRequestBase base;
@@ -1976,41 +1349,24 @@ class ConvSetReadPositionRequest extends _ConvSetReadPositionRequest {
   @override
   final String positionWDT;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvSetReadPositionRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int convId,
-      String positionWDT,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int convId, String positionWDT}) {
     return new ConvSetReadPositionRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         convId: convId ?? this.convId,
-        positionWDT: positionWDT ?? this.positionWDT,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        positionWDT: positionWDT ?? this.positionWDT);
   }
 
   bool operator ==(other) {
     return other is _ConvSetReadPositionRequest &&
-        other.id == id &&
         other.base == base &&
         other.convId == convId &&
-        other.positionWDT == positionWDT &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.positionWDT == positionWDT;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, convId, positionWDT, createdAt, updatedAt]);
+    return hashObjects([base, convId, positionWDT]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2019,19 +1375,9 @@ class ConvSetReadPositionRequest extends _ConvSetReadPositionRequest {
 }
 
 @generatedSerializable
-class ConvUserSaveRequest extends _ConvUserSaveRequest {
-  ConvUserSaveRequest(
-      {this.id,
-      this.base,
-      this.convId,
-      this.status,
-      this.like,
-      this.bookmarked,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ConvUserSaveRequest implements _ConvUserSaveRequest {
+  const ConvUserSaveRequest(
+      {this.base, this.convId, this.status, this.like, this.bookmarked});
 
   @override
   final _APIRequestBase base;
@@ -2048,48 +1394,32 @@ class ConvUserSaveRequest extends _ConvUserSaveRequest {
   @override
   final String bookmarked;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ConvUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int convId,
       String status,
       String like,
-      String bookmarked,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String bookmarked}) {
     return new ConvUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         convId: convId ?? this.convId,
         status: status ?? this.status,
         like: like ?? this.like,
-        bookmarked: bookmarked ?? this.bookmarked,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        bookmarked: bookmarked ?? this.bookmarked);
   }
 
   bool operator ==(other) {
     return other is _ConvUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.convId == convId &&
         other.status == status &&
         other.like == like &&
-        other.bookmarked == bookmarked &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.bookmarked == bookmarked;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, convId, status, like, bookmarked, createdAt, updatedAt]);
+    return hashObjects([base, convId, status, like, bookmarked]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2098,12 +1428,8 @@ class ConvUserSaveRequest extends _ConvUserSaveRequest {
 }
 
 @generatedSerializable
-class ConvUserSaveResponse extends _ConvUserSaveResponse {
-  ConvUserSaveResponse(
-      {this.id, this.base, this.action, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ConvUserSaveResponse implements _ConvUserSaveResponse {
+  const ConvUserSaveResponse({this.base, this.action});
 
   @override
   final _APIResponseBase base;
@@ -2111,38 +1437,20 @@ class ConvUserSaveResponse extends _ConvUserSaveResponse {
   @override
   final String action;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ConvUserSaveResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      String action,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ConvUserSaveResponse copyWith({_APIResponseBase base, String action}) {
     return new ConvUserSaveResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        action: action ?? this.action,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, action: action ?? this.action);
   }
 
   bool operator ==(other) {
     return other is _ConvUserSaveResponse &&
-        other.id == id &&
         other.base == base &&
-        other.action == action &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.action == action;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, action, createdAt, updatedAt]);
+    return hashObjects([base, action]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2151,12 +1459,8 @@ class ConvUserSaveResponse extends _ConvUserSaveResponse {
 }
 
 @generatedSerializable
-class DocQueryRequest extends _DocQueryRequest {
-  DocQueryRequest(
-      {this.id, this.base, this.mode, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class DocQueryRequest implements _DocQueryRequest {
+  const DocQueryRequest({this.base, this.mode});
 
   @override
   final _APIRequestBase base;
@@ -2164,38 +1468,20 @@ class DocQueryRequest extends _DocQueryRequest {
   @override
   final String mode;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  DocQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String mode,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  DocQueryRequest copyWith({_APIRequestBase base, String mode}) {
     return new DocQueryRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        mode: mode ?? this.mode,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, mode: mode ?? this.mode);
   }
 
   bool operator ==(other) {
     return other is _DocQueryRequest &&
-        other.id == id &&
         other.base == base &&
-        other.mode == mode &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.mode == mode;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, mode, createdAt, updatedAt]);
+    return hashObjects([base, mode]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2204,17 +1490,8 @@ class DocQueryRequest extends _DocQueryRequest {
 }
 
 @generatedSerializable
-class DocQueryResponse extends _DocQueryResponse {
-  DocQueryResponse(
-      {this.id,
-      this.base,
-      List<_DocQueryItem> docs,
-      this.createdAt,
-      this.updatedAt})
-      : this.docs = new List.unmodifiable(docs ?? []);
-
-  @override
-  final String id;
+class DocQueryResponse implements _DocQueryResponse {
+  const DocQueryResponse({this.base, List<_DocQueryItem> this.docs});
 
   @override
   final _APIResponseBase base;
@@ -2222,40 +1499,22 @@ class DocQueryResponse extends _DocQueryResponse {
   @override
   final List<_DocQueryItem> docs;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  DocQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_DocQueryItem> docs,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  DocQueryResponse copyWith({_APIResponseBase base, List<_DocQueryItem> docs}) {
     return new DocQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        docs: docs ?? this.docs,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, docs: docs ?? this.docs);
   }
 
   bool operator ==(other) {
     return other is _DocQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_DocQueryItem>(
                 const DefaultEquality<_DocQueryItem>())
-            .equals(other.docs, docs) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.docs, docs);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, docs, createdAt, updatedAt]);
+    return hashObjects([base, docs]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2264,11 +1523,8 @@ class DocQueryResponse extends _DocQueryResponse {
 }
 
 @generatedSerializable
-class DocQueryItem extends _DocQueryItem {
-  DocQueryItem({this.id, this.iid, this.title, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class DocQueryItem implements _DocQueryItem {
+  const DocQueryItem({this.iid, this.title});
 
   @override
   final int iid;
@@ -2276,38 +1532,17 @@ class DocQueryItem extends _DocQueryItem {
   @override
   final String title;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  DocQueryItem copyWith(
-      {String id,
-      int iid,
-      String title,
-      DateTime createdAt,
-      DateTime updatedAt}) {
-    return new DocQueryItem(
-        id: id ?? this.id,
-        iid: iid ?? this.iid,
-        title: title ?? this.title,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+  DocQueryItem copyWith({int iid, String title}) {
+    return new DocQueryItem(iid: iid ?? this.iid, title: title ?? this.title);
   }
 
   bool operator ==(other) {
-    return other is _DocQueryItem &&
-        other.id == id &&
-        other.iid == iid &&
-        other.title == title &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+    return other is _DocQueryItem && other.iid == iid && other.title == title;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, iid, title, createdAt, updatedAt]);
+    return hashObjects([iid, title]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2316,19 +1551,13 @@ class DocQueryItem extends _DocQueryItem {
 }
 
 @generatedSerializable
-class DocGetRequest extends _DocGetRequest {
-  DocGetRequest(
-      {this.id,
-      this.base,
+class DocGetRequest implements _DocGetRequest {
+  const DocGetRequest(
+      {this.base,
       this.docId,
       this.specialCode,
       this.revisionNo,
-      this.getVerList,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.getVerList});
 
   @override
   final _APIRequestBase base;
@@ -2345,56 +1574,32 @@ class DocGetRequest extends _DocGetRequest {
   @override
   final String getVerList;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   DocGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int docId,
       String specialCode,
       int revisionNo,
-      String getVerList,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String getVerList}) {
     return new DocGetRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         docId: docId ?? this.docId,
         specialCode: specialCode ?? this.specialCode,
         revisionNo: revisionNo ?? this.revisionNo,
-        getVerList: getVerList ?? this.getVerList,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        getVerList: getVerList ?? this.getVerList);
   }
 
   bool operator ==(other) {
     return other is _DocGetRequest &&
-        other.id == id &&
         other.base == base &&
         other.docId == docId &&
         other.specialCode == specialCode &&
         other.revisionNo == revisionNo &&
-        other.getVerList == getVerList &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.getVerList == getVerList;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      docId,
-      specialCode,
-      revisionNo,
-      getVerList,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, docId, specialCode, revisionNo, getVerList]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2403,10 +1608,9 @@ class DocGetRequest extends _DocGetRequest {
 }
 
 @generatedSerializable
-class DocGetResponse extends _DocGetResponse {
-  DocGetResponse(
-      {this.id,
-      this.base,
+class DocGetResponse implements _DocGetResponse {
+  const DocGetResponse(
+      {this.base,
       this.docId,
       this.title,
       this.body,
@@ -2418,13 +1622,7 @@ class DocGetResponse extends _DocGetResponse {
       this.reasonNotEditable,
       this.createdAtR,
       this.proposalId,
-      List<_DocGetVersionItem> verList,
-      this.createdAt,
-      this.updatedAt})
-      : this.verList = new List.unmodifiable(verList ?? []);
-
-  @override
-  final String id;
+      List<_DocGetVersionItem> this.verList});
 
   @override
   final _APIResponseBase base;
@@ -2465,15 +1663,8 @@ class DocGetResponse extends _DocGetResponse {
   @override
   final List<_DocGetVersionItem> verList;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   DocGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       int docId,
       String title,
       String body,
@@ -2485,11 +1676,8 @@ class DocGetResponse extends _DocGetResponse {
       String reasonNotEditable,
       String createdAtR,
       int proposalId,
-      List<_DocGetVersionItem> verList,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      List<_DocGetVersionItem> verList}) {
     return new DocGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         docId: docId ?? this.docId,
         title: title ?? this.title,
@@ -2502,14 +1690,11 @@ class DocGetResponse extends _DocGetResponse {
         reasonNotEditable: reasonNotEditable ?? this.reasonNotEditable,
         createdAtR: createdAtR ?? this.createdAtR,
         proposalId: proposalId ?? this.proposalId,
-        verList: verList ?? this.verList,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        verList: verList ?? this.verList);
   }
 
   bool operator ==(other) {
     return other is _DocGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.docId == docId &&
         other.title == title &&
@@ -2524,15 +1709,12 @@ class DocGetResponse extends _DocGetResponse {
         other.proposalId == proposalId &&
         const ListEquality<_DocGetVersionItem>(
                 const DefaultEquality<_DocGetVersionItem>())
-            .equals(other.verList, verList) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.verList, verList);
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       docId,
       title,
@@ -2545,9 +1727,7 @@ class DocGetResponse extends _DocGetResponse {
       reasonNotEditable,
       createdAtR,
       proposalId,
-      verList,
-      createdAt,
-      updatedAt
+      verList
     ]);
   }
 
@@ -2557,16 +1737,8 @@ class DocGetResponse extends _DocGetResponse {
 }
 
 @generatedSerializable
-class DocGetVersionItem extends _DocGetVersionItem {
-  DocGetVersionItem(
-      {this.id,
-      this.revisionNo,
-      this.createdAtR,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class DocGetVersionItem implements _DocGetVersionItem {
+  const DocGetVersionItem({this.revisionNo, this.createdAtR});
 
   @override
   final int revisionNo;
@@ -2574,38 +1746,21 @@ class DocGetVersionItem extends _DocGetVersionItem {
   @override
   final String createdAtR;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  DocGetVersionItem copyWith(
-      {String id,
-      int revisionNo,
-      String createdAtR,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  DocGetVersionItem copyWith({int revisionNo, String createdAtR}) {
     return new DocGetVersionItem(
-        id: id ?? this.id,
         revisionNo: revisionNo ?? this.revisionNo,
-        createdAtR: createdAtR ?? this.createdAtR,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        createdAtR: createdAtR ?? this.createdAtR);
   }
 
   bool operator ==(other) {
     return other is _DocGetVersionItem &&
-        other.id == id &&
         other.revisionNo == revisionNo &&
-        other.createdAtR == createdAtR &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.createdAtR == createdAtR;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, revisionNo, createdAtR, createdAt, updatedAt]);
+    return hashObjects([revisionNo, createdAtR]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2614,21 +1769,15 @@ class DocGetVersionItem extends _DocGetVersionItem {
 }
 
 @generatedSerializable
-class DocSaveRequest extends _DocSaveRequest {
-  DocSaveRequest(
-      {this.id,
-      this.base,
+class DocSaveRequest implements _DocSaveRequest {
+  const DocSaveRequest(
+      {this.base,
       this.docId,
       this.projectId,
       this.title,
       this.retitleMode,
       this.body,
-      this.summary,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.summary});
 
   @override
   final _APIRequestBase base;
@@ -2651,64 +1800,39 @@ class DocSaveRequest extends _DocSaveRequest {
   @override
   final String summary;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   DocSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int docId,
       int projectId,
       String title,
       String retitleMode,
       String body,
-      String summary,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String summary}) {
     return new DocSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         docId: docId ?? this.docId,
         projectId: projectId ?? this.projectId,
         title: title ?? this.title,
         retitleMode: retitleMode ?? this.retitleMode,
         body: body ?? this.body,
-        summary: summary ?? this.summary,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        summary: summary ?? this.summary);
   }
 
   bool operator ==(other) {
     return other is _DocSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.docId == docId &&
         other.projectId == projectId &&
         other.title == title &&
         other.retitleMode == retitleMode &&
         other.body == body &&
-        other.summary == summary &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.summary == summary;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      docId,
-      projectId,
-      title,
-      retitleMode,
-      body,
-      summary,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects(
+        [base, docId, projectId, title, retitleMode, body, summary]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2717,17 +1841,8 @@ class DocSaveRequest extends _DocSaveRequest {
 }
 
 @generatedSerializable
-class DocRollbackRequest extends _DocRollbackRequest {
-  DocRollbackRequest(
-      {this.id,
-      this.base,
-      this.docId,
-      this.revisionNo,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class DocRollbackRequest implements _DocRollbackRequest {
+  const DocRollbackRequest({this.base, this.docId, this.revisionNo});
 
   @override
   final _APIRequestBase base;
@@ -2738,41 +1853,24 @@ class DocRollbackRequest extends _DocRollbackRequest {
   @override
   final int revisionNo;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   DocRollbackRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int docId,
-      int revisionNo,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int docId, int revisionNo}) {
     return new DocRollbackRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         docId: docId ?? this.docId,
-        revisionNo: revisionNo ?? this.revisionNo,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        revisionNo: revisionNo ?? this.revisionNo);
   }
 
   bool operator ==(other) {
     return other is _DocRollbackRequest &&
-        other.id == id &&
         other.base == base &&
         other.docId == docId &&
-        other.revisionNo == revisionNo &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.revisionNo == revisionNo;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, docId, revisionNo, createdAt, updatedAt]);
+    return hashObjects([base, docId, revisionNo]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2781,21 +1879,15 @@ class DocRollbackRequest extends _DocRollbackRequest {
 }
 
 @generatedSerializable
-class EventQueryRequest extends _EventQueryRequest {
-  EventQueryRequest(
-      {this.id,
-      this.base,
+class EventQueryRequest implements _EventQueryRequest {
+  const EventQueryRequest(
+      {this.base,
       this.title,
       this.dateFrom,
       this.dateTo,
       this.miles,
       this.lat,
-      this.lon,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.lon});
 
   @override
   final _APIRequestBase base;
@@ -2818,64 +1910,38 @@ class EventQueryRequest extends _EventQueryRequest {
   @override
   final String lon;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       String title,
       String dateFrom,
       String dateTo,
       int miles,
       String lat,
-      String lon,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String lon}) {
     return new EventQueryRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         title: title ?? this.title,
         dateFrom: dateFrom ?? this.dateFrom,
         dateTo: dateTo ?? this.dateTo,
         miles: miles ?? this.miles,
         lat: lat ?? this.lat,
-        lon: lon ?? this.lon,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        lon: lon ?? this.lon);
   }
 
   bool operator ==(other) {
     return other is _EventQueryRequest &&
-        other.id == id &&
         other.base == base &&
         other.title == title &&
         other.dateFrom == dateFrom &&
         other.dateTo == dateTo &&
         other.miles == miles &&
         other.lat == lat &&
-        other.lon == lon &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.lon == lon;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      title,
-      dateFrom,
-      dateTo,
-      miles,
-      lat,
-      lon,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, title, dateFrom, dateTo, miles, lat, lon]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2884,17 +1950,8 @@ class EventQueryRequest extends _EventQueryRequest {
 }
 
 @generatedSerializable
-class EventQueryResponse extends _EventQueryResponse {
-  EventQueryResponse(
-      {this.id,
-      this.base,
-      List<_EventItemResponse> events,
-      this.createdAt,
-      this.updatedAt})
-      : this.events = new List.unmodifiable(events ?? []);
-
-  @override
-  final String id;
+class EventQueryResponse implements _EventQueryResponse {
+  const EventQueryResponse({this.base, List<_EventItemResponse> this.events});
 
   @override
   final _APIResponseBase base;
@@ -2902,40 +1959,23 @@ class EventQueryResponse extends _EventQueryResponse {
   @override
   final List<_EventItemResponse> events;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_EventItemResponse> events,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_EventItemResponse> events}) {
     return new EventQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        events: events ?? this.events,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, events: events ?? this.events);
   }
 
   bool operator ==(other) {
     return other is _EventQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_EventItemResponse>(
                 const DefaultEquality<_EventItemResponse>())
-            .equals(other.events, events) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.events, events);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, events, createdAt, updatedAt]);
+    return hashObjects([base, events]);
   }
 
   Map<String, dynamic> toJson() {
@@ -2944,19 +1984,9 @@ class EventQueryResponse extends _EventQueryResponse {
 }
 
 @generatedSerializable
-class EventItemResponse extends _EventItemResponse {
-  EventItemResponse(
-      {this.id,
-      this.iid,
-      this.title,
-      this.startTime,
-      this.creatorNick,
-      this.creatorId,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class EventItemResponse implements _EventItemResponse {
+  const EventItemResponse(
+      {this.iid, this.title, this.startTime, this.creatorNick, this.creatorId});
 
   @override
   final int iid;
@@ -2973,56 +2003,32 @@ class EventItemResponse extends _EventItemResponse {
   @override
   final int creatorId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventItemResponse copyWith(
-      {String id,
-      int iid,
+      {int iid,
       String title,
       String startTime,
       String creatorNick,
-      int creatorId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      int creatorId}) {
     return new EventItemResponse(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         title: title ?? this.title,
         startTime: startTime ?? this.startTime,
         creatorNick: creatorNick ?? this.creatorNick,
-        creatorId: creatorId ?? this.creatorId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        creatorId: creatorId ?? this.creatorId);
   }
 
   bool operator ==(other) {
     return other is _EventItemResponse &&
-        other.id == id &&
         other.iid == iid &&
         other.title == title &&
         other.startTime == startTime &&
         other.creatorNick == creatorNick &&
-        other.creatorId == creatorId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.creatorId == creatorId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      iid,
-      title,
-      startTime,
-      creatorNick,
-      creatorId,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([iid, title, startTime, creatorNick, creatorId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3031,12 +2037,8 @@ class EventItemResponse extends _EventItemResponse {
 }
 
 @generatedSerializable
-class EventRequest extends _EventRequest {
-  EventRequest(
-      {this.id, this.base, this.eventId, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class EventRequest implements _EventRequest {
+  const EventRequest({this.base, this.eventId});
 
   @override
   final _APIRequestBase base;
@@ -3044,38 +2046,20 @@ class EventRequest extends _EventRequest {
   @override
   final int eventId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  EventRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int eventId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  EventRequest copyWith({_APIRequestBase base, int eventId}) {
     return new EventRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        eventId: eventId ?? this.eventId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, eventId: eventId ?? this.eventId);
   }
 
   bool operator ==(other) {
     return other is _EventRequest &&
-        other.id == id &&
         other.base == base &&
-        other.eventId == eventId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.eventId == eventId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, eventId, createdAt, updatedAt]);
+    return hashObjects([base, eventId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3084,10 +2068,9 @@ class EventRequest extends _EventRequest {
 }
 
 @generatedSerializable
-class EventGetResponse extends _EventGetResponse {
-  EventGetResponse(
-      {this.id,
-      this.base,
+class EventGetResponse implements _EventGetResponse {
+  const EventGetResponse(
+      {this.base,
       this.title,
       this.description,
       this.duration,
@@ -3100,16 +2083,9 @@ class EventGetResponse extends _EventGetResponse {
       this.createdAtR,
       this.lat,
       this.lon,
-      List<_EventGetUserResponse> users,
-      List<_EventGetConvResponse> convs,
-      this.isCreator,
-      this.createdAt,
-      this.updatedAt})
-      : this.users = new List.unmodifiable(users ?? []),
-        this.convs = new List.unmodifiable(convs ?? []);
-
-  @override
-  final String id;
+      List<_EventGetUserResponse> this.users,
+      List<_EventGetConvResponse> this.convs,
+      this.isCreator});
 
   @override
   final _APIResponseBase base;
@@ -3159,15 +2135,8 @@ class EventGetResponse extends _EventGetResponse {
   @override
   final String isCreator;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String title,
       String description,
       String duration,
@@ -3182,11 +2151,8 @@ class EventGetResponse extends _EventGetResponse {
       String lon,
       List<_EventGetUserResponse> users,
       List<_EventGetConvResponse> convs,
-      String isCreator,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String isCreator}) {
     return new EventGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         title: title ?? this.title,
         description: description ?? this.description,
@@ -3202,14 +2168,11 @@ class EventGetResponse extends _EventGetResponse {
         lon: lon ?? this.lon,
         users: users ?? this.users,
         convs: convs ?? this.convs,
-        isCreator: isCreator ?? this.isCreator,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        isCreator: isCreator ?? this.isCreator);
   }
 
   bool operator ==(other) {
     return other is _EventGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.title == title &&
         other.description == description &&
@@ -3229,15 +2192,12 @@ class EventGetResponse extends _EventGetResponse {
         const ListEquality<_EventGetConvResponse>(
                 const DefaultEquality<_EventGetConvResponse>())
             .equals(other.convs, convs) &&
-        other.isCreator == isCreator &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.isCreator == isCreator;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       title,
       description,
@@ -3253,9 +2213,7 @@ class EventGetResponse extends _EventGetResponse {
       lon,
       users,
       convs,
-      isCreator,
-      createdAt,
-      updatedAt
+      isCreator
     ]);
   }
 
@@ -3265,20 +2223,14 @@ class EventGetResponse extends _EventGetResponse {
 }
 
 @generatedSerializable
-class EventGetUserResponse extends _EventGetUserResponse {
-  EventGetUserResponse(
-      {this.id,
-      this.userId,
+class EventGetUserResponse implements _EventGetUserResponse {
+  const EventGetUserResponse(
+      {this.userId,
       this.nick,
       this.publicName,
       this.avatarUrl,
       this.status,
-      this.statusDesc,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.statusDesc});
 
   @override
   final int userId;
@@ -3298,60 +2250,36 @@ class EventGetUserResponse extends _EventGetUserResponse {
   @override
   final String statusDesc;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventGetUserResponse copyWith(
-      {String id,
-      int userId,
+      {int userId,
       String nick,
       String publicName,
       String avatarUrl,
       String status,
-      String statusDesc,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String statusDesc}) {
     return new EventGetUserResponse(
-        id: id ?? this.id,
         userId: userId ?? this.userId,
         nick: nick ?? this.nick,
         publicName: publicName ?? this.publicName,
         avatarUrl: avatarUrl ?? this.avatarUrl,
         status: status ?? this.status,
-        statusDesc: statusDesc ?? this.statusDesc,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        statusDesc: statusDesc ?? this.statusDesc);
   }
 
   bool operator ==(other) {
     return other is _EventGetUserResponse &&
-        other.id == id &&
         other.userId == userId &&
         other.nick == nick &&
         other.publicName == publicName &&
         other.avatarUrl == avatarUrl &&
         other.status == status &&
-        other.statusDesc == statusDesc &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.statusDesc == statusDesc;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      userId,
-      nick,
-      publicName,
-      avatarUrl,
-      status,
-      statusDesc,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects(
+        [userId, nick, publicName, avatarUrl, status, statusDesc]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3360,18 +2288,9 @@ class EventGetUserResponse extends _EventGetUserResponse {
 }
 
 @generatedSerializable
-class EventGetConvResponse extends _EventGetConvResponse {
-  EventGetConvResponse(
-      {this.id,
-      this.iid,
-      this.open,
-      this.title,
-      this.lastActivity,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class EventGetConvResponse implements _EventGetConvResponse {
+  const EventGetConvResponse(
+      {this.iid, this.open, this.title, this.lastActivity});
 
   @override
   final int iid;
@@ -3385,45 +2304,26 @@ class EventGetConvResponse extends _EventGetConvResponse {
   @override
   final String lastActivity;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventGetConvResponse copyWith(
-      {String id,
-      int iid,
-      String open,
-      String title,
-      String lastActivity,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int iid, String open, String title, String lastActivity}) {
     return new EventGetConvResponse(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         open: open ?? this.open,
         title: title ?? this.title,
-        lastActivity: lastActivity ?? this.lastActivity,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        lastActivity: lastActivity ?? this.lastActivity);
   }
 
   bool operator ==(other) {
     return other is _EventGetConvResponse &&
-        other.id == id &&
         other.iid == iid &&
         other.open == open &&
         other.title == title &&
-        other.lastActivity == lastActivity &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.lastActivity == lastActivity;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, iid, open, title, lastActivity, createdAt, updatedAt]);
+    return hashObjects([iid, open, title, lastActivity]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3432,10 +2332,9 @@ class EventGetConvResponse extends _EventGetConvResponse {
 }
 
 @generatedSerializable
-class EventSaveRequest extends _EventSaveRequest {
-  EventSaveRequest(
-      {this.id,
-      this.base,
+class EventSaveRequest implements _EventSaveRequest {
+  const EventSaveRequest(
+      {this.base,
       this.eventId,
       this.title,
       this.description,
@@ -3443,12 +2342,7 @@ class EventSaveRequest extends _EventSaveRequest {
       this.location,
       this.startTime,
       this.lat,
-      this.lon,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.lon});
 
   @override
   final _APIRequestBase base;
@@ -3477,15 +2371,8 @@ class EventSaveRequest extends _EventSaveRequest {
   @override
   final String lon;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int eventId,
       String title,
       String description,
@@ -3493,11 +2380,8 @@ class EventSaveRequest extends _EventSaveRequest {
       String location,
       String startTime,
       String lat,
-      String lon,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String lon}) {
     return new EventSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         eventId: eventId ?? this.eventId,
         title: title ?? this.title,
@@ -3506,14 +2390,11 @@ class EventSaveRequest extends _EventSaveRequest {
         location: location ?? this.location,
         startTime: startTime ?? this.startTime,
         lat: lat ?? this.lat,
-        lon: lon ?? this.lon,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        lon: lon ?? this.lon);
   }
 
   bool operator ==(other) {
     return other is _EventSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.eventId == eventId &&
         other.title == title &&
@@ -3522,15 +2403,12 @@ class EventSaveRequest extends _EventSaveRequest {
         other.location == location &&
         other.startTime == startTime &&
         other.lat == lat &&
-        other.lon == lon &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.lon == lon;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       eventId,
       title,
@@ -3539,9 +2417,7 @@ class EventSaveRequest extends _EventSaveRequest {
       location,
       startTime,
       lat,
-      lon,
-      createdAt,
-      updatedAt
+      lon
     ]);
   }
 
@@ -3551,18 +2427,9 @@ class EventSaveRequest extends _EventSaveRequest {
 }
 
 @generatedSerializable
-class EventUserSaveRequest extends _EventUserSaveRequest {
-  EventUserSaveRequest(
-      {this.id,
-      this.base,
-      this.eventId,
-      this.status,
-      this.statusDesc,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class EventUserSaveRequest implements _EventUserSaveRequest {
+  const EventUserSaveRequest(
+      {this.base, this.eventId, this.status, this.statusDesc});
 
   @override
   final _APIRequestBase base;
@@ -3576,45 +2443,26 @@ class EventUserSaveRequest extends _EventUserSaveRequest {
   @override
   final String statusDesc;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   EventUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int eventId,
-      String status,
-      String statusDesc,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int eventId, String status, String statusDesc}) {
     return new EventUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         eventId: eventId ?? this.eventId,
         status: status ?? this.status,
-        statusDesc: statusDesc ?? this.statusDesc,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        statusDesc: statusDesc ?? this.statusDesc);
   }
 
   bool operator ==(other) {
     return other is _EventUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.eventId == eventId &&
         other.status == status &&
-        other.statusDesc == statusDesc &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.statusDesc == statusDesc;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, eventId, status, statusDesc, createdAt, updatedAt]);
+    return hashObjects([base, eventId, status, statusDesc]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3623,17 +2471,8 @@ class EventUserSaveRequest extends _EventUserSaveRequest {
 }
 
 @generatedSerializable
-class ProjectQueryRequest extends _ProjectQueryRequest {
-  ProjectQueryRequest(
-      {this.id,
-      this.base,
-      this.catId,
-      this.title,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProjectQueryRequest implements _ProjectQueryRequest {
+  const ProjectQueryRequest({this.base, this.catId, this.title});
 
   @override
   final _APIRequestBase base;
@@ -3644,41 +2483,24 @@ class ProjectQueryRequest extends _ProjectQueryRequest {
   @override
   final String title;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int catId,
-      String title,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int catId, String title}) {
     return new ProjectQueryRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         catId: catId ?? this.catId,
-        title: title ?? this.title,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        title: title ?? this.title);
   }
 
   bool operator ==(other) {
     return other is _ProjectQueryRequest &&
-        other.id == id &&
         other.base == base &&
         other.catId == catId &&
-        other.title == title &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.title == title;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, catId, title, createdAt, updatedAt]);
+    return hashObjects([base, catId, title]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3687,17 +2509,9 @@ class ProjectQueryRequest extends _ProjectQueryRequest {
 }
 
 @generatedSerializable
-class ProjectQueryResponse extends _ProjectQueryResponse {
-  ProjectQueryResponse(
-      {this.id,
-      this.base,
-      List<_ProjectQueryItem> projects,
-      this.createdAt,
-      this.updatedAt})
-      : this.projects = new List.unmodifiable(projects ?? []);
-
-  @override
-  final String id;
+class ProjectQueryResponse implements _ProjectQueryResponse {
+  const ProjectQueryResponse(
+      {this.base, List<_ProjectQueryItem> this.projects});
 
   @override
   final _APIResponseBase base;
@@ -3705,40 +2519,23 @@ class ProjectQueryResponse extends _ProjectQueryResponse {
   @override
   final List<_ProjectQueryItem> projects;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_ProjectQueryItem> projects,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_ProjectQueryItem> projects}) {
     return new ProjectQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        projects: projects ?? this.projects,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, projects: projects ?? this.projects);
   }
 
   bool operator ==(other) {
     return other is _ProjectQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_ProjectQueryItem>(
                 const DefaultEquality<_ProjectQueryItem>())
-            .equals(other.projects, projects) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.projects, projects);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, projects, createdAt, updatedAt]);
+    return hashObjects([base, projects]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3747,19 +2544,13 @@ class ProjectQueryResponse extends _ProjectQueryResponse {
 }
 
 @generatedSerializable
-class ProjectQueryItem extends _ProjectQueryItem {
-  ProjectQueryItem(
-      {this.id,
-      this.projectId,
+class ProjectQueryItem implements _ProjectQueryItem {
+  const ProjectQueryItem(
+      {this.projectId,
       this.title,
       this.description,
       this.leadership,
-      this.privacy,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.privacy});
 
   @override
   final int projectId;
@@ -3776,56 +2567,32 @@ class ProjectQueryItem extends _ProjectQueryItem {
   @override
   final String privacy;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectQueryItem copyWith(
-      {String id,
-      int projectId,
+      {int projectId,
       String title,
       String description,
       String leadership,
-      String privacy,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String privacy}) {
     return new ProjectQueryItem(
-        id: id ?? this.id,
         projectId: projectId ?? this.projectId,
         title: title ?? this.title,
         description: description ?? this.description,
         leadership: leadership ?? this.leadership,
-        privacy: privacy ?? this.privacy,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        privacy: privacy ?? this.privacy);
   }
 
   bool operator ==(other) {
     return other is _ProjectQueryItem &&
-        other.id == id &&
         other.projectId == projectId &&
         other.title == title &&
         other.description == description &&
         other.leadership == leadership &&
-        other.privacy == privacy &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.privacy == privacy;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      projectId,
-      title,
-      description,
-      leadership,
-      privacy,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([projectId, title, description, leadership, privacy]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3834,12 +2601,8 @@ class ProjectQueryItem extends _ProjectQueryItem {
 }
 
 @generatedSerializable
-class ProjectGetRequest extends _ProjectGetRequest {
-  ProjectGetRequest(
-      {this.id, this.base, this.projectId, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ProjectGetRequest implements _ProjectGetRequest {
+  const ProjectGetRequest({this.base, this.projectId});
 
   @override
   final _APIRequestBase base;
@@ -3847,38 +2610,20 @@ class ProjectGetRequest extends _ProjectGetRequest {
   @override
   final int projectId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ProjectGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int projectId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ProjectGetRequest copyWith({_APIRequestBase base, int projectId}) {
     return new ProjectGetRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        projectId: projectId ?? this.projectId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, projectId: projectId ?? this.projectId);
   }
 
   bool operator ==(other) {
     return other is _ProjectGetRequest &&
-        other.id == id &&
         other.base == base &&
-        other.projectId == projectId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.projectId == projectId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, projectId, createdAt, updatedAt]);
+    return hashObjects([base, projectId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -3887,10 +2632,9 @@ class ProjectGetRequest extends _ProjectGetRequest {
 }
 
 @generatedSerializable
-class ProjectGetResponse extends _ProjectGetResponse {
-  ProjectGetResponse(
-      {this.id,
-      this.base,
+class ProjectGetResponse implements _ProjectGetResponse {
+  const ProjectGetResponse(
+      {this.base,
       this.active,
       this.leadership,
       this.privacy,
@@ -3898,17 +2642,9 @@ class ProjectGetResponse extends _ProjectGetResponse {
       this.description,
       this.categoryId,
       this.userKind,
-      List<_ProjectProposalItem> proposals,
-      List<_ProjectConvItem> convs,
-      List<_ProjectDocItem> docs,
-      this.createdAt,
-      this.updatedAt})
-      : this.proposals = new List.unmodifiable(proposals ?? []),
-        this.convs = new List.unmodifiable(convs ?? []),
-        this.docs = new List.unmodifiable(docs ?? []);
-
-  @override
-  final String id;
+      List<_ProjectProposalItem> this.proposals,
+      List<_ProjectConvItem> this.convs,
+      List<_ProjectDocItem> this.docs});
 
   @override
   final _APIResponseBase base;
@@ -3943,15 +2679,8 @@ class ProjectGetResponse extends _ProjectGetResponse {
   @override
   final List<_ProjectDocItem> docs;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String active,
       String leadership,
       String privacy,
@@ -3961,11 +2690,8 @@ class ProjectGetResponse extends _ProjectGetResponse {
       String userKind,
       List<_ProjectProposalItem> proposals,
       List<_ProjectConvItem> convs,
-      List<_ProjectDocItem> docs,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      List<_ProjectDocItem> docs}) {
     return new ProjectGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         active: active ?? this.active,
         leadership: leadership ?? this.leadership,
@@ -3976,14 +2702,11 @@ class ProjectGetResponse extends _ProjectGetResponse {
         userKind: userKind ?? this.userKind,
         proposals: proposals ?? this.proposals,
         convs: convs ?? this.convs,
-        docs: docs ?? this.docs,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        docs: docs ?? this.docs);
   }
 
   bool operator ==(other) {
     return other is _ProjectGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.active == active &&
         other.leadership == leadership &&
@@ -4000,15 +2723,12 @@ class ProjectGetResponse extends _ProjectGetResponse {
             .equals(other.convs, convs) &&
         const ListEquality<_ProjectDocItem>(
                 const DefaultEquality<_ProjectDocItem>())
-            .equals(other.docs, docs) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.docs, docs);
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       active,
       leadership,
@@ -4019,9 +2739,7 @@ class ProjectGetResponse extends _ProjectGetResponse {
       userKind,
       proposals,
       convs,
-      docs,
-      createdAt,
-      updatedAt
+      docs
     ]);
   }
 
@@ -4031,18 +2749,9 @@ class ProjectGetResponse extends _ProjectGetResponse {
 }
 
 @generatedSerializable
-class ProjectProposalItem extends _ProjectProposalItem {
-  ProjectProposalItem(
-      {this.id,
-      this.iid,
-      this.active,
-      this.title,
-      this.createdAtR,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProjectProposalItem implements _ProjectProposalItem {
+  const ProjectProposalItem(
+      {this.iid, this.active, this.title, this.createdAtR});
 
   @override
   final int iid;
@@ -4056,45 +2765,26 @@ class ProjectProposalItem extends _ProjectProposalItem {
   @override
   final String createdAtR;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectProposalItem copyWith(
-      {String id,
-      int iid,
-      String active,
-      String title,
-      String createdAtR,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int iid, String active, String title, String createdAtR}) {
     return new ProjectProposalItem(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         active: active ?? this.active,
         title: title ?? this.title,
-        createdAtR: createdAtR ?? this.createdAtR,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        createdAtR: createdAtR ?? this.createdAtR);
   }
 
   bool operator ==(other) {
     return other is _ProjectProposalItem &&
-        other.id == id &&
         other.iid == iid &&
         other.active == active &&
         other.title == title &&
-        other.createdAtR == createdAtR &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.createdAtR == createdAtR;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, iid, active, title, createdAtR, createdAt, updatedAt]);
+    return hashObjects([iid, active, title, createdAtR]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4103,18 +2793,8 @@ class ProjectProposalItem extends _ProjectProposalItem {
 }
 
 @generatedSerializable
-class ProjectConvItem extends _ProjectConvItem {
-  ProjectConvItem(
-      {this.id,
-      this.iid,
-      this.open,
-      this.title,
-      this.lastActivity,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProjectConvItem implements _ProjectConvItem {
+  const ProjectConvItem({this.iid, this.open, this.title, this.lastActivity});
 
   @override
   final int iid;
@@ -4128,45 +2808,26 @@ class ProjectConvItem extends _ProjectConvItem {
   @override
   final String lastActivity;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectConvItem copyWith(
-      {String id,
-      int iid,
-      String open,
-      String title,
-      String lastActivity,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int iid, String open, String title, String lastActivity}) {
     return new ProjectConvItem(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         open: open ?? this.open,
         title: title ?? this.title,
-        lastActivity: lastActivity ?? this.lastActivity,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        lastActivity: lastActivity ?? this.lastActivity);
   }
 
   bool operator ==(other) {
     return other is _ProjectConvItem &&
-        other.id == id &&
         other.iid == iid &&
         other.open == open &&
         other.title == title &&
-        other.lastActivity == lastActivity &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.lastActivity == lastActivity;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, iid, open, title, lastActivity, createdAt, updatedAt]);
+    return hashObjects([iid, open, title, lastActivity]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4175,12 +2836,8 @@ class ProjectConvItem extends _ProjectConvItem {
 }
 
 @generatedSerializable
-class ProjectDocItem extends _ProjectDocItem {
-  ProjectDocItem(
-      {this.id, this.iid, this.title, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ProjectDocItem implements _ProjectDocItem {
+  const ProjectDocItem({this.iid, this.title});
 
   @override
   final int iid;
@@ -4188,38 +2845,17 @@ class ProjectDocItem extends _ProjectDocItem {
   @override
   final String title;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ProjectDocItem copyWith(
-      {String id,
-      int iid,
-      String title,
-      DateTime createdAt,
-      DateTime updatedAt}) {
-    return new ProjectDocItem(
-        id: id ?? this.id,
-        iid: iid ?? this.iid,
-        title: title ?? this.title,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+  ProjectDocItem copyWith({int iid, String title}) {
+    return new ProjectDocItem(iid: iid ?? this.iid, title: title ?? this.title);
   }
 
   bool operator ==(other) {
-    return other is _ProjectDocItem &&
-        other.id == id &&
-        other.iid == iid &&
-        other.title == title &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+    return other is _ProjectDocItem && other.iid == iid && other.title == title;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, iid, title, createdAt, updatedAt]);
+    return hashObjects([iid, title]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4228,21 +2864,15 @@ class ProjectDocItem extends _ProjectDocItem {
 }
 
 @generatedSerializable
-class ProjectSaveRequest extends _ProjectSaveRequest {
-  ProjectSaveRequest(
-      {this.id,
-      this.base,
+class ProjectSaveRequest implements _ProjectSaveRequest {
+  const ProjectSaveRequest(
+      {this.base,
       this.projectId,
       this.leadership,
       this.privacy,
       this.title,
       this.description,
-      this.categoryId,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.categoryId});
 
   @override
   final _APIRequestBase base;
@@ -4265,64 +2895,39 @@ class ProjectSaveRequest extends _ProjectSaveRequest {
   @override
   final int categoryId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int projectId,
       String leadership,
       String privacy,
       String title,
       String description,
-      int categoryId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      int categoryId}) {
     return new ProjectSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         projectId: projectId ?? this.projectId,
         leadership: leadership ?? this.leadership,
         privacy: privacy ?? this.privacy,
         title: title ?? this.title,
         description: description ?? this.description,
-        categoryId: categoryId ?? this.categoryId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        categoryId: categoryId ?? this.categoryId);
   }
 
   bool operator ==(other) {
     return other is _ProjectSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.projectId == projectId &&
         other.leadership == leadership &&
         other.privacy == privacy &&
         other.title == title &&
         other.description == description &&
-        other.categoryId == categoryId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.categoryId == categoryId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      projectId,
-      leadership,
-      privacy,
-      title,
-      description,
-      categoryId,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects(
+        [base, projectId, leadership, privacy, title, description, categoryId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4331,18 +2936,9 @@ class ProjectSaveRequest extends _ProjectSaveRequest {
 }
 
 @generatedSerializable
-class ProjectUserQueryRequest extends _ProjectUserQueryRequest {
-  ProjectUserQueryRequest(
-      {this.id,
-      this.base,
-      this.projectId,
-      this.name,
-      this.resultPage,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProjectUserQueryRequest implements _ProjectUserQueryRequest {
+  const ProjectUserQueryRequest(
+      {this.base, this.projectId, this.name, this.resultPage});
 
   @override
   final _APIRequestBase base;
@@ -4356,45 +2952,26 @@ class ProjectUserQueryRequest extends _ProjectUserQueryRequest {
   @override
   final int resultPage;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectUserQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int projectId,
-      String name,
-      int resultPage,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int projectId, String name, int resultPage}) {
     return new ProjectUserQueryRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         projectId: projectId ?? this.projectId,
         name: name ?? this.name,
-        resultPage: resultPage ?? this.resultPage,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        resultPage: resultPage ?? this.resultPage);
   }
 
   bool operator ==(other) {
     return other is _ProjectUserQueryRequest &&
-        other.id == id &&
         other.base == base &&
         other.projectId == projectId &&
         other.name == name &&
-        other.resultPage == resultPage &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.resultPage == resultPage;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, projectId, name, resultPage, createdAt, updatedAt]);
+    return hashObjects([base, projectId, name, resultPage]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4403,20 +2980,13 @@ class ProjectUserQueryRequest extends _ProjectUserQueryRequest {
 }
 
 @generatedSerializable
-class ProjectUserQueryResponse extends _ProjectUserQueryResponse {
-  ProjectUserQueryResponse(
-      {this.id,
-      this.base,
+class ProjectUserQueryResponse implements _ProjectUserQueryResponse {
+  const ProjectUserQueryResponse(
+      {this.base,
       this.projectTitle,
       this.completeLoad,
       this.editable,
-      List<_ProjectUserItem> users,
-      this.createdAt,
-      this.updatedAt})
-      : this.users = new List.unmodifiable(users ?? []);
-
-  @override
-  final String id;
+      List<_ProjectUserItem> this.users});
 
   @override
   final _APIResponseBase base;
@@ -4433,58 +3003,34 @@ class ProjectUserQueryResponse extends _ProjectUserQueryResponse {
   @override
   final List<_ProjectUserItem> users;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectUserQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String projectTitle,
       String completeLoad,
       String editable,
-      List<_ProjectUserItem> users,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      List<_ProjectUserItem> users}) {
     return new ProjectUserQueryResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         projectTitle: projectTitle ?? this.projectTitle,
         completeLoad: completeLoad ?? this.completeLoad,
         editable: editable ?? this.editable,
-        users: users ?? this.users,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        users: users ?? this.users);
   }
 
   bool operator ==(other) {
     return other is _ProjectUserQueryResponse &&
-        other.id == id &&
         other.base == base &&
         other.projectTitle == projectTitle &&
         other.completeLoad == completeLoad &&
         other.editable == editable &&
         const ListEquality<_ProjectUserItem>(
                 const DefaultEquality<_ProjectUserItem>())
-            .equals(other.users, users) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.users, users);
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      projectTitle,
-      completeLoad,
-      editable,
-      users,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, projectTitle, completeLoad, editable, users]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4493,21 +3039,15 @@ class ProjectUserQueryResponse extends _ProjectUserQueryResponse {
 }
 
 @generatedSerializable
-class ProjectUserItem extends _ProjectUserItem {
-  ProjectUserItem(
-      {this.id,
-      this.userId,
+class ProjectUserItem implements _ProjectUserItem {
+  const ProjectUserItem(
+      {this.userId,
       this.kind,
       this.throttle,
       this.nick,
       this.publicName,
       this.avatarUrl,
-      this.voteKind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.voteKind});
 
   @override
   final int userId;
@@ -4530,64 +3070,39 @@ class ProjectUserItem extends _ProjectUserItem {
   @override
   final String voteKind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectUserItem copyWith(
-      {String id,
-      int userId,
+      {int userId,
       String kind,
       String throttle,
       String nick,
       String publicName,
       String avatarUrl,
-      String voteKind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String voteKind}) {
     return new ProjectUserItem(
-        id: id ?? this.id,
         userId: userId ?? this.userId,
         kind: kind ?? this.kind,
         throttle: throttle ?? this.throttle,
         nick: nick ?? this.nick,
         publicName: publicName ?? this.publicName,
         avatarUrl: avatarUrl ?? this.avatarUrl,
-        voteKind: voteKind ?? this.voteKind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        voteKind: voteKind ?? this.voteKind);
   }
 
   bool operator ==(other) {
     return other is _ProjectUserItem &&
-        other.id == id &&
         other.userId == userId &&
         other.kind == kind &&
         other.throttle == throttle &&
         other.nick == nick &&
         other.publicName == publicName &&
         other.avatarUrl == avatarUrl &&
-        other.voteKind == voteKind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.voteKind == voteKind;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      userId,
-      kind,
-      throttle,
-      nick,
-      publicName,
-      avatarUrl,
-      voteKind,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects(
+        [userId, kind, throttle, nick, publicName, avatarUrl, voteKind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4596,18 +3111,9 @@ class ProjectUserItem extends _ProjectUserItem {
 }
 
 @generatedSerializable
-class ProjectUserSaveRequest extends _ProjectUserSaveRequest {
-  ProjectUserSaveRequest(
-      {this.id,
-      this.base,
-      this.projectId,
-      this.userId,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProjectUserSaveRequest implements _ProjectUserSaveRequest {
+  const ProjectUserSaveRequest(
+      {this.base, this.projectId, this.userId, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -4621,45 +3127,26 @@ class ProjectUserSaveRequest extends _ProjectUserSaveRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int projectId,
-      int userId,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int projectId, int userId, String kind}) {
     return new ProjectUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         projectId: projectId ?? this.projectId,
         userId: userId ?? this.userId,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _ProjectUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.projectId == projectId &&
         other.userId == userId &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, projectId, userId, kind, createdAt, updatedAt]);
+    return hashObjects([base, projectId, userId, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4668,18 +3155,9 @@ class ProjectUserSaveRequest extends _ProjectUserSaveRequest {
 }
 
 @generatedSerializable
-class ProjectUserUserSaveRequest extends _ProjectUserUserSaveRequest {
-  ProjectUserUserSaveRequest(
-      {this.id,
-      this.base,
-      this.projectId,
-      this.aboutId,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProjectUserUserSaveRequest implements _ProjectUserUserSaveRequest {
+  const ProjectUserUserSaveRequest(
+      {this.base, this.projectId, this.aboutId, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -4693,45 +3171,26 @@ class ProjectUserUserSaveRequest extends _ProjectUserUserSaveRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProjectUserUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int projectId,
-      int aboutId,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int projectId, int aboutId, String kind}) {
     return new ProjectUserUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         projectId: projectId ?? this.projectId,
         aboutId: aboutId ?? this.aboutId,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _ProjectUserUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.projectId == projectId &&
         other.aboutId == aboutId &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, projectId, aboutId, kind, createdAt, updatedAt]);
+    return hashObjects([base, projectId, aboutId, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4740,18 +3199,8 @@ class ProjectUserUserSaveRequest extends _ProjectUserUserSaveRequest {
 }
 
 @generatedSerializable
-class ProposalQueryRequest extends _ProposalQueryRequest {
-  ProposalQueryRequest(
-      {this.id,
-      this.base,
-      this.mode,
-      this.year,
-      this.projectId,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProposalQueryRequest implements _ProposalQueryRequest {
+  const ProposalQueryRequest({this.base, this.mode, this.year, this.projectId});
 
   @override
   final _APIRequestBase base;
@@ -4765,44 +3214,26 @@ class ProposalQueryRequest extends _ProposalQueryRequest {
   @override
   final int projectId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProposalQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String mode,
-      int year,
-      int projectId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, String mode, int year, int projectId}) {
     return new ProposalQueryRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         mode: mode ?? this.mode,
         year: year ?? this.year,
-        projectId: projectId ?? this.projectId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        projectId: projectId ?? this.projectId);
   }
 
   bool operator ==(other) {
     return other is _ProposalQueryRequest &&
-        other.id == id &&
         other.base == base &&
         other.mode == mode &&
         other.year == year &&
-        other.projectId == projectId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.projectId == projectId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, mode, year, projectId, createdAt, updatedAt]);
+    return hashObjects([base, mode, year, projectId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4811,17 +3242,8 @@ class ProposalQueryRequest extends _ProposalQueryRequest {
 }
 
 @generatedSerializable
-class ProposalQueryResponse extends _ProposalQueryResponse {
-  ProposalQueryResponse(
-      {this.id,
-      this.base,
-      List<_ProposalQueryItem> items,
-      this.createdAt,
-      this.updatedAt})
-      : this.items = new List.unmodifiable(items ?? []);
-
-  @override
-  final String id;
+class ProposalQueryResponse implements _ProposalQueryResponse {
+  const ProposalQueryResponse({this.base, List<_ProposalQueryItem> this.items});
 
   @override
   final _APIResponseBase base;
@@ -4829,40 +3251,23 @@ class ProposalQueryResponse extends _ProposalQueryResponse {
   @override
   final List<_ProposalQueryItem> items;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProposalQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_ProposalQueryItem> items,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_ProposalQueryItem> items}) {
     return new ProposalQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        items: items ?? this.items,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, items: items ?? this.items);
   }
 
   bool operator ==(other) {
     return other is _ProposalQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_ProposalQueryItem>(
                 const DefaultEquality<_ProposalQueryItem>())
-            .equals(other.items, items) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.items, items);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, items, createdAt, updatedAt]);
+    return hashObjects([base, items]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4871,17 +3276,8 @@ class ProposalQueryResponse extends _ProposalQueryResponse {
 }
 
 @generatedSerializable
-class ProposalQueryItem extends _ProposalQueryItem {
-  ProposalQueryItem(
-      {this.id,
-      this.iid,
-      this.title,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProposalQueryItem implements _ProposalQueryItem {
+  const ProposalQueryItem({this.iid, this.title, this.kind});
 
   @override
   final int iid;
@@ -4892,41 +3288,23 @@ class ProposalQueryItem extends _ProposalQueryItem {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ProposalQueryItem copyWith(
-      {String id,
-      int iid,
-      String title,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ProposalQueryItem copyWith({int iid, String title, String kind}) {
     return new ProposalQueryItem(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         title: title ?? this.title,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _ProposalQueryItem &&
-        other.id == id &&
         other.iid == iid &&
         other.title == title &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, iid, title, kind, createdAt, updatedAt]);
+    return hashObjects([iid, title, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4935,12 +3313,8 @@ class ProposalQueryItem extends _ProposalQueryItem {
 }
 
 @generatedSerializable
-class ProposalGetRequest extends _ProposalGetRequest {
-  ProposalGetRequest(
-      {this.id, this.base, this.proposalId, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ProposalGetRequest implements _ProposalGetRequest {
+  const ProposalGetRequest({this.base, this.proposalId});
 
   @override
   final _APIRequestBase base;
@@ -4948,38 +3322,20 @@ class ProposalGetRequest extends _ProposalGetRequest {
   @override
   final int proposalId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ProposalGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int proposalId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ProposalGetRequest copyWith({_APIRequestBase base, int proposalId}) {
     return new ProposalGetRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        proposalId: proposalId ?? this.proposalId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, proposalId: proposalId ?? this.proposalId);
   }
 
   bool operator ==(other) {
     return other is _ProposalGetRequest &&
-        other.id == id &&
         other.base == base &&
-        other.proposalId == proposalId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.proposalId == proposalId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, proposalId, createdAt, updatedAt]);
+    return hashObjects([base, proposalId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4988,10 +3344,9 @@ class ProposalGetRequest extends _ProposalGetRequest {
 }
 
 @generatedSerializable
-class ProposalGetResponse extends _ProposalGetResponse {
-  ProposalGetResponse(
-      {this.id,
-      this.base,
+class ProposalGetResponse implements _ProposalGetResponse {
+  const ProposalGetResponse(
+      {this.base,
       this.active,
       this.kind,
       this.eligible,
@@ -5007,16 +3362,10 @@ class ProposalGetResponse extends _ProposalGetResponse {
       this.docId,
       this.createdByNick,
       this.createdByAvatarUrl,
-      List<_ProposalOptionItem> options,
+      List<_ProposalOptionItem> this.options,
       this.myVote,
       this.statusDescription,
-      this.myEligible,
-      this.createdAt,
-      this.updatedAt})
-      : this.options = new List.unmodifiable(options ?? []);
-
-  @override
-  final String id;
+      this.myEligible});
 
   @override
   final _APIResponseBase base;
@@ -5078,15 +3427,8 @@ class ProposalGetResponse extends _ProposalGetResponse {
   @override
   final String myEligible;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProposalGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String active,
       String kind,
       String eligible,
@@ -5105,11 +3447,8 @@ class ProposalGetResponse extends _ProposalGetResponse {
       List<_ProposalOptionItem> options,
       int myVote,
       String statusDescription,
-      String myEligible,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String myEligible}) {
     return new ProposalGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         active: active ?? this.active,
         kind: kind ?? this.kind,
@@ -5129,14 +3468,11 @@ class ProposalGetResponse extends _ProposalGetResponse {
         options: options ?? this.options,
         myVote: myVote ?? this.myVote,
         statusDescription: statusDescription ?? this.statusDescription,
-        myEligible: myEligible ?? this.myEligible,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        myEligible: myEligible ?? this.myEligible);
   }
 
   bool operator ==(other) {
     return other is _ProposalGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.active == active &&
         other.kind == kind &&
@@ -5158,15 +3494,12 @@ class ProposalGetResponse extends _ProposalGetResponse {
             .equals(other.options, options) &&
         other.myVote == myVote &&
         other.statusDescription == statusDescription &&
-        other.myEligible == myEligible &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.myEligible == myEligible;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       active,
       kind,
@@ -5186,9 +3519,7 @@ class ProposalGetResponse extends _ProposalGetResponse {
       options,
       myVote,
       statusDescription,
-      myEligible,
-      createdAt,
-      updatedAt
+      myEligible
     ]);
   }
 
@@ -5198,17 +3529,8 @@ class ProposalGetResponse extends _ProposalGetResponse {
 }
 
 @generatedSerializable
-class ProposalOptionItem extends _ProposalOptionItem {
-  ProposalOptionItem(
-      {this.id,
-      this.optionNo,
-      this.voteCount,
-      this.optionDesc,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProposalOptionItem implements _ProposalOptionItem {
+  const ProposalOptionItem({this.optionNo, this.voteCount, this.optionDesc});
 
   @override
   final int optionNo;
@@ -5219,42 +3541,24 @@ class ProposalOptionItem extends _ProposalOptionItem {
   @override
   final String optionDesc;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProposalOptionItem copyWith(
-      {String id,
-      int optionNo,
-      int voteCount,
-      String optionDesc,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int optionNo, int voteCount, String optionDesc}) {
     return new ProposalOptionItem(
-        id: id ?? this.id,
         optionNo: optionNo ?? this.optionNo,
         voteCount: voteCount ?? this.voteCount,
-        optionDesc: optionDesc ?? this.optionDesc,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        optionDesc: optionDesc ?? this.optionDesc);
   }
 
   bool operator ==(other) {
     return other is _ProposalOptionItem &&
-        other.id == id &&
         other.optionNo == optionNo &&
         other.voteCount == voteCount &&
-        other.optionDesc == optionDesc &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.optionDesc == optionDesc;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, optionNo, voteCount, optionDesc, createdAt, updatedAt]);
+    return hashObjects([optionNo, voteCount, optionDesc]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5263,23 +3567,16 @@ class ProposalOptionItem extends _ProposalOptionItem {
 }
 
 @generatedSerializable
-class ProposalSaveRequest extends _ProposalSaveRequest {
-  ProposalSaveRequest(
-      {this.id,
-      this.base,
+class ProposalSaveRequest implements _ProposalSaveRequest {
+  const ProposalSaveRequest(
+      {this.base,
       this.kind,
       this.projectId,
       this.eligible,
       this.title,
       this.summary,
       this.days,
-      List<String> options,
-      this.createdAt,
-      this.updatedAt})
-      : this.options = new List.unmodifiable(options ?? []);
-
-  @override
-  final String id;
+      List<String> this.options});
 
   @override
   final _APIRequestBase base;
@@ -5305,26 +3602,16 @@ class ProposalSaveRequest extends _ProposalSaveRequest {
   @override
   final List<String> options;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProposalSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       String kind,
       int projectId,
       String eligible,
       String title,
       String summary,
       int days,
-      List<String> options,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      List<String> options}) {
     return new ProposalSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         kind: kind ?? this.kind,
         projectId: projectId ?? this.projectId,
@@ -5332,14 +3619,11 @@ class ProposalSaveRequest extends _ProposalSaveRequest {
         title: title ?? this.title,
         summary: summary ?? this.summary,
         days: days ?? this.days,
-        options: options ?? this.options,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        options: options ?? this.options);
   }
 
   bool operator ==(other) {
     return other is _ProposalSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.kind == kind &&
         other.projectId == projectId &&
@@ -5348,26 +3632,13 @@ class ProposalSaveRequest extends _ProposalSaveRequest {
         other.summary == summary &&
         other.days == days &&
         const ListEquality<String>(const DefaultEquality<String>())
-            .equals(other.options, options) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.options, options);
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      kind,
-      projectId,
-      eligible,
-      title,
-      summary,
-      days,
-      options,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects(
+        [base, kind, projectId, eligible, title, summary, days, options]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5376,17 +3647,8 @@ class ProposalSaveRequest extends _ProposalSaveRequest {
 }
 
 @generatedSerializable
-class ProposalUserSaveRequest extends _ProposalUserSaveRequest {
-  ProposalUserSaveRequest(
-      {this.id,
-      this.base,
-      this.proposalId,
-      this.vote,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ProposalUserSaveRequest implements _ProposalUserSaveRequest {
+  const ProposalUserSaveRequest({this.base, this.proposalId, this.vote});
 
   @override
   final _APIRequestBase base;
@@ -5397,41 +3659,24 @@ class ProposalUserSaveRequest extends _ProposalUserSaveRequest {
   @override
   final int vote;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ProposalUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int proposalId,
-      int vote,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int proposalId, int vote}) {
     return new ProposalUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         proposalId: proposalId ?? this.proposalId,
-        vote: vote ?? this.vote,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        vote: vote ?? this.vote);
   }
 
   bool operator ==(other) {
     return other is _ProposalUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.proposalId == proposalId &&
-        other.vote == vote &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.vote == vote;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, proposalId, vote, createdAt, updatedAt]);
+    return hashObjects([base, proposalId, vote]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5440,12 +3685,8 @@ class ProposalUserSaveRequest extends _ProposalUserSaveRequest {
 }
 
 @generatedSerializable
-class PushQueueGetRequest extends _PushQueueGetRequest {
-  PushQueueGetRequest(
-      {this.id, this.base, this.depth, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class PushQueueGetRequest implements _PushQueueGetRequest {
+  const PushQueueGetRequest({this.base, this.depth});
 
   @override
   final _APIRequestBase base;
@@ -5453,38 +3694,20 @@ class PushQueueGetRequest extends _PushQueueGetRequest {
   @override
   final String depth;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  PushQueueGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String depth,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  PushQueueGetRequest copyWith({_APIRequestBase base, String depth}) {
     return new PushQueueGetRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        depth: depth ?? this.depth,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, depth: depth ?? this.depth);
   }
 
   bool operator ==(other) {
     return other is _PushQueueGetRequest &&
-        other.id == id &&
         other.base == base &&
-        other.depth == depth &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.depth == depth;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, depth, createdAt, updatedAt]);
+    return hashObjects([base, depth]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5493,18 +3716,9 @@ class PushQueueGetRequest extends _PushQueueGetRequest {
 }
 
 @generatedSerializable
-class PushQueueGetResponse extends _PushQueueGetResponse {
-  PushQueueGetResponse(
-      {this.id,
-      this.base,
-      List<_PushQueueItem> items,
-      this.fullModeStatus,
-      this.createdAt,
-      this.updatedAt})
-      : this.items = new List.unmodifiable(items ?? []);
-
-  @override
-  final String id;
+class PushQueueGetResponse implements _PushQueueGetResponse {
+  const PushQueueGetResponse(
+      {this.base, List<_PushQueueItem> this.items, this.fullModeStatus});
 
   @override
   final _APIResponseBase base;
@@ -5515,43 +3729,28 @@ class PushQueueGetResponse extends _PushQueueGetResponse {
   @override
   final String fullModeStatus;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   PushQueueGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       List<_PushQueueItem> items,
-      String fullModeStatus,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String fullModeStatus}) {
     return new PushQueueGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         items: items ?? this.items,
-        fullModeStatus: fullModeStatus ?? this.fullModeStatus,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        fullModeStatus: fullModeStatus ?? this.fullModeStatus);
   }
 
   bool operator ==(other) {
     return other is _PushQueueGetResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_PushQueueItem>(
                 const DefaultEquality<_PushQueueItem>())
             .equals(other.items, items) &&
-        other.fullModeStatus == fullModeStatus &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.fullModeStatus == fullModeStatus;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, items, fullModeStatus, createdAt, updatedAt]);
+    return hashObjects([base, items, fullModeStatus]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5560,21 +3759,15 @@ class PushQueueGetResponse extends _PushQueueGetResponse {
 }
 
 @generatedSerializable
-class PushQueueItem extends _PushQueueItem {
-  PushQueueItem(
-      {this.id,
-      this.kind,
+class PushQueueItem implements _PushQueueItem {
+  const PushQueueItem(
+      {this.kind,
       this.why,
       this.iid,
       this.sid,
       this.text,
       this.linkText,
-      this.linkPaneKey,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.linkPaneKey});
 
   @override
   final String kind;
@@ -5597,64 +3790,38 @@ class PushQueueItem extends _PushQueueItem {
   @override
   final String linkPaneKey;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   PushQueueItem copyWith(
-      {String id,
-      String kind,
+      {String kind,
       String why,
       int iid,
       String sid,
       String text,
       String linkText,
-      String linkPaneKey,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String linkPaneKey}) {
     return new PushQueueItem(
-        id: id ?? this.id,
         kind: kind ?? this.kind,
         why: why ?? this.why,
         iid: iid ?? this.iid,
         sid: sid ?? this.sid,
         text: text ?? this.text,
         linkText: linkText ?? this.linkText,
-        linkPaneKey: linkPaneKey ?? this.linkPaneKey,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        linkPaneKey: linkPaneKey ?? this.linkPaneKey);
   }
 
   bool operator ==(other) {
     return other is _PushQueueItem &&
-        other.id == id &&
         other.kind == kind &&
         other.why == why &&
         other.iid == iid &&
         other.sid == sid &&
         other.text == text &&
         other.linkText == linkText &&
-        other.linkPaneKey == linkPaneKey &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.linkPaneKey == linkPaneKey;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      kind,
-      why,
-      iid,
-      sid,
-      text,
-      linkText,
-      linkPaneKey,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([kind, why, iid, sid, text, linkText, linkPaneKey]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5663,18 +3830,9 @@ class PushQueueItem extends _PushQueueItem {
 }
 
 @generatedSerializable
-class ResourceQueryRequest extends _ResourceQueryRequest {
-  ResourceQueryRequest(
-      {this.id,
-      this.base,
-      this.categoryId,
-      this.title,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ResourceQueryRequest implements _ResourceQueryRequest {
+  const ResourceQueryRequest(
+      {this.base, this.categoryId, this.title, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -5688,45 +3846,26 @@ class ResourceQueryRequest extends _ResourceQueryRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ResourceQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int categoryId,
-      String title,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int categoryId, String title, String kind}) {
     return new ResourceQueryRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         categoryId: categoryId ?? this.categoryId,
         title: title ?? this.title,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _ResourceQueryRequest &&
-        other.id == id &&
         other.base == base &&
         other.categoryId == categoryId &&
         other.title == title &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, base, categoryId, title, kind, createdAt, updatedAt]);
+    return hashObjects([base, categoryId, title, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5735,17 +3874,8 @@ class ResourceQueryRequest extends _ResourceQueryRequest {
 }
 
 @generatedSerializable
-class ResourceQueryResponse extends _ResourceQueryResponse {
-  ResourceQueryResponse(
-      {this.id,
-      this.base,
-      List<_ResourceItem> items,
-      this.createdAt,
-      this.updatedAt})
-      : this.items = new List.unmodifiable(items ?? []);
-
-  @override
-  final String id;
+class ResourceQueryResponse implements _ResourceQueryResponse {
+  const ResourceQueryResponse({this.base, List<_ResourceItem> this.items});
 
   @override
   final _APIResponseBase base;
@@ -5753,40 +3883,23 @@ class ResourceQueryResponse extends _ResourceQueryResponse {
   @override
   final List<_ResourceItem> items;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ResourceQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_ResourceItem> items,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_ResourceItem> items}) {
     return new ResourceQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        items: items ?? this.items,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, items: items ?? this.items);
   }
 
   bool operator ==(other) {
     return other is _ResourceQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_ResourceItem>(
                 const DefaultEquality<_ResourceItem>())
-            .equals(other.items, items) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.items, items);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, items, createdAt, updatedAt]);
+    return hashObjects([base, items]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5795,18 +3908,8 @@ class ResourceQueryResponse extends _ResourceQueryResponse {
 }
 
 @generatedSerializable
-class ResourceItem extends _ResourceItem {
-  ResourceItem(
-      {this.id,
-      this.iid,
-      this.title,
-      this.url,
-      this.description,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ResourceItem implements _ResourceItem {
+  const ResourceItem({this.iid, this.title, this.url, this.description});
 
   @override
   final int iid;
@@ -5820,45 +3923,26 @@ class ResourceItem extends _ResourceItem {
   @override
   final String description;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ResourceItem copyWith(
-      {String id,
-      int iid,
-      String title,
-      String url,
-      String description,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {int iid, String title, String url, String description}) {
     return new ResourceItem(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         title: title ?? this.title,
         url: url ?? this.url,
-        description: description ?? this.description,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        description: description ?? this.description);
   }
 
   bool operator ==(other) {
     return other is _ResourceItem &&
-        other.id == id &&
         other.iid == iid &&
         other.title == title &&
         other.url == url &&
-        other.description == description &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.description == description;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, iid, title, url, description, createdAt, updatedAt]);
+    return hashObjects([iid, title, url, description]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5867,12 +3951,8 @@ class ResourceItem extends _ResourceItem {
 }
 
 @generatedSerializable
-class ResourceGetRequest extends _ResourceGetRequest {
-  ResourceGetRequest(
-      {this.id, this.base, this.iid, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class ResourceGetRequest implements _ResourceGetRequest {
+  const ResourceGetRequest({this.base, this.iid});
 
   @override
   final _APIRequestBase base;
@@ -5880,38 +3960,20 @@ class ResourceGetRequest extends _ResourceGetRequest {
   @override
   final int iid;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ResourceGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int iid,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ResourceGetRequest copyWith({_APIRequestBase base, int iid}) {
     return new ResourceGetRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        iid: iid ?? this.iid,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, iid: iid ?? this.iid);
   }
 
   bool operator ==(other) {
     return other is _ResourceGetRequest &&
-        other.id == id &&
         other.base == base &&
-        other.iid == iid &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.iid == iid;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, iid, createdAt, updatedAt]);
+    return hashObjects([base, iid]);
   }
 
   Map<String, dynamic> toJson() {
@@ -5920,10 +3982,9 @@ class ResourceGetRequest extends _ResourceGetRequest {
 }
 
 @generatedSerializable
-class ResourceGetResponse extends _ResourceGetResponse {
-  ResourceGetResponse(
-      {this.id,
-      this.base,
+class ResourceGetResponse implements _ResourceGetResponse {
+  const ResourceGetResponse(
+      {this.base,
       this.categoryId,
       this.userId,
       this.importantCount,
@@ -5936,12 +3997,7 @@ class ResourceGetResponse extends _ResourceGetResponse {
       this.userKind,
       this.isSiteAdmin,
       this.isCreator,
-      this.nick,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.nick});
 
   @override
   final _APIResponseBase base;
@@ -5985,15 +4041,8 @@ class ResourceGetResponse extends _ResourceGetResponse {
   @override
   final String nick;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ResourceGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       int categoryId,
       int userId,
       int importantCount,
@@ -6006,11 +4055,8 @@ class ResourceGetResponse extends _ResourceGetResponse {
       String userKind,
       String isSiteAdmin,
       String isCreator,
-      String nick,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String nick}) {
     return new ResourceGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         categoryId: categoryId ?? this.categoryId,
         userId: userId ?? this.userId,
@@ -6024,14 +4070,11 @@ class ResourceGetResponse extends _ResourceGetResponse {
         userKind: userKind ?? this.userKind,
         isSiteAdmin: isSiteAdmin ?? this.isSiteAdmin,
         isCreator: isCreator ?? this.isCreator,
-        nick: nick ?? this.nick,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        nick: nick ?? this.nick);
   }
 
   bool operator ==(other) {
     return other is _ResourceGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.categoryId == categoryId &&
         other.userId == userId &&
@@ -6045,15 +4088,12 @@ class ResourceGetResponse extends _ResourceGetResponse {
         other.userKind == userKind &&
         other.isSiteAdmin == isSiteAdmin &&
         other.isCreator == isCreator &&
-        other.nick == nick &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.nick == nick;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       categoryId,
       userId,
@@ -6067,9 +4107,7 @@ class ResourceGetResponse extends _ResourceGetResponse {
       userKind,
       isSiteAdmin,
       isCreator,
-      nick,
-      createdAt,
-      updatedAt
+      nick
     ]);
   }
 
@@ -6079,21 +4117,15 @@ class ResourceGetResponse extends _ResourceGetResponse {
 }
 
 @generatedSerializable
-class ResourceSaveRequest extends _ResourceSaveRequest {
-  ResourceSaveRequest(
-      {this.id,
-      this.base,
+class ResourceSaveRequest implements _ResourceSaveRequest {
+  const ResourceSaveRequest(
+      {this.base,
       this.iid,
       this.categoryId,
       this.title,
       this.description,
       this.kind,
-      this.url,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.url});
 
   @override
   final _APIRequestBase base;
@@ -6116,64 +4148,38 @@ class ResourceSaveRequest extends _ResourceSaveRequest {
   @override
   final String url;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ResourceSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int iid,
       int categoryId,
       String title,
       String description,
       String kind,
-      String url,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String url}) {
     return new ResourceSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         iid: iid ?? this.iid,
         categoryId: categoryId ?? this.categoryId,
         title: title ?? this.title,
         description: description ?? this.description,
         kind: kind ?? this.kind,
-        url: url ?? this.url,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        url: url ?? this.url);
   }
 
   bool operator ==(other) {
     return other is _ResourceSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.iid == iid &&
         other.categoryId == categoryId &&
         other.title == title &&
         other.description == description &&
         other.kind == kind &&
-        other.url == url &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.url == url;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      iid,
-      categoryId,
-      title,
-      description,
-      kind,
-      url,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, iid, categoryId, title, description, kind, url]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6182,17 +4188,8 @@ class ResourceSaveRequest extends _ResourceSaveRequest {
 }
 
 @generatedSerializable
-class ResourceTriageRequest extends _ResourceTriageRequest {
-  ResourceTriageRequest(
-      {this.id,
-      this.base,
-      this.iid,
-      this.mode,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ResourceTriageRequest implements _ResourceTriageRequest {
+  const ResourceTriageRequest({this.base, this.iid, this.mode});
 
   @override
   final _APIRequestBase base;
@@ -6203,41 +4200,21 @@ class ResourceTriageRequest extends _ResourceTriageRequest {
   @override
   final String mode;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  ResourceTriageRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int iid,
-      String mode,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  ResourceTriageRequest copyWith({_APIRequestBase base, int iid, String mode}) {
     return new ResourceTriageRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        iid: iid ?? this.iid,
-        mode: mode ?? this.mode,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, iid: iid ?? this.iid, mode: mode ?? this.mode);
   }
 
   bool operator ==(other) {
     return other is _ResourceTriageRequest &&
-        other.id == id &&
         other.base == base &&
         other.iid == iid &&
-        other.mode == mode &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.mode == mode;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, iid, mode, createdAt, updatedAt]);
+    return hashObjects([base, iid, mode]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6246,17 +4223,8 @@ class ResourceTriageRequest extends _ResourceTriageRequest {
 }
 
 @generatedSerializable
-class ResourceUserSaveRequest extends _ResourceUserSaveRequest {
-  ResourceUserSaveRequest(
-      {this.id,
-      this.base,
-      this.iid,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class ResourceUserSaveRequest implements _ResourceUserSaveRequest {
+  const ResourceUserSaveRequest({this.base, this.iid, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -6267,41 +4235,22 @@ class ResourceUserSaveRequest extends _ResourceUserSaveRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   ResourceUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int iid,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int iid, String kind}) {
     return new ResourceUserSaveRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        iid: iid ?? this.iid,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, iid: iid ?? this.iid, kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _ResourceUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.iid == iid &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, iid, kind, createdAt, updatedAt]);
+    return hashObjects([base, iid, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6310,12 +4259,8 @@ class ResourceUserSaveRequest extends _ResourceUserSaveRequest {
 }
 
 @generatedSerializable
-class UserQueryRequest extends _UserQueryRequest {
-  UserQueryRequest(
-      {this.id, this.base, this.name, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class UserQueryRequest implements _UserQueryRequest {
+  const UserQueryRequest({this.base, this.name});
 
   @override
   final _APIRequestBase base;
@@ -6323,38 +4268,20 @@ class UserQueryRequest extends _UserQueryRequest {
   @override
   final String name;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  UserQueryRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String name,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  UserQueryRequest copyWith({_APIRequestBase base, String name}) {
     return new UserQueryRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        name: name ?? this.name,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, name: name ?? this.name);
   }
 
   bool operator ==(other) {
     return other is _UserQueryRequest &&
-        other.id == id &&
         other.base == base &&
-        other.name == name &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.name == name;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, name, createdAt, updatedAt]);
+    return hashObjects([base, name]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6363,17 +4290,8 @@ class UserQueryRequest extends _UserQueryRequest {
 }
 
 @generatedSerializable
-class UserQueryResponse extends _UserQueryResponse {
-  UserQueryResponse(
-      {this.id,
-      this.base,
-      List<_UserQueryItem> users,
-      this.createdAt,
-      this.updatedAt})
-      : this.users = new List.unmodifiable(users ?? []);
-
-  @override
-  final String id;
+class UserQueryResponse implements _UserQueryResponse {
+  const UserQueryResponse({this.base, List<_UserQueryItem> this.users});
 
   @override
   final _APIResponseBase base;
@@ -6381,40 +4299,23 @@ class UserQueryResponse extends _UserQueryResponse {
   @override
   final List<_UserQueryItem> users;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserQueryResponse copyWith(
-      {String id,
-      _APIResponseBase base,
-      List<_UserQueryItem> users,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIResponseBase base, List<_UserQueryItem> users}) {
     return new UserQueryResponse(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        users: users ?? this.users,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, users: users ?? this.users);
   }
 
   bool operator ==(other) {
     return other is _UserQueryResponse &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<_UserQueryItem>(
                 const DefaultEquality<_UserQueryItem>())
-            .equals(other.users, users) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.users, users);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, users, createdAt, updatedAt]);
+    return hashObjects([base, users]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6423,19 +4324,9 @@ class UserQueryResponse extends _UserQueryResponse {
 }
 
 @generatedSerializable
-class UserQueryItem extends _UserQueryItem {
-  UserQueryItem(
-      {this.id,
-      this.iid,
-      this.nick,
-      this.kind,
-      this.publicName,
-      this.avatarUrl,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class UserQueryItem implements _UserQueryItem {
+  const UserQueryItem(
+      {this.iid, this.nick, this.kind, this.publicName, this.avatarUrl});
 
   @override
   final int iid;
@@ -6452,48 +4343,32 @@ class UserQueryItem extends _UserQueryItem {
   @override
   final String avatarUrl;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserQueryItem copyWith(
-      {String id,
-      int iid,
+      {int iid,
       String nick,
       String kind,
       String publicName,
-      String avatarUrl,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String avatarUrl}) {
     return new UserQueryItem(
-        id: id ?? this.id,
         iid: iid ?? this.iid,
         nick: nick ?? this.nick,
         kind: kind ?? this.kind,
         publicName: publicName ?? this.publicName,
-        avatarUrl: avatarUrl ?? this.avatarUrl,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        avatarUrl: avatarUrl ?? this.avatarUrl);
   }
 
   bool operator ==(other) {
     return other is _UserQueryItem &&
-        other.id == id &&
         other.iid == iid &&
         other.nick == nick &&
         other.kind == kind &&
         other.publicName == publicName &&
-        other.avatarUrl == avatarUrl &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.avatarUrl == avatarUrl;
   }
 
   @override
   int get hashCode {
-    return hashObjects(
-        [id, iid, nick, kind, publicName, avatarUrl, createdAt, updatedAt]);
+    return hashObjects([iid, nick, kind, publicName, avatarUrl]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6502,18 +4377,9 @@ class UserQueryItem extends _UserQueryItem {
 }
 
 @generatedSerializable
-class UserGetRequest extends _UserGetRequest {
-  UserGetRequest(
-      {this.id,
-      this.base,
-      this.userId,
-      this.includeDetail,
-      this.includeEditing,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class UserGetRequest implements _UserGetRequest {
+  const UserGetRequest(
+      {this.base, this.userId, this.includeDetail, this.includeEditing});
 
   @override
   final _APIRequestBase base;
@@ -6527,52 +4393,29 @@ class UserGetRequest extends _UserGetRequest {
   @override
   final String includeEditing;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserGetRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       int userId,
       String includeDetail,
-      String includeEditing,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String includeEditing}) {
     return new UserGetRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         userId: userId ?? this.userId,
         includeDetail: includeDetail ?? this.includeDetail,
-        includeEditing: includeEditing ?? this.includeEditing,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        includeEditing: includeEditing ?? this.includeEditing);
   }
 
   bool operator ==(other) {
     return other is _UserGetRequest &&
-        other.id == id &&
         other.base == base &&
         other.userId == userId &&
         other.includeDetail == includeDetail &&
-        other.includeEditing == includeEditing &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.includeEditing == includeEditing;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      userId,
-      includeDetail,
-      includeEditing,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, userId, includeDetail, includeEditing]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6581,10 +4424,9 @@ class UserGetRequest extends _UserGetRequest {
 }
 
 @generatedSerializable
-class UserGetResponse extends _UserGetResponse {
-  UserGetResponse(
-      {this.id,
-      this.base,
+class UserGetResponse implements _UserGetResponse {
+  const UserGetResponse(
+      {this.base,
       this.status,
       this.nick,
       this.email,
@@ -6592,24 +4434,14 @@ class UserGetResponse extends _UserGetResponse {
       this.isSiteAdmin,
       this.publicName,
       this.prefEmailNotify,
-      Map<String, String> publicLinks,
+      Map<String, String> this.publicLinks,
       this.timeZone,
-      List<String> allTimeZones,
+      List<String> this.allTimeZones,
       this.avatarUrl,
       this.userUserKind,
-      List<_APIResponseAssociation> events,
-      List<_APIResponseAssociation> projects,
-      List<_APIResponseAssociation> resources,
-      this.createdAt,
-      this.updatedAt})
-      : this.publicLinks = new Map.unmodifiable(publicLinks ?? {}),
-        this.allTimeZones = new List.unmodifiable(allTimeZones ?? []),
-        this.events = new List.unmodifiable(events ?? []),
-        this.projects = new List.unmodifiable(projects ?? []),
-        this.resources = new List.unmodifiable(resources ?? []);
-
-  @override
-  final String id;
+      List<_APIResponseAssociation> this.events,
+      List<_APIResponseAssociation> this.projects,
+      List<_APIResponseAssociation> this.resources});
 
   @override
   final _APIResponseBase base;
@@ -6659,15 +4491,8 @@ class UserGetResponse extends _UserGetResponse {
   @override
   final List<_APIResponseAssociation> resources;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserGetResponse copyWith(
-      {String id,
-      _APIResponseBase base,
+      {_APIResponseBase base,
       String status,
       String nick,
       String email,
@@ -6682,11 +4507,8 @@ class UserGetResponse extends _UserGetResponse {
       String userUserKind,
       List<_APIResponseAssociation> events,
       List<_APIResponseAssociation> projects,
-      List<_APIResponseAssociation> resources,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      List<_APIResponseAssociation> resources}) {
     return new UserGetResponse(
-        id: id ?? this.id,
         base: base ?? this.base,
         status: status ?? this.status,
         nick: nick ?? this.nick,
@@ -6702,14 +4524,11 @@ class UserGetResponse extends _UserGetResponse {
         userUserKind: userUserKind ?? this.userUserKind,
         events: events ?? this.events,
         projects: projects ?? this.projects,
-        resources: resources ?? this.resources,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        resources: resources ?? this.resources);
   }
 
   bool operator ==(other) {
     return other is _UserGetResponse &&
-        other.id == id &&
         other.base == base &&
         other.status == status &&
         other.nick == nick &&
@@ -6735,15 +4554,12 @@ class UserGetResponse extends _UserGetResponse {
             .equals(other.projects, projects) &&
         const ListEquality<_APIResponseAssociation>(
                 const DefaultEquality<_APIResponseAssociation>())
-            .equals(other.resources, resources) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.resources, resources);
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       status,
       nick,
@@ -6759,9 +4575,7 @@ class UserGetResponse extends _UserGetResponse {
       userUserKind,
       events,
       projects,
-      resources,
-      createdAt,
-      updatedAt
+      resources
     ]);
   }
 
@@ -6771,10 +4585,9 @@ class UserGetResponse extends _UserGetResponse {
 }
 
 @generatedSerializable
-class UserSaveRequest extends _UserSaveRequest {
-  UserSaveRequest(
-      {this.id,
-      this.base,
+class UserSaveRequest implements _UserSaveRequest {
+  const UserSaveRequest(
+      {this.base,
       this.isNew,
       this.isDelete,
       this.saveNick,
@@ -6784,14 +4597,8 @@ class UserSaveRequest extends _UserSaveRequest {
       this.isSiteAdmin,
       this.publicName,
       this.prefEmailNotify,
-      Map<String, String> publicLinks,
-      this.timeZone,
-      this.createdAt,
-      this.updatedAt})
-      : this.publicLinks = new Map.unmodifiable(publicLinks ?? {});
-
-  @override
-  final String id;
+      Map<String, String> this.publicLinks,
+      this.timeZone});
 
   @override
   final _APIRequestBase base;
@@ -6829,15 +4636,8 @@ class UserSaveRequest extends _UserSaveRequest {
   @override
   final String timeZone;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       String isNew,
       String isDelete,
       String saveNick,
@@ -6848,11 +4648,8 @@ class UserSaveRequest extends _UserSaveRequest {
       String publicName,
       String prefEmailNotify,
       Map<String, String> publicLinks,
-      String timeZone,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String timeZone}) {
     return new UserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         isNew: isNew ?? this.isNew,
         isDelete: isDelete ?? this.isDelete,
@@ -6864,14 +4661,11 @@ class UserSaveRequest extends _UserSaveRequest {
         publicName: publicName ?? this.publicName,
         prefEmailNotify: prefEmailNotify ?? this.prefEmailNotify,
         publicLinks: publicLinks ?? this.publicLinks,
-        timeZone: timeZone ?? this.timeZone,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        timeZone: timeZone ?? this.timeZone);
   }
 
   bool operator ==(other) {
     return other is _UserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.isNew == isNew &&
         other.isDelete == isDelete &&
@@ -6886,15 +4680,12 @@ class UserSaveRequest extends _UserSaveRequest {
                 keys: const DefaultEquality<String>(),
                 values: const DefaultEquality<String>())
             .equals(other.publicLinks, publicLinks) &&
-        other.timeZone == timeZone &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.timeZone == timeZone;
   }
 
   @override
   int get hashCode {
     return hashObjects([
-      id,
       base,
       isNew,
       isDelete,
@@ -6906,9 +4697,7 @@ class UserSaveRequest extends _UserSaveRequest {
       publicName,
       prefEmailNotify,
       publicLinks,
-      timeZone,
-      createdAt,
-      updatedAt
+      timeZone
     ]);
   }
 
@@ -6918,17 +4707,8 @@ class UserSaveRequest extends _UserSaveRequest {
 }
 
 @generatedSerializable
-class UserAvatarSaveRequest extends _UserAvatarSaveRequest {
-  UserAvatarSaveRequest(
-      {this.id,
-      this.base,
-      List<int> imageBytes,
-      this.createdAt,
-      this.updatedAt})
-      : this.imageBytes = new List.unmodifiable(imageBytes ?? []);
-
-  @override
-  final String id;
+class UserAvatarSaveRequest implements _UserAvatarSaveRequest {
+  const UserAvatarSaveRequest({this.base, List<int> this.imageBytes});
 
   @override
   final _APIRequestBase base;
@@ -6936,39 +4716,21 @@ class UserAvatarSaveRequest extends _UserAvatarSaveRequest {
   @override
   final List<int> imageBytes;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  UserAvatarSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      List<int> imageBytes,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  UserAvatarSaveRequest copyWith({_APIRequestBase base, List<int> imageBytes}) {
     return new UserAvatarSaveRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        imageBytes: imageBytes ?? this.imageBytes,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, imageBytes: imageBytes ?? this.imageBytes);
   }
 
   bool operator ==(other) {
     return other is _UserAvatarSaveRequest &&
-        other.id == id &&
         other.base == base &&
         const ListEquality<int>(const DefaultEquality<int>())
-            .equals(other.imageBytes, imageBytes) &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+            .equals(other.imageBytes, imageBytes);
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, imageBytes, createdAt, updatedAt]);
+    return hashObjects([base, imageBytes]);
   }
 
   Map<String, dynamic> toJson() {
@@ -6977,12 +4739,8 @@ class UserAvatarSaveRequest extends _UserAvatarSaveRequest {
 }
 
 @generatedSerializable
-class UserNotifySaveRequest extends _UserNotifySaveRequest {
-  UserNotifySaveRequest(
-      {this.id, this.base, this.notifyId, this.createdAt, this.updatedAt});
-
-  @override
-  final String id;
+class UserNotifySaveRequest implements _UserNotifySaveRequest {
+  const UserNotifySaveRequest({this.base, this.notifyId});
 
   @override
   final _APIRequestBase base;
@@ -6990,38 +4748,20 @@ class UserNotifySaveRequest extends _UserNotifySaveRequest {
   @override
   final String notifyId;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
-  UserNotifySaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      String notifyId,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+  UserNotifySaveRequest copyWith({_APIRequestBase base, String notifyId}) {
     return new UserNotifySaveRequest(
-        id: id ?? this.id,
-        base: base ?? this.base,
-        notifyId: notifyId ?? this.notifyId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        base: base ?? this.base, notifyId: notifyId ?? this.notifyId);
   }
 
   bool operator ==(other) {
     return other is _UserNotifySaveRequest &&
-        other.id == id &&
         other.base == base &&
-        other.notifyId == notifyId &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.notifyId == notifyId;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, notifyId, createdAt, updatedAt]);
+    return hashObjects([base, notifyId]);
   }
 
   Map<String, dynamic> toJson() {
@@ -7030,19 +4770,13 @@ class UserNotifySaveRequest extends _UserNotifySaveRequest {
 }
 
 @generatedSerializable
-class UserRecoverPasswordRequest extends _UserRecoverPasswordRequest {
-  UserRecoverPasswordRequest(
-      {this.id,
-      this.base,
+class UserRecoverPasswordRequest implements _UserRecoverPasswordRequest {
+  const UserRecoverPasswordRequest(
+      {this.base,
       this.recoveryNick,
       this.mode,
       this.recoveryPassword,
-      this.code,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+      this.code});
 
   @override
   final _APIRequestBase base;
@@ -7059,56 +4793,32 @@ class UserRecoverPasswordRequest extends _UserRecoverPasswordRequest {
   @override
   final String code;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserRecoverPasswordRequest copyWith(
-      {String id,
-      _APIRequestBase base,
+      {_APIRequestBase base,
       String recoveryNick,
       String mode,
       String recoveryPassword,
-      String code,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      String code}) {
     return new UserRecoverPasswordRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         recoveryNick: recoveryNick ?? this.recoveryNick,
         mode: mode ?? this.mode,
         recoveryPassword: recoveryPassword ?? this.recoveryPassword,
-        code: code ?? this.code,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        code: code ?? this.code);
   }
 
   bool operator ==(other) {
     return other is _UserRecoverPasswordRequest &&
-        other.id == id &&
         other.base == base &&
         other.recoveryNick == recoveryNick &&
         other.mode == mode &&
         other.recoveryPassword == recoveryPassword &&
-        other.code == code &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.code == code;
   }
 
   @override
   int get hashCode {
-    return hashObjects([
-      id,
-      base,
-      recoveryNick,
-      mode,
-      recoveryPassword,
-      code,
-      createdAt,
-      updatedAt
-    ]);
+    return hashObjects([base, recoveryNick, mode, recoveryPassword, code]);
   }
 
   Map<String, dynamic> toJson() {
@@ -7117,17 +4827,8 @@ class UserRecoverPasswordRequest extends _UserRecoverPasswordRequest {
 }
 
 @generatedSerializable
-class UserUserSaveRequest extends _UserUserSaveRequest {
-  UserUserSaveRequest(
-      {this.id,
-      this.base,
-      this.aboutId,
-      this.kind,
-      this.createdAt,
-      this.updatedAt});
-
-  @override
-  final String id;
+class UserUserSaveRequest implements _UserUserSaveRequest {
+  const UserUserSaveRequest({this.base, this.aboutId, this.kind});
 
   @override
   final _APIRequestBase base;
@@ -7138,41 +4839,24 @@ class UserUserSaveRequest extends _UserUserSaveRequest {
   @override
   final String kind;
 
-  @override
-  final DateTime createdAt;
-
-  @override
-  final DateTime updatedAt;
-
   UserUserSaveRequest copyWith(
-      {String id,
-      _APIRequestBase base,
-      int aboutId,
-      String kind,
-      DateTime createdAt,
-      DateTime updatedAt}) {
+      {_APIRequestBase base, int aboutId, String kind}) {
     return new UserUserSaveRequest(
-        id: id ?? this.id,
         base: base ?? this.base,
         aboutId: aboutId ?? this.aboutId,
-        kind: kind ?? this.kind,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt);
+        kind: kind ?? this.kind);
   }
 
   bool operator ==(other) {
     return other is _UserUserSaveRequest &&
-        other.id == id &&
         other.base == base &&
         other.aboutId == aboutId &&
-        other.kind == kind &&
-        other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.kind == kind;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, base, aboutId, kind, createdAt, updatedAt]);
+    return hashObjects([base, aboutId, kind]);
   }
 
   Map<String, dynamic> toJson() {
@@ -7187,53 +4871,23 @@ class UserUserSaveRequest extends _UserUserSaveRequest {
 abstract class APIRequestBaseSerializer {
   static APIRequestBase fromMap(Map map) {
     return new APIRequestBase(
-        id: map['id'] as String,
-        nick: map['nick'] as String,
-        password: map['password'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        nick: map['nick'] as String, password: map['password'] as String);
   }
 
   static Map<String, dynamic> toMap(_APIRequestBase model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'nick': model.nick,
-      'password': model.password,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'nick': model.nick, 'password': model.password};
   }
 }
 
 abstract class APIRequestBaseFields {
-  static const List<String> allFields = <String>[
-    id,
-    nick,
-    password,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[nick, password];
 
   static const String nick = 'nick';
 
   static const String password = 'password';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class APIResponseBaseSerializer {
@@ -7278,76 +4932,36 @@ abstract class APIResponseBaseFields {
 abstract class APIResponseAssociationSerializer {
   static APIResponseAssociation fromMap(Map map) {
     return new APIResponseAssociation(
-        id: map['id'] as String,
         linkText: map['link_text'] as String,
-        linkPaneKey: map['link_pane_key'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        linkPaneKey: map['link_pane_key'] as String);
   }
 
   static Map<String, dynamic> toMap(_APIResponseAssociation model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'link_text': model.linkText,
-      'link_pane_key': model.linkPaneKey,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'link_text': model.linkText, 'link_pane_key': model.linkPaneKey};
   }
 }
 
 abstract class APIResponseAssociationFields {
-  static const List<String> allFields = <String>[
-    id,
-    linkText,
-    linkPaneKey,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[linkText, linkPaneKey];
 
   static const String linkText = 'link_text';
 
   static const String linkPaneKey = 'link_pane_key';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class AuthenticateResponseSerializer {
   static AuthenticateResponse fromMap(Map map) {
     return new AuthenticateResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
         publicName: map['public_name'] as String,
         nick: map['nick'] as String,
         userId: map['user_id'] as int,
-        isSiteAdmin: map['is_site_admin'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        isSiteAdmin: map['is_site_admin'] as String);
   }
 
   static Map<String, dynamic> toMap(_AuthenticateResponse model) {
@@ -7355,31 +4969,23 @@ abstract class AuthenticateResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'public_name': model.publicName,
       'nick': model.nick,
       'user_id': model.userId,
-      'is_site_admin': model.isSiteAdmin,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'is_site_admin': model.isSiteAdmin
     };
   }
 }
 
 abstract class AuthenticateResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     publicName,
     nick,
     userId,
-    isSiteAdmin,
-    createdAt,
-    updatedAt
+    isSiteAdmin
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -7390,30 +4996,15 @@ abstract class AuthenticateResponseFields {
   static const String userId = 'user_id';
 
   static const String isSiteAdmin = 'is_site_admin';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class CategoryQueryRequestSerializer {
   static CategoryQueryRequest fromMap(Map map) {
     return new CategoryQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_CategoryQueryRequest model) {
@@ -7421,39 +5012,23 @@ abstract class CategoryQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class CategoryQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, kind];
 
   static const String base = 'base';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class CategoryQueryResponseSerializer {
   static CategoryQueryResponse fromMap(Map map) {
     return new CategoryQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -7462,16 +5037,6 @@ abstract class CategoryQueryResponseSerializer {
                 ((map['categories'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(CategoryItemResponseSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -7480,56 +5045,30 @@ abstract class CategoryQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'categories': model.categories
           ?.map((m) => CategoryItemResponseSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class CategoryQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    categories,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, categories];
 
   static const String base = 'base';
 
   static const String categories = 'categories';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class CategoryDeleteRequestSerializer {
   static CategoryDeleteRequest fromMap(Map map) {
     return new CategoryDeleteRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         catId: map['cat_id'] as int,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_CategoryDeleteRequest model) {
@@ -7537,43 +5076,26 @@ abstract class CategoryDeleteRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'cat_id': model.catId,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class CategoryDeleteRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    catId,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, catId, kind];
 
   static const String base = 'base';
 
   static const String catId = 'cat_id';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class CategorySaveRequestSerializer {
   static CategorySaveRequest fromMap(Map map) {
     return new CategorySaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -7582,17 +5104,7 @@ abstract class CategorySaveRequestSerializer {
         referenceId: map['reference_id'] as int,
         referenceMode: map['reference_mode'] as String,
         title: map['title'] as String,
-        description: map['description'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        description: map['description'] as String);
   }
 
   static Map<String, dynamic> toMap(_CategorySaveRequest model) {
@@ -7600,35 +5112,27 @@ abstract class CategorySaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'cat_id': model.catId,
       'kind': model.kind,
       'reference_id': model.referenceId,
       'reference_mode': model.referenceMode,
       'title': model.title,
-      'description': model.description,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'description': model.description
     };
   }
 }
 
 abstract class CategorySaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     catId,
     kind,
     referenceId,
     referenceMode,
     title,
-    description,
-    createdAt,
-    updatedAt
+    description
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -7643,16 +5147,11 @@ abstract class CategorySaveRequestFields {
   static const String title = 'title';
 
   static const String description = 'description';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class CategoryMoveContentsRequestSerializer {
   static CategoryMoveContentsRequest fromMap(Map map) {
     return new CategoryMoveContentsRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -7660,16 +5159,6 @@ abstract class CategoryMoveContentsRequestSerializer {
         kind: map['kind'] as String,
         relatedIds: map['related_ids'] is Iterable
             ? (map['related_ids'] as Iterable).cast<int>().toList()
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -7678,29 +5167,16 @@ abstract class CategoryMoveContentsRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'cat_id': model.catId,
       'kind': model.kind,
-      'related_ids': model.relatedIds,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'related_ids': model.relatedIds
     };
   }
 }
 
 abstract class CategoryMoveContentsRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    catId,
-    kind,
-    relatedIds,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, catId, kind, relatedIds];
 
   static const String base = 'base';
 
@@ -7709,30 +5185,15 @@ abstract class CategoryMoveContentsRequestFields {
   static const String kind = 'kind';
 
   static const String relatedIds = 'related_ids';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class CategoryItemResponseSerializer {
   static CategoryItemResponse fromMap(Map map) {
     return new CategoryItemResponse(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         parentId: map['parent_id'] as int,
         title: map['title'] as String,
-        description: map['description'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        description: map['description'] as String);
   }
 
   static Map<String, dynamic> toMap(_CategoryItemResponse model) {
@@ -7740,29 +5201,21 @@ abstract class CategoryItemResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'parent_id': model.parentId,
       'title': model.title,
-      'description': model.description,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'description': model.description
     };
   }
 }
 
 abstract class CategoryItemResponseFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     parentId,
     title,
-    description,
-    createdAt,
-    updatedAt
+    description
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -7771,30 +5224,15 @@ abstract class CategoryItemResponseFields {
   static const String title = 'title';
 
   static const String description = 'description';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvQueryRequestSerializer {
   static ConvQueryRequest fromMap(Map map) {
     return new ConvQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        term: map['term'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        term: map['term'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvQueryRequest model) {
@@ -7802,39 +5240,23 @@ abstract class ConvQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'term': model.term,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'term': model.term
     };
   }
 }
 
 abstract class ConvQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    term,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, term];
 
   static const String base = 'base';
 
   static const String term = 'term';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvQueryResponseSerializer {
   static ConvQueryResponse fromMap(Map map) {
     return new ConvQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -7843,16 +5265,6 @@ abstract class ConvQueryResponseSerializer {
                 ((map['convs'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(ConvQueryConvItemResponseSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -7861,41 +5273,25 @@ abstract class ConvQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'convs': model.convs
           ?.map((m) => ConvQueryConvItemResponseSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class ConvQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    convs,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, convs];
 
   static const String base = 'base';
 
   static const String convs = 'convs';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvQueryConvItemResponseSerializer {
   static ConvQueryConvItemResponse fromMap(Map map) {
     return new ConvQueryConvItemResponse(
-        id: map['id'] as String,
         convId: map['conv_id'] as int,
         hitText: map['hit_text'] as String,
         posts: map['posts'] is Iterable
@@ -7903,16 +5299,6 @@ abstract class ConvQueryConvItemResponseSerializer {
                 ((map['posts'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(ConvQueryPostItemResponseSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -7921,114 +5307,57 @@ abstract class ConvQueryConvItemResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'conv_id': model.convId,
       'hit_text': model.hitText,
       'posts': model.posts
           ?.map((m) => ConvQueryPostItemResponseSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class ConvQueryConvItemResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    convId,
-    hitText,
-    posts,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[convId, hitText, posts];
 
   static const String convId = 'conv_id';
 
   static const String hitText = 'hit_text';
 
   static const String posts = 'posts';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvQueryPostItemResponseSerializer {
   static ConvQueryPostItemResponse fromMap(Map map) {
     return new ConvQueryPostItemResponse(
-        id: map['id'] as String,
-        postId: map['post_id'] as String,
-        hitText: map['hit_text'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        postId: map['post_id'] as String, hitText: map['hit_text'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvQueryPostItemResponse model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'post_id': model.postId,
-      'hit_text': model.hitText,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'post_id': model.postId, 'hit_text': model.hitText};
   }
 }
 
 abstract class ConvQueryPostItemResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    postId,
-    hitText,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[postId, hitText];
 
   static const String postId = 'post_id';
 
   static const String hitText = 'hit_text';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvGetRequestSerializer {
   static ConvGetRequest fromMap(Map map) {
     return new ConvGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         convId: map['conv_id'] as int,
         mode: map['mode'] as String,
         rangeFromWDT: map['range_from_w_d_t'] as String,
-        rangeToWDT: map['range_to_w_d_t'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        rangeToWDT: map['range_to_w_d_t'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvGetRequest model) {
@@ -8036,31 +5365,23 @@ abstract class ConvGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'conv_id': model.convId,
       'mode': model.mode,
       'range_from_w_d_t': model.rangeFromWDT,
-      'range_to_w_d_t': model.rangeToWDT,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'range_to_w_d_t': model.rangeToWDT
     };
   }
 }
 
 abstract class ConvGetRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     convId,
     mode,
     rangeFromWDT,
-    rangeToWDT,
-    createdAt,
-    updatedAt
+    rangeToWDT
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8071,16 +5392,11 @@ abstract class ConvGetRequestFields {
   static const String rangeFromWDT = 'range_from_w_d_t';
 
   static const String rangeToWDT = 'range_to_w_d_t';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvGetResponseSerializer {
   static ConvGetResponse fromMap(Map map) {
     return new ConvGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -8102,17 +5418,7 @@ abstract class ConvGetResponseSerializer {
         like: map['like'] as String,
         bookmarked: map['bookmarked'] as String,
         parentTitle: map['parent_title'] as String,
-        parentPaneKey: map['parent_pane_key'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        parentPaneKey: map['parent_pane_key'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvGetResponse model) {
@@ -8120,7 +5426,6 @@ abstract class ConvGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'is_manager': model.isManager,
       'is_joined': model.isJoined,
@@ -8136,16 +5441,13 @@ abstract class ConvGetResponseSerializer {
       'like': model.like,
       'bookmarked': model.bookmarked,
       'parent_title': model.parentTitle,
-      'parent_pane_key': model.parentPaneKey,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'parent_pane_key': model.parentPaneKey
     };
   }
 }
 
 abstract class ConvGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     isManager,
     isJoined,
@@ -8160,12 +5462,8 @@ abstract class ConvGetResponseFields {
     like,
     bookmarked,
     parentTitle,
-    parentPaneKey,
-    createdAt,
-    updatedAt
+    parentPaneKey
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8196,16 +5494,11 @@ abstract class ConvGetResponseFields {
   static const String parentTitle = 'parent_title';
 
   static const String parentPaneKey = 'parent_pane_key';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvGetPostItemSerializer {
   static ConvGetPostItem fromMap(Map map) {
     return new ConvGetPostItem(
-        id: map['id'] as String,
         iid: map['iid'] as String,
         authorId: map['author_id'] as int,
         authorNick: map['author_nick'] as String,
@@ -8216,17 +5509,7 @@ abstract class ConvGetPostItemSerializer {
         ptext: map['ptext'] as String,
         imageUrl: map['image_url'] as String,
         collapseMode: map['collapse_mode'] as String,
-        collapsePosition: map['collapse_position'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        collapsePosition: map['collapse_position'] as int);
   }
 
   static Map<String, dynamic> toMap(_ConvGetPostItem model) {
@@ -8234,7 +5517,6 @@ abstract class ConvGetPostItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'author_id': model.authorId,
       'author_nick': model.authorNick,
@@ -8245,16 +5527,13 @@ abstract class ConvGetPostItemSerializer {
       'ptext': model.ptext,
       'image_url': model.imageUrl,
       'collapse_mode': model.collapseMode,
-      'collapse_position': model.collapsePosition,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'collapse_position': model.collapsePosition
     };
   }
 }
 
 abstract class ConvGetPostItemFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     authorId,
     authorNick,
@@ -8265,12 +5544,8 @@ abstract class ConvGetPostItemFields {
     ptext,
     imageUrl,
     collapseMode,
-    collapsePosition,
-    createdAt,
-    updatedAt
+    collapsePosition
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -8293,30 +5568,15 @@ abstract class ConvGetPostItemFields {
   static const String collapseMode = 'collapse_mode';
 
   static const String collapsePosition = 'collapse_position';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvGetRulesRequestSerializer {
   static ConvGetRulesRequest fromMap(Map map) {
     return new ConvGetRulesRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        convId: map['conv_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        convId: map['conv_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_ConvGetRulesRequest model) {
@@ -8324,55 +5584,29 @@ abstract class ConvGetRulesRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'conv_id': model.convId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'conv_id': model.convId
     };
   }
 }
 
 abstract class ConvGetRulesRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    convId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, convId];
 
   static const String base = 'base';
 
   static const String convId = 'conv_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvGetRulesResponseSerializer {
   static ConvGetRulesResponse fromMap(Map map) {
     return new ConvGetRulesResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
         postMaxSize: map['post_max_size'] as int,
         userDailyMax: map['user_daily_max'] as int,
-        title: map['title'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        title: map['title'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvGetRulesResponse model) {
@@ -8380,29 +5614,21 @@ abstract class ConvGetRulesResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'post_max_size': model.postMaxSize,
       'user_daily_max': model.userDailyMax,
-      'title': model.title,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'title': model.title
     };
   }
 }
 
 abstract class ConvGetRulesResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     postMaxSize,
     userDailyMax,
-    title,
-    createdAt,
-    updatedAt
+    title
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8411,16 +5637,11 @@ abstract class ConvGetRulesResponseFields {
   static const String userDailyMax = 'user_daily_max';
 
   static const String title = 'title';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvSaveRequestSerializer {
   static ConvSaveRequest fromMap(Map map) {
     return new ConvSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -8431,17 +5652,7 @@ abstract class ConvSaveRequestSerializer {
         openingPostId: map['opening_post_id'] as String,
         title: map['title'] as String,
         postMaxSize: map['post_max_size'] as int,
-        userDailyMax: map['user_daily_max'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        userDailyMax: map['user_daily_max'] as int);
   }
 
   static Map<String, dynamic> toMap(_ConvSaveRequest model) {
@@ -8449,7 +5660,6 @@ abstract class ConvSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'conv_id': model.convId,
       'project_id': model.projectId,
@@ -8458,16 +5668,13 @@ abstract class ConvSaveRequestSerializer {
       'opening_post_id': model.openingPostId,
       'title': model.title,
       'post_max_size': model.postMaxSize,
-      'user_daily_max': model.userDailyMax,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'user_daily_max': model.userDailyMax
     };
   }
 }
 
 abstract class ConvSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     convId,
     projectId,
@@ -8476,12 +5683,8 @@ abstract class ConvSaveRequestFields {
     openingPostId,
     title,
     postMaxSize,
-    userDailyMax,
-    createdAt,
-    updatedAt
+    userDailyMax
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8500,30 +5703,15 @@ abstract class ConvSaveRequestFields {
   static const String postMaxSize = 'post_max_size';
 
   static const String userDailyMax = 'user_daily_max';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvPostGetRequestSerializer {
   static ConvPostGetRequest fromMap(Map map) {
     return new ConvPostGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        postId: map['post_id'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        postId: map['post_id'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvPostGetRequest model) {
@@ -8531,39 +5719,23 @@ abstract class ConvPostGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'post_id': model.postId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'post_id': model.postId
     };
   }
 }
 
 abstract class ConvPostGetRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    postId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, postId];
 
   static const String base = 'base';
 
   static const String postId = 'post_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvPostGetResponseSerializer {
   static ConvPostGetResponse fromMap(Map map) {
     return new ConvPostGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -8572,17 +5744,7 @@ abstract class ConvPostGetResponseSerializer {
         reaction: map['reaction'] as String,
         throttleDescription: map['throttle_description'] as String,
         canCensor: map['can_censor'] as String,
-        allReasons: map['all_reasons'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        allReasons: map['all_reasons'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvPostGetResponse model) {
@@ -8590,35 +5752,27 @@ abstract class ConvPostGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'avatar_url': model.avatarUrl,
       'created_at_readable': model.createdAtReadable,
       'reaction': model.reaction,
       'throttle_description': model.throttleDescription,
       'can_censor': model.canCensor,
-      'all_reasons': model.allReasons,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'all_reasons': model.allReasons
     };
   }
 }
 
 abstract class ConvPostGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     avatarUrl,
     createdAtReadable,
     reaction,
     throttleDescription,
     canCensor,
-    allReasons,
-    createdAt,
-    updatedAt
+    allReasons
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8633,16 +5787,11 @@ abstract class ConvPostGetResponseFields {
   static const String canCensor = 'can_censor';
 
   static const String allReasons = 'all_reasons';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvPostSaveRequestSerializer {
   static ConvPostSaveRequest fromMap(Map map) {
     return new ConvPostSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -8652,17 +5801,7 @@ abstract class ConvPostSaveRequestSerializer {
         ptext: map['ptext'] as String,
         censored: map['censored'] as String,
         delete: map['delete'] as String,
-        lastKnownWDT: map['last_known_w_d_t'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        lastKnownWDT: map['last_known_w_d_t'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvPostSaveRequest model) {
@@ -8670,7 +5809,6 @@ abstract class ConvPostSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'conv_id': model.convId,
       'post_id': model.postId,
@@ -8678,16 +5816,13 @@ abstract class ConvPostSaveRequestSerializer {
       'ptext': model.ptext,
       'censored': model.censored,
       'delete': model.delete,
-      'last_known_w_d_t': model.lastKnownWDT,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'last_known_w_d_t': model.lastKnownWDT
     };
   }
 }
 
 abstract class ConvPostSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     convId,
     postId,
@@ -8695,12 +5830,8 @@ abstract class ConvPostSaveRequestFields {
     ptext,
     censored,
     delete,
-    lastKnownWDT,
-    createdAt,
-    updatedAt
+    lastKnownWDT
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8717,16 +5848,11 @@ abstract class ConvPostSaveRequestFields {
   static const String delete = 'delete';
 
   static const String lastKnownWDT = 'last_known_w_d_t';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvPostImageSaveRequestSerializer {
   static ConvPostImageSaveRequest fromMap(Map map) {
     return new ConvPostImageSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -8734,16 +5860,6 @@ abstract class ConvPostImageSaveRequestSerializer {
         ptext: map['ptext'] as String,
         imageBytes: map['image_bytes'] is Iterable
             ? (map['image_bytes'] as Iterable).cast<int>().toList()
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -8752,29 +5868,21 @@ abstract class ConvPostImageSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'conv_id': model.convId,
       'ptext': model.ptext,
-      'image_bytes': model.imageBytes,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'image_bytes': model.imageBytes
     };
   }
 }
 
 abstract class ConvPostImageSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     convId,
     ptext,
-    imageBytes,
-    createdAt,
-    updatedAt
+    imageBytes
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8783,32 +5891,17 @@ abstract class ConvPostImageSaveRequestFields {
   static const String ptext = 'ptext';
 
   static const String imageBytes = 'image_bytes';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvPostUserSaveRequestSerializer {
   static ConvPostUserSaveRequest fromMap(Map map) {
     return new ConvPostUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         postId: map['post_id'] as String,
         reaction: map['reaction'] as String,
-        reason: map['reason'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        reason: map['reason'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvPostUserSaveRequest model) {
@@ -8816,29 +5909,21 @@ abstract class ConvPostUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'post_id': model.postId,
       'reaction': model.reaction,
-      'reason': model.reason,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'reason': model.reason
     };
   }
 }
 
 abstract class ConvPostUserSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     postId,
     reaction,
-    reason,
-    createdAt,
-    updatedAt
+    reason
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8847,31 +5932,16 @@ abstract class ConvPostUserSaveRequestFields {
   static const String reaction = 'reaction';
 
   static const String reason = 'reason';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvSetReadPositionRequestSerializer {
   static ConvSetReadPositionRequest fromMap(Map map) {
     return new ConvSetReadPositionRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         convId: map['conv_id'] as int,
-        positionWDT: map['position_w_d_t'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        positionWDT: map['position_w_d_t'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvSetReadPositionRequest model) {
@@ -8879,60 +5949,33 @@ abstract class ConvSetReadPositionRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'conv_id': model.convId,
-      'position_w_d_t': model.positionWDT,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'position_w_d_t': model.positionWDT
     };
   }
 }
 
 abstract class ConvSetReadPositionRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    convId,
-    positionWDT,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, convId, positionWDT];
 
   static const String base = 'base';
 
   static const String convId = 'conv_id';
 
   static const String positionWDT = 'position_w_d_t';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvUserSaveRequestSerializer {
   static ConvUserSaveRequest fromMap(Map map) {
     return new ConvUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         convId: map['conv_id'] as int,
         status: map['status'] as String,
         like: map['like'] as String,
-        bookmarked: map['bookmarked'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        bookmarked: map['bookmarked'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvUserSaveRequest model) {
@@ -8940,31 +5983,23 @@ abstract class ConvUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'conv_id': model.convId,
       'status': model.status,
       'like': model.like,
-      'bookmarked': model.bookmarked,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'bookmarked': model.bookmarked
     };
   }
 }
 
 abstract class ConvUserSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     convId,
     status,
     like,
-    bookmarked,
-    createdAt,
-    updatedAt
+    bookmarked
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -8975,30 +6010,15 @@ abstract class ConvUserSaveRequestFields {
   static const String like = 'like';
 
   static const String bookmarked = 'bookmarked';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ConvUserSaveResponseSerializer {
   static ConvUserSaveResponse fromMap(Map map) {
     return new ConvUserSaveResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        action: map['action'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        action: map['action'] as String);
   }
 
   static Map<String, dynamic> toMap(_ConvUserSaveResponse model) {
@@ -9006,53 +6026,27 @@ abstract class ConvUserSaveResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
-      'action': model.action,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'action': model.action
     };
   }
 }
 
 abstract class ConvUserSaveResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    action,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, action];
 
   static const String base = 'base';
 
   static const String action = 'action';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocQueryRequestSerializer {
   static DocQueryRequest fromMap(Map map) {
     return new DocQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        mode: map['mode'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        mode: map['mode'] as String);
   }
 
   static Map<String, dynamic> toMap(_DocQueryRequest model) {
@@ -9060,39 +6054,23 @@ abstract class DocQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'mode': model.mode,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'mode': model.mode
     };
   }
 }
 
 abstract class DocQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    mode,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, mode];
 
   static const String base = 'base';
 
   static const String mode = 'mode';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocQueryResponseSerializer {
   static DocQueryResponse fromMap(Map map) {
     return new DocQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -9101,16 +6079,6 @@ abstract class DocQueryResponseSerializer {
                 ((map['docs'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(DocQueryItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -9119,108 +6087,52 @@ abstract class DocQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
-      'docs': model.docs?.map((m) => DocQueryItemSerializer.toMap(m))?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'docs': model.docs?.map((m) => DocQueryItemSerializer.toMap(m))?.toList()
     };
   }
 }
 
 abstract class DocQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    docs,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, docs];
 
   static const String base = 'base';
 
   static const String docs = 'docs';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocQueryItemSerializer {
   static DocQueryItem fromMap(Map map) {
     return new DocQueryItem(
-        id: map['id'] as String,
-        iid: map['iid'] as int,
-        title: map['title'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        iid: map['iid'] as int, title: map['title'] as String);
   }
 
   static Map<String, dynamic> toMap(_DocQueryItem model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'iid': model.iid,
-      'title': model.title,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'iid': model.iid, 'title': model.title};
   }
 }
 
 abstract class DocQueryItemFields {
-  static const List<String> allFields = <String>[
-    id,
-    iid,
-    title,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[iid, title];
 
   static const String iid = 'iid';
 
   static const String title = 'title';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocGetRequestSerializer {
   static DocGetRequest fromMap(Map map) {
     return new DocGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         docId: map['doc_id'] as int,
         specialCode: map['special_code'] as String,
         revisionNo: map['revision_no'] as int,
-        getVerList: map['get_ver_list'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        getVerList: map['get_ver_list'] as String);
   }
 
   static Map<String, dynamic> toMap(_DocGetRequest model) {
@@ -9228,31 +6140,23 @@ abstract class DocGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'doc_id': model.docId,
       'special_code': model.specialCode,
       'revision_no': model.revisionNo,
-      'get_ver_list': model.getVerList,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'get_ver_list': model.getVerList
     };
   }
 }
 
 abstract class DocGetRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     docId,
     specialCode,
     revisionNo,
-    getVerList,
-    createdAt,
-    updatedAt
+    getVerList
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -9263,16 +6167,11 @@ abstract class DocGetRequestFields {
   static const String revisionNo = 'revision_no';
 
   static const String getVerList = 'get_ver_list';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocGetResponseSerializer {
   static DocGetResponse fromMap(Map map) {
     return new DocGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -9292,16 +6191,6 @@ abstract class DocGetResponseSerializer {
                 ((map['ver_list'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(DocGetVersionItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -9310,7 +6199,6 @@ abstract class DocGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'doc_id': model.docId,
       'title': model.title,
@@ -9325,16 +6213,13 @@ abstract class DocGetResponseSerializer {
       'proposal_id': model.proposalId,
       'ver_list': model.verList
           ?.map((m) => DocGetVersionItemSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class DocGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     docId,
     title,
@@ -9347,12 +6232,8 @@ abstract class DocGetResponseFields {
     reasonNotEditable,
     createdAtR,
     proposalId,
-    verList,
-    createdAt,
-    updatedAt
+    verList
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -9379,68 +6260,34 @@ abstract class DocGetResponseFields {
   static const String proposalId = 'proposal_id';
 
   static const String verList = 'ver_list';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocGetVersionItemSerializer {
   static DocGetVersionItem fromMap(Map map) {
     return new DocGetVersionItem(
-        id: map['id'] as String,
         revisionNo: map['revision_no'] as int,
-        createdAtR: map['created_at_r'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        createdAtR: map['created_at_r'] as String);
   }
 
   static Map<String, dynamic> toMap(_DocGetVersionItem model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'revision_no': model.revisionNo,
-      'created_at_r': model.createdAtR,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'revision_no': model.revisionNo, 'created_at_r': model.createdAtR};
   }
 }
 
 abstract class DocGetVersionItemFields {
-  static const List<String> allFields = <String>[
-    id,
-    revisionNo,
-    createdAtR,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[revisionNo, createdAtR];
 
   static const String revisionNo = 'revision_no';
 
   static const String createdAtR = 'created_at_r';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocSaveRequestSerializer {
   static DocSaveRequest fromMap(Map map) {
     return new DocSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -9449,17 +6296,7 @@ abstract class DocSaveRequestSerializer {
         title: map['title'] as String,
         retitleMode: map['retitle_mode'] as String,
         body: map['body'] as String,
-        summary: map['summary'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        summary: map['summary'] as String);
   }
 
   static Map<String, dynamic> toMap(_DocSaveRequest model) {
@@ -9467,35 +6304,27 @@ abstract class DocSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'doc_id': model.docId,
       'project_id': model.projectId,
       'title': model.title,
       'retitle_mode': model.retitleMode,
       'body': model.body,
-      'summary': model.summary,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'summary': model.summary
     };
   }
 }
 
 abstract class DocSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     docId,
     projectId,
     title,
     retitleMode,
     body,
-    summary,
-    createdAt,
-    updatedAt
+    summary
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -9510,31 +6339,16 @@ abstract class DocSaveRequestFields {
   static const String body = 'body';
 
   static const String summary = 'summary';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class DocRollbackRequestSerializer {
   static DocRollbackRequest fromMap(Map map) {
     return new DocRollbackRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         docId: map['doc_id'] as int,
-        revisionNo: map['revision_no'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        revisionNo: map['revision_no'] as int);
   }
 
   static Map<String, dynamic> toMap(_DocRollbackRequest model) {
@@ -9542,43 +6356,26 @@ abstract class DocRollbackRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'doc_id': model.docId,
-      'revision_no': model.revisionNo,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'revision_no': model.revisionNo
     };
   }
 }
 
 abstract class DocRollbackRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    docId,
-    revisionNo,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, docId, revisionNo];
 
   static const String base = 'base';
 
   static const String docId = 'doc_id';
 
   static const String revisionNo = 'revision_no';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventQueryRequestSerializer {
   static EventQueryRequest fromMap(Map map) {
     return new EventQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -9587,17 +6384,7 @@ abstract class EventQueryRequestSerializer {
         dateTo: map['date_to'] as String,
         miles: map['miles'] as int,
         lat: map['lat'] as String,
-        lon: map['lon'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        lon: map['lon'] as String);
   }
 
   static Map<String, dynamic> toMap(_EventQueryRequest model) {
@@ -9605,35 +6392,27 @@ abstract class EventQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'title': model.title,
       'date_from': model.dateFrom,
       'date_to': model.dateTo,
       'miles': model.miles,
       'lat': model.lat,
-      'lon': model.lon,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'lon': model.lon
     };
   }
 }
 
 abstract class EventQueryRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     title,
     dateFrom,
     dateTo,
     miles,
     lat,
-    lon,
-    createdAt,
-    updatedAt
+    lon
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -9648,16 +6427,11 @@ abstract class EventQueryRequestFields {
   static const String lat = 'lat';
 
   static const String lon = 'lon';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventQueryResponseSerializer {
   static EventQueryResponse fromMap(Map map) {
     return new EventQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -9666,16 +6440,6 @@ abstract class EventQueryResponseSerializer {
                 ((map['events'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(EventItemResponseSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -9684,56 +6448,30 @@ abstract class EventQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'events': model.events
           ?.map((m) => EventItemResponseSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class EventQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    events,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, events];
 
   static const String base = 'base';
 
   static const String events = 'events';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventItemResponseSerializer {
   static EventItemResponse fromMap(Map map) {
     return new EventItemResponse(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         title: map['title'] as String,
         startTime: map['start_time'] as String,
         creatorNick: map['creator_nick'] as String,
-        creatorId: map['creator_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        creatorId: map['creator_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_EventItemResponse model) {
@@ -9741,31 +6479,23 @@ abstract class EventItemResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'title': model.title,
       'start_time': model.startTime,
       'creator_nick': model.creatorNick,
-      'creator_id': model.creatorId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'creator_id': model.creatorId
     };
   }
 }
 
 abstract class EventItemResponseFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     title,
     startTime,
     creatorNick,
-    creatorId,
-    createdAt,
-    updatedAt
+    creatorId
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -9776,30 +6506,15 @@ abstract class EventItemResponseFields {
   static const String creatorNick = 'creator_nick';
 
   static const String creatorId = 'creator_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventRequestSerializer {
   static EventRequest fromMap(Map map) {
     return new EventRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        eventId: map['event_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        eventId: map['event_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_EventRequest model) {
@@ -9807,39 +6522,23 @@ abstract class EventRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'event_id': model.eventId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'event_id': model.eventId
     };
   }
 }
 
 abstract class EventRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    eventId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, eventId];
 
   static const String base = 'base';
 
   static const String eventId = 'event_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventGetResponseSerializer {
   static EventGetResponse fromMap(Map map) {
     return new EventGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -9867,17 +6566,7 @@ abstract class EventGetResponseSerializer {
                     .cast<Map>()
                     .map(EventGetConvResponseSerializer.fromMap))
             : null,
-        isCreator: map['is_creator'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        isCreator: map['is_creator'] as String);
   }
 
   static Map<String, dynamic> toMap(_EventGetResponse model) {
@@ -9885,7 +6574,6 @@ abstract class EventGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'title': model.title,
       'description': model.description,
@@ -9905,16 +6593,13 @@ abstract class EventGetResponseSerializer {
       'convs': model.convs
           ?.map((m) => EventGetConvResponseSerializer.toMap(m))
           ?.toList(),
-      'is_creator': model.isCreator,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'is_creator': model.isCreator
     };
   }
 }
 
 abstract class EventGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     title,
     description,
@@ -9930,12 +6615,8 @@ abstract class EventGetResponseFields {
     lon,
     users,
     convs,
-    isCreator,
-    createdAt,
-    updatedAt
+    isCreator
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -9968,32 +6649,17 @@ abstract class EventGetResponseFields {
   static const String convs = 'convs';
 
   static const String isCreator = 'is_creator';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventGetUserResponseSerializer {
   static EventGetUserResponse fromMap(Map map) {
     return new EventGetUserResponse(
-        id: map['id'] as String,
         userId: map['user_id'] as int,
         nick: map['nick'] as String,
         publicName: map['public_name'] as String,
         avatarUrl: map['avatar_url'] as String,
         status: map['status'] as String,
-        statusDesc: map['status_desc'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        statusDesc: map['status_desc'] as String);
   }
 
   static Map<String, dynamic> toMap(_EventGetUserResponse model) {
@@ -10001,33 +6667,25 @@ abstract class EventGetUserResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'user_id': model.userId,
       'nick': model.nick,
       'public_name': model.publicName,
       'avatar_url': model.avatarUrl,
       'status': model.status,
-      'status_desc': model.statusDesc,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'status_desc': model.statusDesc
     };
   }
 }
 
 abstract class EventGetUserResponseFields {
   static const List<String> allFields = <String>[
-    id,
     userId,
     nick,
     publicName,
     avatarUrl,
     status,
-    statusDesc,
-    createdAt,
-    updatedAt
+    statusDesc
   ];
-
-  static const String id = 'id';
 
   static const String userId = 'user_id';
 
@@ -10040,30 +6698,15 @@ abstract class EventGetUserResponseFields {
   static const String status = 'status';
 
   static const String statusDesc = 'status_desc';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventGetConvResponseSerializer {
   static EventGetConvResponse fromMap(Map map) {
     return new EventGetConvResponse(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         open: map['open'] as String,
         title: map['title'] as String,
-        lastActivity: map['last_activity'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        lastActivity: map['last_activity'] as String);
   }
 
   static Map<String, dynamic> toMap(_EventGetConvResponse model) {
@@ -10071,29 +6714,21 @@ abstract class EventGetConvResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'open': model.open,
       'title': model.title,
-      'last_activity': model.lastActivity,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'last_activity': model.lastActivity
     };
   }
 }
 
 abstract class EventGetConvResponseFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     open,
     title,
-    lastActivity,
-    createdAt,
-    updatedAt
+    lastActivity
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -10102,16 +6737,11 @@ abstract class EventGetConvResponseFields {
   static const String title = 'title';
 
   static const String lastActivity = 'last_activity';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventSaveRequestSerializer {
   static EventSaveRequest fromMap(Map map) {
     return new EventSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -10122,17 +6752,7 @@ abstract class EventSaveRequestSerializer {
         location: map['location'] as String,
         startTime: map['start_time'] as String,
         lat: map['lat'] as String,
-        lon: map['lon'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        lon: map['lon'] as String);
   }
 
   static Map<String, dynamic> toMap(_EventSaveRequest model) {
@@ -10140,7 +6760,6 @@ abstract class EventSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'event_id': model.eventId,
       'title': model.title,
@@ -10149,16 +6768,13 @@ abstract class EventSaveRequestSerializer {
       'location': model.location,
       'start_time': model.startTime,
       'lat': model.lat,
-      'lon': model.lon,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'lon': model.lon
     };
   }
 }
 
 abstract class EventSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     eventId,
     title,
@@ -10167,12 +6783,8 @@ abstract class EventSaveRequestFields {
     location,
     startTime,
     lat,
-    lon,
-    createdAt,
-    updatedAt
+    lon
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -10191,32 +6803,17 @@ abstract class EventSaveRequestFields {
   static const String lat = 'lat';
 
   static const String lon = 'lon';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class EventUserSaveRequestSerializer {
   static EventUserSaveRequest fromMap(Map map) {
     return new EventUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         eventId: map['event_id'] as int,
         status: map['status'] as String,
-        statusDesc: map['status_desc'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        statusDesc: map['status_desc'] as String);
   }
 
   static Map<String, dynamic> toMap(_EventUserSaveRequest model) {
@@ -10224,29 +6821,21 @@ abstract class EventUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'event_id': model.eventId,
       'status': model.status,
-      'status_desc': model.statusDesc,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'status_desc': model.statusDesc
     };
   }
 }
 
 abstract class EventUserSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     eventId,
     status,
-    statusDesc,
-    createdAt,
-    updatedAt
+    statusDesc
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -10255,31 +6844,16 @@ abstract class EventUserSaveRequestFields {
   static const String status = 'status';
 
   static const String statusDesc = 'status_desc';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectQueryRequestSerializer {
   static ProjectQueryRequest fromMap(Map map) {
     return new ProjectQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         catId: map['cat_id'] as int,
-        title: map['title'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        title: map['title'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectQueryRequest model) {
@@ -10287,43 +6861,26 @@ abstract class ProjectQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'cat_id': model.catId,
-      'title': model.title,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'title': model.title
     };
   }
 }
 
 abstract class ProjectQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    catId,
-    title,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, catId, title];
 
   static const String base = 'base';
 
   static const String catId = 'cat_id';
 
   static const String title = 'title';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectQueryResponseSerializer {
   static ProjectQueryResponse fromMap(Map map) {
     return new ProjectQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -10332,16 +6889,6 @@ abstract class ProjectQueryResponseSerializer {
                 ((map['projects'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(ProjectQueryItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -10350,56 +6897,30 @@ abstract class ProjectQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'projects': model.projects
           ?.map((m) => ProjectQueryItemSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class ProjectQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    projects,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, projects];
 
   static const String base = 'base';
 
   static const String projects = 'projects';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectQueryItemSerializer {
   static ProjectQueryItem fromMap(Map map) {
     return new ProjectQueryItem(
-        id: map['id'] as String,
         projectId: map['project_id'] as int,
         title: map['title'] as String,
         description: map['description'] as String,
         leadership: map['leadership'] as String,
-        privacy: map['privacy'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        privacy: map['privacy'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectQueryItem model) {
@@ -10407,31 +6928,23 @@ abstract class ProjectQueryItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'project_id': model.projectId,
       'title': model.title,
       'description': model.description,
       'leadership': model.leadership,
-      'privacy': model.privacy,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'privacy': model.privacy
     };
   }
 }
 
 abstract class ProjectQueryItemFields {
   static const List<String> allFields = <String>[
-    id,
     projectId,
     title,
     description,
     leadership,
-    privacy,
-    createdAt,
-    updatedAt
+    privacy
   ];
-
-  static const String id = 'id';
 
   static const String projectId = 'project_id';
 
@@ -10442,30 +6955,15 @@ abstract class ProjectQueryItemFields {
   static const String leadership = 'leadership';
 
   static const String privacy = 'privacy';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectGetRequestSerializer {
   static ProjectGetRequest fromMap(Map map) {
     return new ProjectGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        projectId: map['project_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        projectId: map['project_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_ProjectGetRequest model) {
@@ -10473,39 +6971,23 @@ abstract class ProjectGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'project_id': model.projectId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'project_id': model.projectId
     };
   }
 }
 
 abstract class ProjectGetRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    projectId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, projectId];
 
   static const String base = 'base';
 
   static const String projectId = 'project_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectGetResponseSerializer {
   static ProjectGetResponse fromMap(Map map) {
     return new ProjectGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -10517,26 +6999,23 @@ abstract class ProjectGetResponseSerializer {
         categoryId: map['category_id'] as int,
         userKind: map['user_kind'] as String,
         proposals: map['proposals'] is Iterable
-            ? new List.unmodifiable(((map['proposals'] as Iterable).where((x) => x is Map))
-                .cast<Map>()
-                .map(ProjectProposalItemSerializer.fromMap))
+            ? new List.unmodifiable(
+                ((map['proposals'] as Iterable).where((x) => x is Map))
+                    .cast<Map>()
+                    .map(ProjectProposalItemSerializer.fromMap))
             : null,
         convs: map['convs'] is Iterable
-            ? new List.unmodifiable(((map['convs'] as Iterable).where((x) => x is Map))
-                .cast<Map>()
-                .map(ProjectConvItemSerializer.fromMap))
+            ? new List.unmodifiable(
+                ((map['convs'] as Iterable).where((x) => x is Map))
+                    .cast<Map>()
+                    .map(ProjectConvItemSerializer.fromMap))
             : null,
         docs: map['docs'] is Iterable
-            ? new List.unmodifiable(((map['docs'] as Iterable).where((x) => x is Map))
-                .cast<Map>()
-                .map(ProjectDocItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null ? (map['updated_at'] is DateTime ? (map['updated_at'] as DateTime) : DateTime.parse(map['updated_at'].toString())) : null);
+            ? new List.unmodifiable(
+                ((map['docs'] as Iterable).where((x) => x is Map))
+                    .cast<Map>()
+                    .map(ProjectDocItemSerializer.fromMap))
+            : null);
   }
 
   static Map<String, dynamic> toMap(_ProjectGetResponse model) {
@@ -10544,7 +7023,6 @@ abstract class ProjectGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'active': model.active,
       'leadership': model.leadership,
@@ -10559,16 +7037,13 @@ abstract class ProjectGetResponseSerializer {
       'convs':
           model.convs?.map((m) => ProjectConvItemSerializer.toMap(m))?.toList(),
       'docs':
-          model.docs?.map((m) => ProjectDocItemSerializer.toMap(m))?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          model.docs?.map((m) => ProjectDocItemSerializer.toMap(m))?.toList()
     };
   }
 }
 
 abstract class ProjectGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     active,
     leadership,
@@ -10579,12 +7054,8 @@ abstract class ProjectGetResponseFields {
     userKind,
     proposals,
     convs,
-    docs,
-    createdAt,
-    updatedAt
+    docs
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -10607,30 +7078,15 @@ abstract class ProjectGetResponseFields {
   static const String convs = 'convs';
 
   static const String docs = 'docs';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectProposalItemSerializer {
   static ProjectProposalItem fromMap(Map map) {
     return new ProjectProposalItem(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         active: map['active'] as String,
         title: map['title'] as String,
-        createdAtR: map['created_at_r'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        createdAtR: map['created_at_r'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectProposalItem model) {
@@ -10638,29 +7094,21 @@ abstract class ProjectProposalItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'active': model.active,
       'title': model.title,
-      'created_at_r': model.createdAtR,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'created_at_r': model.createdAtR
     };
   }
 }
 
 abstract class ProjectProposalItemFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     active,
     title,
-    createdAtR,
-    createdAt,
-    updatedAt
+    createdAtR
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -10669,30 +7117,15 @@ abstract class ProjectProposalItemFields {
   static const String title = 'title';
 
   static const String createdAtR = 'created_at_r';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectConvItemSerializer {
   static ProjectConvItem fromMap(Map map) {
     return new ProjectConvItem(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         open: map['open'] as String,
         title: map['title'] as String,
-        lastActivity: map['last_activity'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        lastActivity: map['last_activity'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectConvItem model) {
@@ -10700,29 +7133,21 @@ abstract class ProjectConvItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'open': model.open,
       'title': model.title,
-      'last_activity': model.lastActivity,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'last_activity': model.lastActivity
     };
   }
 }
 
 abstract class ProjectConvItemFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     open,
     title,
-    lastActivity,
-    createdAt,
-    updatedAt
+    lastActivity
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -10731,68 +7156,33 @@ abstract class ProjectConvItemFields {
   static const String title = 'title';
 
   static const String lastActivity = 'last_activity';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectDocItemSerializer {
   static ProjectDocItem fromMap(Map map) {
     return new ProjectDocItem(
-        id: map['id'] as String,
-        iid: map['iid'] as int,
-        title: map['title'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        iid: map['iid'] as int, title: map['title'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectDocItem model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'iid': model.iid,
-      'title': model.title,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'iid': model.iid, 'title': model.title};
   }
 }
 
 abstract class ProjectDocItemFields {
-  static const List<String> allFields = <String>[
-    id,
-    iid,
-    title,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[iid, title];
 
   static const String iid = 'iid';
 
   static const String title = 'title';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectSaveRequestSerializer {
   static ProjectSaveRequest fromMap(Map map) {
     return new ProjectSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -10801,17 +7191,7 @@ abstract class ProjectSaveRequestSerializer {
         privacy: map['privacy'] as String,
         title: map['title'] as String,
         description: map['description'] as String,
-        categoryId: map['category_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        categoryId: map['category_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_ProjectSaveRequest model) {
@@ -10819,35 +7199,27 @@ abstract class ProjectSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'project_id': model.projectId,
       'leadership': model.leadership,
       'privacy': model.privacy,
       'title': model.title,
       'description': model.description,
-      'category_id': model.categoryId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'category_id': model.categoryId
     };
   }
 }
 
 abstract class ProjectSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     projectId,
     leadership,
     privacy,
     title,
     description,
-    categoryId,
-    createdAt,
-    updatedAt
+    categoryId
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -10862,32 +7234,17 @@ abstract class ProjectSaveRequestFields {
   static const String description = 'description';
 
   static const String categoryId = 'category_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectUserQueryRequestSerializer {
   static ProjectUserQueryRequest fromMap(Map map) {
     return new ProjectUserQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         projectId: map['project_id'] as int,
         name: map['name'] as String,
-        resultPage: map['result_page'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        resultPage: map['result_page'] as int);
   }
 
   static Map<String, dynamic> toMap(_ProjectUserQueryRequest model) {
@@ -10895,29 +7252,21 @@ abstract class ProjectUserQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'project_id': model.projectId,
       'name': model.name,
-      'result_page': model.resultPage,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'result_page': model.resultPage
     };
   }
 }
 
 abstract class ProjectUserQueryRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     projectId,
     name,
-    resultPage,
-    createdAt,
-    updatedAt
+    resultPage
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -10926,16 +7275,11 @@ abstract class ProjectUserQueryRequestFields {
   static const String name = 'name';
 
   static const String resultPage = 'result_page';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectUserQueryResponseSerializer {
   static ProjectUserQueryResponse fromMap(Map map) {
     return new ProjectUserQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -10947,16 +7291,6 @@ abstract class ProjectUserQueryResponseSerializer {
                 ((map['users'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(ProjectUserItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -10965,32 +7299,24 @@ abstract class ProjectUserQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'project_title': model.projectTitle,
       'complete_load': model.completeLoad,
       'editable': model.editable,
       'users':
-          model.users?.map((m) => ProjectUserItemSerializer.toMap(m))?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          model.users?.map((m) => ProjectUserItemSerializer.toMap(m))?.toList()
     };
   }
 }
 
 abstract class ProjectUserQueryResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     projectTitle,
     completeLoad,
     editable,
-    users,
-    createdAt,
-    updatedAt
+    users
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -11001,33 +7327,18 @@ abstract class ProjectUserQueryResponseFields {
   static const String editable = 'editable';
 
   static const String users = 'users';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectUserItemSerializer {
   static ProjectUserItem fromMap(Map map) {
     return new ProjectUserItem(
-        id: map['id'] as String,
         userId: map['user_id'] as int,
         kind: map['kind'] as String,
         throttle: map['throttle'] as String,
         nick: map['nick'] as String,
         publicName: map['public_name'] as String,
         avatarUrl: map['avatar_url'] as String,
-        voteKind: map['vote_kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        voteKind: map['vote_kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectUserItem model) {
@@ -11035,35 +7346,27 @@ abstract class ProjectUserItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'user_id': model.userId,
       'kind': model.kind,
       'throttle': model.throttle,
       'nick': model.nick,
       'public_name': model.publicName,
       'avatar_url': model.avatarUrl,
-      'vote_kind': model.voteKind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'vote_kind': model.voteKind
     };
   }
 }
 
 abstract class ProjectUserItemFields {
   static const List<String> allFields = <String>[
-    id,
     userId,
     kind,
     throttle,
     nick,
     publicName,
     avatarUrl,
-    voteKind,
-    createdAt,
-    updatedAt
+    voteKind
   ];
-
-  static const String id = 'id';
 
   static const String userId = 'user_id';
 
@@ -11078,32 +7381,17 @@ abstract class ProjectUserItemFields {
   static const String avatarUrl = 'avatar_url';
 
   static const String voteKind = 'vote_kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectUserSaveRequestSerializer {
   static ProjectUserSaveRequest fromMap(Map map) {
     return new ProjectUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         projectId: map['project_id'] as int,
         userId: map['user_id'] as int,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectUserSaveRequest model) {
@@ -11111,29 +7399,16 @@ abstract class ProjectUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'project_id': model.projectId,
       'user_id': model.userId,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class ProjectUserSaveRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    projectId,
-    userId,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, projectId, userId, kind];
 
   static const String base = 'base';
 
@@ -11142,32 +7417,17 @@ abstract class ProjectUserSaveRequestFields {
   static const String userId = 'user_id';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProjectUserUserSaveRequestSerializer {
   static ProjectUserUserSaveRequest fromMap(Map map) {
     return new ProjectUserUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         projectId: map['project_id'] as int,
         aboutId: map['about_id'] as int,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProjectUserUserSaveRequest model) {
@@ -11175,29 +7435,21 @@ abstract class ProjectUserUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'project_id': model.projectId,
       'about_id': model.aboutId,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class ProjectUserUserSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     projectId,
     aboutId,
-    kind,
-    createdAt,
-    updatedAt
+    kind
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -11206,32 +7458,17 @@ abstract class ProjectUserUserSaveRequestFields {
   static const String aboutId = 'about_id';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalQueryRequestSerializer {
   static ProposalQueryRequest fromMap(Map map) {
     return new ProposalQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         mode: map['mode'] as String,
         year: map['year'] as int,
-        projectId: map['project_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        projectId: map['project_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_ProposalQueryRequest model) {
@@ -11239,29 +7476,16 @@ abstract class ProposalQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'mode': model.mode,
       'year': model.year,
-      'project_id': model.projectId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'project_id': model.projectId
     };
   }
 }
 
 abstract class ProposalQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    mode,
-    year,
-    projectId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, mode, year, projectId];
 
   static const String base = 'base';
 
@@ -11270,16 +7494,11 @@ abstract class ProposalQueryRequestFields {
   static const String year = 'year';
 
   static const String projectId = 'project_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalQueryResponseSerializer {
   static ProposalQueryResponse fromMap(Map map) {
     return new ProposalQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -11288,16 +7507,6 @@ abstract class ProposalQueryResponseSerializer {
                 ((map['items'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(ProposalQueryItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -11306,112 +7515,55 @@ abstract class ProposalQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'items': model.items
           ?.map((m) => ProposalQueryItemSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class ProposalQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    items,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, items];
 
   static const String base = 'base';
 
   static const String items = 'items';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalQueryItemSerializer {
   static ProposalQueryItem fromMap(Map map) {
     return new ProposalQueryItem(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         title: map['title'] as String,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProposalQueryItem model) {
     if (model == null) {
       return null;
     }
-    return {
-      'id': model.id,
-      'iid': model.iid,
-      'title': model.title,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
-    };
+    return {'iid': model.iid, 'title': model.title, 'kind': model.kind};
   }
 }
 
 abstract class ProposalQueryItemFields {
-  static const List<String> allFields = <String>[
-    id,
-    iid,
-    title,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[iid, title, kind];
 
   static const String iid = 'iid';
 
   static const String title = 'title';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalGetRequestSerializer {
   static ProposalGetRequest fromMap(Map map) {
     return new ProposalGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        proposalId: map['proposal_id'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        proposalId: map['proposal_id'] as int);
   }
 
   static Map<String, dynamic> toMap(_ProposalGetRequest model) {
@@ -11419,39 +7571,23 @@ abstract class ProposalGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'proposal_id': model.proposalId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'proposal_id': model.proposalId
     };
   }
 }
 
 abstract class ProposalGetRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    proposalId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, proposalId];
 
   static const String base = 'base';
 
   static const String proposalId = 'proposal_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalGetResponseSerializer {
   static ProposalGetResponse fromMap(Map map) {
     return new ProposalGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -11478,17 +7614,7 @@ abstract class ProposalGetResponseSerializer {
             : null,
         myVote: map['my_vote'] as int,
         statusDescription: map['status_description'] as String,
-        myEligible: map['my_eligible'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        myEligible: map['my_eligible'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProposalGetResponse model) {
@@ -11496,7 +7622,6 @@ abstract class ProposalGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'active': model.active,
       'kind': model.kind,
@@ -11518,16 +7643,13 @@ abstract class ProposalGetResponseSerializer {
           ?.toList(),
       'my_vote': model.myVote,
       'status_description': model.statusDescription,
-      'my_eligible': model.myEligible,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'my_eligible': model.myEligible
     };
   }
 }
 
 abstract class ProposalGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     active,
     kind,
@@ -11547,12 +7669,8 @@ abstract class ProposalGetResponseFields {
     options,
     myVote,
     statusDescription,
-    myEligible,
-    createdAt,
-    updatedAt
+    myEligible
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -11593,29 +7711,14 @@ abstract class ProposalGetResponseFields {
   static const String statusDescription = 'status_description';
 
   static const String myEligible = 'my_eligible';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalOptionItemSerializer {
   static ProposalOptionItem fromMap(Map map) {
     return new ProposalOptionItem(
-        id: map['id'] as String,
         optionNo: map['option_no'] as int,
         voteCount: map['vote_count'] as int,
-        optionDesc: map['option_desc'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        optionDesc: map['option_desc'] as String);
   }
 
   static Map<String, dynamic> toMap(_ProposalOptionItem model) {
@@ -11623,43 +7726,30 @@ abstract class ProposalOptionItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'option_no': model.optionNo,
       'vote_count': model.voteCount,
-      'option_desc': model.optionDesc,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'option_desc': model.optionDesc
     };
   }
 }
 
 abstract class ProposalOptionItemFields {
   static const List<String> allFields = <String>[
-    id,
     optionNo,
     voteCount,
-    optionDesc,
-    createdAt,
-    updatedAt
+    optionDesc
   ];
-
-  static const String id = 'id';
 
   static const String optionNo = 'option_no';
 
   static const String voteCount = 'vote_count';
 
   static const String optionDesc = 'option_desc';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalSaveRequestSerializer {
   static ProposalSaveRequest fromMap(Map map) {
     return new ProposalSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -11671,16 +7761,6 @@ abstract class ProposalSaveRequestSerializer {
         days: map['days'] as int,
         options: map['options'] is Iterable
             ? (map['options'] as Iterable).cast<String>().toList()
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -11689,7 +7769,6 @@ abstract class ProposalSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'kind': model.kind,
       'project_id': model.projectId,
@@ -11697,16 +7776,13 @@ abstract class ProposalSaveRequestSerializer {
       'title': model.title,
       'summary': model.summary,
       'days': model.days,
-      'options': model.options,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'options': model.options
     };
   }
 }
 
 abstract class ProposalSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     kind,
     projectId,
@@ -11714,12 +7790,8 @@ abstract class ProposalSaveRequestFields {
     title,
     summary,
     days,
-    options,
-    createdAt,
-    updatedAt
+    options
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -11736,31 +7808,16 @@ abstract class ProposalSaveRequestFields {
   static const String days = 'days';
 
   static const String options = 'options';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ProposalUserSaveRequestSerializer {
   static ProposalUserSaveRequest fromMap(Map map) {
     return new ProposalUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         proposalId: map['proposal_id'] as int,
-        vote: map['vote'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        vote: map['vote'] as int);
   }
 
   static Map<String, dynamic> toMap(_ProposalUserSaveRequest model) {
@@ -11768,57 +7825,30 @@ abstract class ProposalUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'proposal_id': model.proposalId,
-      'vote': model.vote,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'vote': model.vote
     };
   }
 }
 
 abstract class ProposalUserSaveRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    proposalId,
-    vote,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, proposalId, vote];
 
   static const String base = 'base';
 
   static const String proposalId = 'proposal_id';
 
   static const String vote = 'vote';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class PushQueueGetRequestSerializer {
   static PushQueueGetRequest fromMap(Map map) {
     return new PushQueueGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        depth: map['depth'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        depth: map['depth'] as String);
   }
 
   static Map<String, dynamic> toMap(_PushQueueGetRequest model) {
@@ -11826,39 +7856,23 @@ abstract class PushQueueGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'depth': model.depth,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'depth': model.depth
     };
   }
 }
 
 abstract class PushQueueGetRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    depth,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, depth];
 
   static const String base = 'base';
 
   static const String depth = 'depth';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class PushQueueGetResponseSerializer {
   static PushQueueGetResponse fromMap(Map map) {
     return new PushQueueGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -11868,17 +7882,7 @@ abstract class PushQueueGetResponseSerializer {
                     .cast<Map>()
                     .map(PushQueueItemSerializer.fromMap))
             : null,
-        fullModeStatus: map['full_mode_status'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        fullModeStatus: map['full_mode_status'] as String);
   }
 
   static Map<String, dynamic> toMap(_PushQueueGetResponse model) {
@@ -11886,61 +7890,34 @@ abstract class PushQueueGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'items':
           model.items?.map((m) => PushQueueItemSerializer.toMap(m))?.toList(),
-      'full_mode_status': model.fullModeStatus,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'full_mode_status': model.fullModeStatus
     };
   }
 }
 
 abstract class PushQueueGetResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    items,
-    fullModeStatus,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, items, fullModeStatus];
 
   static const String base = 'base';
 
   static const String items = 'items';
 
   static const String fullModeStatus = 'full_mode_status';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class PushQueueItemSerializer {
   static PushQueueItem fromMap(Map map) {
     return new PushQueueItem(
-        id: map['id'] as String,
         kind: map['kind'] as String,
         why: map['why'] as String,
         iid: map['iid'] as int,
         sid: map['sid'] as String,
         text: map['text'] as String,
         linkText: map['link_text'] as String,
-        linkPaneKey: map['link_pane_key'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        linkPaneKey: map['link_pane_key'] as String);
   }
 
   static Map<String, dynamic> toMap(_PushQueueItem model) {
@@ -11948,35 +7925,27 @@ abstract class PushQueueItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'kind': model.kind,
       'why': model.why,
       'iid': model.iid,
       'sid': model.sid,
       'text': model.text,
       'link_text': model.linkText,
-      'link_pane_key': model.linkPaneKey,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'link_pane_key': model.linkPaneKey
     };
   }
 }
 
 abstract class PushQueueItemFields {
   static const List<String> allFields = <String>[
-    id,
     kind,
     why,
     iid,
     sid,
     text,
     linkText,
-    linkPaneKey,
-    createdAt,
-    updatedAt
+    linkPaneKey
   ];
-
-  static const String id = 'id';
 
   static const String kind = 'kind';
 
@@ -11991,32 +7960,17 @@ abstract class PushQueueItemFields {
   static const String linkText = 'link_text';
 
   static const String linkPaneKey = 'link_pane_key';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceQueryRequestSerializer {
   static ResourceQueryRequest fromMap(Map map) {
     return new ResourceQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         categoryId: map['category_id'] as int,
         title: map['title'] as String,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_ResourceQueryRequest model) {
@@ -12024,29 +7978,16 @@ abstract class ResourceQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'category_id': model.categoryId,
       'title': model.title,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class ResourceQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    categoryId,
-    title,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, categoryId, title, kind];
 
   static const String base = 'base';
 
@@ -12055,16 +7996,11 @@ abstract class ResourceQueryRequestFields {
   static const String title = 'title';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceQueryResponseSerializer {
   static ResourceQueryResponse fromMap(Map map) {
     return new ResourceQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -12073,16 +8009,6 @@ abstract class ResourceQueryResponseSerializer {
                 ((map['items'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(ResourceItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -12091,54 +8017,28 @@ abstract class ResourceQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'items':
-          model.items?.map((m) => ResourceItemSerializer.toMap(m))?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          model.items?.map((m) => ResourceItemSerializer.toMap(m))?.toList()
     };
   }
 }
 
 abstract class ResourceQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    items,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, items];
 
   static const String base = 'base';
 
   static const String items = 'items';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceItemSerializer {
   static ResourceItem fromMap(Map map) {
     return new ResourceItem(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         title: map['title'] as String,
         url: map['url'] as String,
-        description: map['description'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        description: map['description'] as String);
   }
 
   static Map<String, dynamic> toMap(_ResourceItem model) {
@@ -12146,29 +8046,16 @@ abstract class ResourceItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'title': model.title,
       'url': model.url,
-      'description': model.description,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'description': model.description
     };
   }
 }
 
 abstract class ResourceItemFields {
-  static const List<String> allFields = <String>[
-    id,
-    iid,
-    title,
-    url,
-    description,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[iid, title, url, description];
 
   static const String iid = 'iid';
 
@@ -12177,30 +8064,15 @@ abstract class ResourceItemFields {
   static const String url = 'url';
 
   static const String description = 'description';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceGetRequestSerializer {
   static ResourceGetRequest fromMap(Map map) {
     return new ResourceGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        iid: map['iid'] as int,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        iid: map['iid'] as int);
   }
 
   static Map<String, dynamic> toMap(_ResourceGetRequest model) {
@@ -12208,39 +8080,23 @@ abstract class ResourceGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'iid': model.iid,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'iid': model.iid
     };
   }
 }
 
 abstract class ResourceGetRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    iid,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, iid];
 
   static const String base = 'base';
 
   static const String iid = 'iid';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceGetResponseSerializer {
   static ResourceGetResponse fromMap(Map map) {
     return new ResourceGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -12256,17 +8112,7 @@ abstract class ResourceGetResponseSerializer {
         userKind: map['user_kind'] as String,
         isSiteAdmin: map['is_site_admin'] as String,
         isCreator: map['is_creator'] as String,
-        nick: map['nick'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        nick: map['nick'] as String);
   }
 
   static Map<String, dynamic> toMap(_ResourceGetResponse model) {
@@ -12274,7 +8120,6 @@ abstract class ResourceGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'category_id': model.categoryId,
       'user_id': model.userId,
@@ -12288,16 +8133,13 @@ abstract class ResourceGetResponseSerializer {
       'user_kind': model.userKind,
       'is_site_admin': model.isSiteAdmin,
       'is_creator': model.isCreator,
-      'nick': model.nick,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'nick': model.nick
     };
   }
 }
 
 abstract class ResourceGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     categoryId,
     userId,
@@ -12311,12 +8153,8 @@ abstract class ResourceGetResponseFields {
     userKind,
     isSiteAdmin,
     isCreator,
-    nick,
-    createdAt,
-    updatedAt
+    nick
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -12345,16 +8183,11 @@ abstract class ResourceGetResponseFields {
   static const String isCreator = 'is_creator';
 
   static const String nick = 'nick';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceSaveRequestSerializer {
   static ResourceSaveRequest fromMap(Map map) {
     return new ResourceSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -12363,17 +8196,7 @@ abstract class ResourceSaveRequestSerializer {
         title: map['title'] as String,
         description: map['description'] as String,
         kind: map['kind'] as String,
-        url: map['url'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        url: map['url'] as String);
   }
 
   static Map<String, dynamic> toMap(_ResourceSaveRequest model) {
@@ -12381,35 +8204,27 @@ abstract class ResourceSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'iid': model.iid,
       'category_id': model.categoryId,
       'title': model.title,
       'description': model.description,
       'kind': model.kind,
-      'url': model.url,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'url': model.url
     };
   }
 }
 
 abstract class ResourceSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     iid,
     categoryId,
     title,
     description,
     kind,
-    url,
-    createdAt,
-    updatedAt
+    url
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -12424,31 +8239,16 @@ abstract class ResourceSaveRequestFields {
   static const String kind = 'kind';
 
   static const String url = 'url';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceTriageRequestSerializer {
   static ResourceTriageRequest fromMap(Map map) {
     return new ResourceTriageRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         iid: map['iid'] as int,
-        mode: map['mode'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        mode: map['mode'] as String);
   }
 
   static Map<String, dynamic> toMap(_ResourceTriageRequest model) {
@@ -12456,58 +8256,31 @@ abstract class ResourceTriageRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'iid': model.iid,
-      'mode': model.mode,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'mode': model.mode
     };
   }
 }
 
 abstract class ResourceTriageRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    iid,
-    mode,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, iid, mode];
 
   static const String base = 'base';
 
   static const String iid = 'iid';
 
   static const String mode = 'mode';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class ResourceUserSaveRequestSerializer {
   static ResourceUserSaveRequest fromMap(Map map) {
     return new ResourceUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         iid: map['iid'] as int,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_ResourceUserSaveRequest model) {
@@ -12515,57 +8288,30 @@ abstract class ResourceUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'iid': model.iid,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class ResourceUserSaveRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    iid,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, iid, kind];
 
   static const String base = 'base';
 
   static const String iid = 'iid';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserQueryRequestSerializer {
   static UserQueryRequest fromMap(Map map) {
     return new UserQueryRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        name: map['name'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        name: map['name'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserQueryRequest model) {
@@ -12573,39 +8319,23 @@ abstract class UserQueryRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'name': model.name,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'name': model.name
     };
   }
 }
 
 abstract class UserQueryRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    name,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, name];
 
   static const String base = 'base';
 
   static const String name = 'name';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserQueryResponseSerializer {
   static UserQueryResponse fromMap(Map map) {
     return new UserQueryResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -12614,16 +8344,6 @@ abstract class UserQueryResponseSerializer {
                 ((map['users'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(UserQueryItemSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -12632,55 +8352,29 @@ abstract class UserQueryResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'users':
-          model.users?.map((m) => UserQueryItemSerializer.toMap(m))?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          model.users?.map((m) => UserQueryItemSerializer.toMap(m))?.toList()
     };
   }
 }
 
 abstract class UserQueryResponseFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    users,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, users];
 
   static const String base = 'base';
 
   static const String users = 'users';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserQueryItemSerializer {
   static UserQueryItem fromMap(Map map) {
     return new UserQueryItem(
-        id: map['id'] as String,
         iid: map['iid'] as int,
         nick: map['nick'] as String,
         kind: map['kind'] as String,
         publicName: map['public_name'] as String,
-        avatarUrl: map['avatar_url'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        avatarUrl: map['avatar_url'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserQueryItem model) {
@@ -12688,31 +8382,23 @@ abstract class UserQueryItemSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'iid': model.iid,
       'nick': model.nick,
       'kind': model.kind,
       'public_name': model.publicName,
-      'avatar_url': model.avatarUrl,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'avatar_url': model.avatarUrl
     };
   }
 }
 
 abstract class UserQueryItemFields {
   static const List<String> allFields = <String>[
-    id,
     iid,
     nick,
     kind,
     publicName,
-    avatarUrl,
-    createdAt,
-    updatedAt
+    avatarUrl
   ];
-
-  static const String id = 'id';
 
   static const String iid = 'iid';
 
@@ -12723,32 +8409,17 @@ abstract class UserQueryItemFields {
   static const String publicName = 'public_name';
 
   static const String avatarUrl = 'avatar_url';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserGetRequestSerializer {
   static UserGetRequest fromMap(Map map) {
     return new UserGetRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         userId: map['user_id'] as int,
         includeDetail: map['include_detail'] as String,
-        includeEditing: map['include_editing'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        includeEditing: map['include_editing'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserGetRequest model) {
@@ -12756,29 +8427,21 @@ abstract class UserGetRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'user_id': model.userId,
       'include_detail': model.includeDetail,
-      'include_editing': model.includeEditing,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'include_editing': model.includeEditing
     };
   }
 }
 
 abstract class UserGetRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     userId,
     includeDetail,
-    includeEditing,
-    createdAt,
-    updatedAt
+    includeEditing
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -12787,16 +8450,11 @@ abstract class UserGetRequestFields {
   static const String includeDetail = 'include_detail';
 
   static const String includeEditing = 'include_editing';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserGetResponseSerializer {
   static UserGetResponse fromMap(Map map) {
     return new UserGetResponse(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -12817,25 +8475,23 @@ abstract class UserGetResponseSerializer {
         avatarUrl: map['avatar_url'] as String,
         userUserKind: map['user_user_kind'] as String,
         events: map['events'] is Iterable
-            ? new List.unmodifiable(((map['events'] as Iterable).where((x) => x is Map))
-                .cast<Map>()
-                .map(APIResponseAssociationSerializer.fromMap))
+            ? new List.unmodifiable(
+                ((map['events'] as Iterable).where((x) => x is Map))
+                    .cast<Map>()
+                    .map(APIResponseAssociationSerializer.fromMap))
             : null,
         projects: map['projects'] is Iterable
-            ? new List.unmodifiable(((map['projects'] as Iterable).where((x) => x is Map))
-                .cast<Map>()
-                .map(APIResponseAssociationSerializer.fromMap))
+            ? new List.unmodifiable(
+                ((map['projects'] as Iterable).where((x) => x is Map))
+                    .cast<Map>()
+                    .map(APIResponseAssociationSerializer.fromMap))
             : null,
         resources: map['resources'] is Iterable
             ? new List.unmodifiable(
                 ((map['resources'] as Iterable).where((x) => x is Map))
                     .cast<Map>()
                     .map(APIResponseAssociationSerializer.fromMap))
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime ? (map['created_at'] as DateTime) : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null ? (map['updated_at'] is DateTime ? (map['updated_at'] as DateTime) : DateTime.parse(map['updated_at'].toString())) : null);
+            : null);
   }
 
   static Map<String, dynamic> toMap(_UserGetResponse model) {
@@ -12843,7 +8499,6 @@ abstract class UserGetResponseSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIResponseBaseSerializer.toMap(model.base),
       'status': model.status,
       'nick': model.nick,
@@ -12865,16 +8520,13 @@ abstract class UserGetResponseSerializer {
           ?.toList(),
       'resources': model.resources
           ?.map((m) => APIResponseAssociationSerializer.toMap(m))
-          ?.toList(),
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+          ?.toList()
     };
   }
 }
 
 abstract class UserGetResponseFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     status,
     nick,
@@ -12890,12 +8542,8 @@ abstract class UserGetResponseFields {
     userUserKind,
     events,
     projects,
-    resources,
-    createdAt,
-    updatedAt
+    resources
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -12928,16 +8576,11 @@ abstract class UserGetResponseFields {
   static const String projects = 'projects';
 
   static const String resources = 'resources';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserSaveRequestSerializer {
   static UserSaveRequest fromMap(Map map) {
     return new UserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
@@ -12953,17 +8596,7 @@ abstract class UserSaveRequestSerializer {
         publicLinks: map['public_links'] is Map
             ? (map['public_links'] as Map).cast<String, String>()
             : null,
-        timeZone: map['time_zone'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        timeZone: map['time_zone'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserSaveRequest model) {
@@ -12971,7 +8604,6 @@ abstract class UserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'is_new': model.isNew,
       'is_delete': model.isDelete,
@@ -12983,16 +8615,13 @@ abstract class UserSaveRequestSerializer {
       'public_name': model.publicName,
       'pref_email_notify': model.prefEmailNotify,
       'public_links': model.publicLinks,
-      'time_zone': model.timeZone,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'time_zone': model.timeZone
     };
   }
 }
 
 abstract class UserSaveRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     isNew,
     isDelete,
@@ -13004,12 +8633,8 @@ abstract class UserSaveRequestFields {
     publicName,
     prefEmailNotify,
     publicLinks,
-    timeZone,
-    createdAt,
-    updatedAt
+    timeZone
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -13034,31 +8659,16 @@ abstract class UserSaveRequestFields {
   static const String publicLinks = 'public_links';
 
   static const String timeZone = 'time_zone';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserAvatarSaveRequestSerializer {
   static UserAvatarSaveRequest fromMap(Map map) {
     return new UserAvatarSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         imageBytes: map['image_bytes'] is Iterable
             ? (map['image_bytes'] as Iterable).cast<int>().toList()
-            : null,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
             : null);
   }
 
@@ -13067,53 +8677,27 @@ abstract class UserAvatarSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'image_bytes': model.imageBytes,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'image_bytes': model.imageBytes
     };
   }
 }
 
 abstract class UserAvatarSaveRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    imageBytes,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, imageBytes];
 
   static const String base = 'base';
 
   static const String imageBytes = 'image_bytes';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserNotifySaveRequestSerializer {
   static UserNotifySaveRequest fromMap(Map map) {
     return new UserNotifySaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
-        notifyId: map['notify_id'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        notifyId: map['notify_id'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserNotifySaveRequest model) {
@@ -13121,56 +8705,30 @@ abstract class UserNotifySaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
-      'notify_id': model.notifyId,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'notify_id': model.notifyId
     };
   }
 }
 
 abstract class UserNotifySaveRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    notifyId,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, notifyId];
 
   static const String base = 'base';
 
   static const String notifyId = 'notify_id';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserRecoverPasswordRequestSerializer {
   static UserRecoverPasswordRequest fromMap(Map map) {
     return new UserRecoverPasswordRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         recoveryNick: map['recovery_nick'] as String,
         mode: map['mode'] as String,
         recoveryPassword: map['recovery_password'] as String,
-        code: map['code'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        code: map['code'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserRecoverPasswordRequest model) {
@@ -13178,31 +8736,23 @@ abstract class UserRecoverPasswordRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'recovery_nick': model.recoveryNick,
       'mode': model.mode,
       'recovery_password': model.recoveryPassword,
-      'code': model.code,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'code': model.code
     };
   }
 }
 
 abstract class UserRecoverPasswordRequestFields {
   static const List<String> allFields = <String>[
-    id,
     base,
     recoveryNick,
     mode,
     recoveryPassword,
-    code,
-    createdAt,
-    updatedAt
+    code
   ];
-
-  static const String id = 'id';
 
   static const String base = 'base';
 
@@ -13213,31 +8763,16 @@ abstract class UserRecoverPasswordRequestFields {
   static const String recoveryPassword = 'recovery_password';
 
   static const String code = 'code';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }
 
 abstract class UserUserSaveRequestSerializer {
   static UserUserSaveRequest fromMap(Map map) {
     return new UserUserSaveRequest(
-        id: map['id'] as String,
         base: map['base'] != null
             ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
             : null,
         aboutId: map['about_id'] as int,
-        kind: map['kind'] as String,
-        createdAt: map['created_at'] != null
-            ? (map['created_at'] is DateTime
-                ? (map['created_at'] as DateTime)
-                : DateTime.parse(map['created_at'].toString()))
-            : null,
-        updatedAt: map['updated_at'] != null
-            ? (map['updated_at'] is DateTime
-                ? (map['updated_at'] as DateTime)
-                : DateTime.parse(map['updated_at'].toString()))
-            : null);
+        kind: map['kind'] as String);
   }
 
   static Map<String, dynamic> toMap(_UserUserSaveRequest model) {
@@ -13245,35 +8780,19 @@ abstract class UserUserSaveRequestSerializer {
       return null;
     }
     return {
-      'id': model.id,
       'base': APIRequestBaseSerializer.toMap(model.base),
       'about_id': model.aboutId,
-      'kind': model.kind,
-      'created_at': model.createdAt?.toIso8601String(),
-      'updated_at': model.updatedAt?.toIso8601String()
+      'kind': model.kind
     };
   }
 }
 
 abstract class UserUserSaveRequestFields {
-  static const List<String> allFields = <String>[
-    id,
-    base,
-    aboutId,
-    kind,
-    createdAt,
-    updatedAt
-  ];
-
-  static const String id = 'id';
+  static const List<String> allFields = <String>[base, aboutId, kind];
 
   static const String base = 'base';
 
   static const String aboutId = 'about_id';
 
   static const String kind = 'kind';
-
-  static const String createdAt = 'created_at';
-
-  static const String updatedAt = 'updated_at';
 }

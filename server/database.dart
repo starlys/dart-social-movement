@@ -11,7 +11,7 @@ typedef Future WorkFunc(PostgreSQLConnection db);
 
 ///for use only in Database
 class DatabasePoolItem {
-  bool inUse;
+  bool inUse = false;
   PostgreSQLConnection connection;
 }
 

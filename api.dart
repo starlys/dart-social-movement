@@ -1,4 +1,9 @@
 import 'dart:io';
+import 'package:angel_framework/angel_framework.dart';
+import 'package:angel_framework/http.dart';
+import 'package:angel_static/angel_static.dart';
+import 'package:file/local.dart';
+import 'package:angel_container/mirrors.dart';
 import 'server/api_globals.dart';
 import 'server/pulse.dart';
 import 'server/servant_controller.dart';
@@ -7,10 +12,6 @@ import 'server/linkback.dart';
 import 'server/date_lib.dart';
 import 'server/database.dart';
 import 'server/image_lib.dart';
-import 'package:angel_framework/angel_framework.dart';
-import 'package:angel_framework/http.dart';
-import 'package:angel_static/angel_static.dart';
-import 'package:file/local.dart';
 
 //app entry point
 main() async {
@@ -31,7 +32,7 @@ main() async {
   await Database.loadGlobals();
 
   //set up Angel
-  var angelApp = new Angel();
+  var angelApp = new Angel(reflector: MirrorsReflector());
   AngelHttp angelHttp;
   if (isDev) {
     angelHttp = AngelHttp(angelApp);

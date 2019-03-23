@@ -19,7 +19,7 @@ class NodeSelectDialog extends DialogBox {
   Future build() async {
     //define handling node selection
     OutlineBuilder outline;
-    Future _nodeSelectHandler(Element node) {
+    Future<dynamic> _nodeSelectHandler(Element node) {
       int id = int.parse(OutlineBuilder.getId(node));
       hide(id);
       return Future.value(null);
@@ -27,7 +27,7 @@ class NodeSelectDialog extends DialogBox {
 
     //main content - outline
     new FormBuilder(frame, _instructionText); //the form is just used to format the title
-    outline = new OutlineBuilder(frame, _nodeSelectHandler);
+    outline = new OutlineBuilder(frame, (el) => _nodeSelectHandler(el));
     void addToOutlineRecur(Element parentElement, CategoryNode node, int level) {
       Element el = outline.add(parentElement, node.title, node.id.toString(), childrenCollapsed: level > 1);
       if (node.children != null) {

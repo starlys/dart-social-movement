@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      reflectable:
+        generate_for:
+          - server/servant_controller.dart
+        options:
+          formatted: true

@@ -24,7 +24,7 @@ class EventPane extends BasePane {
 
     //get event
     _eventId = pk.part1AsInt;
-    var getArgs = new EventRequest() ..eventId = _eventId;
+    var getArgs = new EventRequest(eventId: _eventId);
     EventGetResponse event = await RpcLib.eventGet(getArgs);
     bool loggedIn = Globals.userId != 0;
     bool editable = event.isCreator == 'Y';
@@ -66,11 +66,11 @@ class EventPane extends BasePane {
       myStatusDesc = newStatusDesc ?? myStatusDesc; //if dlg canceled, proceed with old message
 
       //save 'vote'
-      EventUserSaveRequest req = new EventUserSaveRequest()
-        ..eventId = _eventId
-        ..status = vote
-        ..statusDesc = myStatusDesc;
-      await RpcLib.command('EventUserSave', req);
+      EventUserSaveRequest req = new EventUserSaveRequest(
+        eventId: _eventId,
+        status: vote,
+        statusDesc: myStatusDesc);
+      await RpcLib.eventUserSave(req);
     });
 
     //show conversation list
@@ -78,7 +78,7 @@ class EventPane extends BasePane {
       bodyElement.appendHtml('<h2><img src="images/paneconv.png"/>Conversations</h2>');
       DivElement scroll = HtmlLib.appendScrollingDiv(bodyElement);
       for (EventGetConvResponse conv in event.convs) {
-        HtmlLib.appendLinkToPane(scroll, conv.title, 'conv/${conv.id}');
+        HtmlLib.appendLinkToPane(scroll, conv.title, 'conv/${conv.iid}');
       }
     }
 
@@ -108,7 +108,7 @@ class EventPane extends BasePane {
         ConfirmDialog dlg = new ConfirmDialog('Really delete event?', ConfirmDialog.YesNoOptions);
         int btnIndex = await dlg.show();
         if (btnIndex == 0) {
-          await RpcLib.command('EventDelete', new EventRequest() ..eventId = _eventId);
+          await RpcLib.eventDelete(EventRequest(eventId: _eventId));
           PaneFactory.delete(this);
         }
       });

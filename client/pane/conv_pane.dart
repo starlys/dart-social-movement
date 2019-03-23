@@ -241,13 +241,13 @@ class ConvPane extends BasePane {
       _inappropriateClicked(post, inappropriateCheck.checked);
     });
     btns.addButton('New Conversation From Here', (e) async {
-      ConvDialog dlg = new ConvDialog.spawn(_convId, post.id, post.ptext);
+      ConvDialog dlg = new ConvDialog.spawn(_convId, post.iid, post.ptext);
       int spawnedConvId = await dlg.show();
       PaneFactory.createFromString('conv/${spawnedConvId}');
     });
 
     //get more info about post from server
-    ConvPostGetResponse moreInfo = await RpcLib.convPostGet(new ConvPostGetRequest(postId: post.id));
+    ConvPostGetResponse moreInfo = await RpcLib.convPostGet(new ConvPostGetRequest(postId: post.iid));
 
     //modify the box with the newly fetched info
     createdAtDiv.text = 'Posted on ' + moreInfo.createdAtReadable;
@@ -300,7 +300,7 @@ class ConvPane extends BasePane {
     //prep server request
     ConvPostSaveRequest deleteReq = new ConvPostSaveRequest(
       convId: _convId,
-      postId: post.id,
+      postId: post.iid,
       delete: isOwnPost ? 'Y' : 'N',
       censored: isOwnPost ? '' : 'C',
       ptext: isOwnPost ? null : 'Post deleted by: ' + Globals.nick
@@ -325,7 +325,7 @@ class ConvPane extends BasePane {
       reason = await dlg.show();
     }
     await RpcLib.convPostUserSave(ConvPostUserSaveRequest(
-      postId: post.id,
+      postId: post.iid,
       reason: reason,
       reaction: isChecked ? 'X' : '')
     );
@@ -348,7 +348,7 @@ class ConvPane extends BasePane {
 
     //change html in DOM to highlight the search term if provided
     if (_hilite != null) {
-      //TODO hilight
+      //deferred
     }
   }
 

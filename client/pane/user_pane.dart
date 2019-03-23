@@ -23,7 +23,7 @@ class UserPane extends BasePane {
 
     //get user
     _userId = pk.part1AsInt;
-    UserGetResponse user = await RpcLib.userGet(new UserGetRequest() ..userId = _userId ..includeDetail = 'Y');
+    UserGetResponse user = await RpcLib.userGet(new UserGetRequest(userId: _userId, includeDetail: 'Y'));
 
     //build pane - readonly info
     buildSkeletonHtml2(paneClass: 'user', iconHoverText: 'User', iconName: 'paneuser', title: user.nick);
@@ -109,9 +109,9 @@ class UserPane extends BasePane {
     if (follow) vote = 'F';
     else if (block) vote = 'B';
     if (!Messages.checkLoggedIn()) return;
-    UserUserSaveRequest req = new UserUserSaveRequest()
-      ..aboutId = _userId
-      ..kind = vote;
-    await RpcLib.command('UserUserSave', req);
+    UserUserSaveRequest req = new UserUserSaveRequest(
+      aboutId: _userId,
+      kind: vote);
+    await RpcLib.userUserSave(req);
   }
 }

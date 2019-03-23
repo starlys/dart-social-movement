@@ -1,6 +1,4 @@
-import 'package:angel_model/angel_model.dart';
 import 'package:angel_serialize/angel_serialize.dart';
-//import 'package:collection/collection.dart';
 
 part 'wtypes.g.dart';
 
@@ -10,7 +8,7 @@ part 'wtypes.g.dart';
 //be derived from a superclass, so _APIRequestBase has to be nested in each
 //request type
 @serializable
-abstract class _APIRequestBase extends Model {
+abstract class _APIRequestBase {
   ///user nickname
   String get nick;
 
@@ -41,13 +39,13 @@ abstract class _APIResponseBase {
 
 ///a general purpose container for links from one entity to others
 @serializable
-abstract class _APIResponseAssociation extends Model {
+abstract class _APIResponseAssociation {
   String get linkText;
   String get linkPaneKey;
 }
 
 @serializable
-abstract class _AuthenticateResponse extends Model {
+abstract class _AuthenticateResponse {
   _APIResponseBase get base;
   String get publicName;
   String get nick; //nick with corrected capitalization
@@ -56,26 +54,26 @@ abstract class _AuthenticateResponse extends Model {
 }
 
 @serializable
-abstract class _CategoryQueryRequest extends Model {
+abstract class _CategoryQueryRequest {
   _APIRequestBase get base;
   String get kind;
 }
 
 @serializable
-abstract class _CategoryQueryResponse  extends Model {
+abstract class _CategoryQueryResponse  {
   _APIResponseBase get base;
   List<_CategoryItemResponse> get categories;
 }
 
 @serializable
-abstract class _CategoryDeleteRequest extends Model {
+abstract class _CategoryDeleteRequest {
   _APIRequestBase get base;
   int get catId; //0 or null for new
   String get kind;
 }
 
 @serializable
-abstract class _CategorySaveRequest extends Model {
+abstract class _CategorySaveRequest {
   _APIRequestBase get base;
   int get catId; //0 or null for new
   String get kind;
@@ -88,16 +86,16 @@ abstract class _CategorySaveRequest extends Model {
 }
 
 @serializable
-abstract class _CategoryMoveContentsRequest extends Model {
+abstract class _CategoryMoveContentsRequest {
   _APIRequestBase get base;
   int get catId;
   String get kind;
   List<int> get relatedIds; //project or resource ids to move
 }
 
-//single entry in CategoryQueryResponse
+///single entry in CategoryQueryResponse
 @serializable
-abstract class _CategoryItemResponse extends Model {
+abstract class _CategoryItemResponse {
   int get iid;
   int get parentId; //null if none
   String get title;
@@ -105,27 +103,29 @@ abstract class _CategoryItemResponse extends Model {
 }
 
 @serializable
-abstract class _ConvQueryRequest extends Model {
+abstract class _ConvQueryRequest {
   _APIRequestBase get base;
   String get term; //search term
 }
 
 @serializable
-abstract class _ConvQueryResponse  extends Model {
+abstract class _ConvQueryResponse  {
   _APIResponseBase get base;
   List<_ConvQueryConvItemResponse> get convs;
 }
 
-//entry in ConvQueryResponse for one conv record
+///entry in ConvQueryResponse for one conv record
 @serializable
-abstract class _ConvQueryConvItemResponse extends Model {
+abstract class _ConvQueryConvItemResponse {
   int get convId;
   String get hitText; //title text surrounding the match phrase
   List<_ConvQueryPostItemResponse> get posts; //null if none
+}
 
+abstract class ConvQueryConvItemResponseUtils {
   ///sort posts by latest first, given a map of times indexed by post id
-  void sortByDate(Map<String, DateTime> postCreatedAt) {
-    posts.sort((_ConvQueryPostItemResponse a, _ConvQueryPostItemResponse b) {
+  static void sortByDate(_ConvQueryConvItemResponse item, Map<String, DateTime> postCreatedAt) {
+    item.posts.sort((_ConvQueryPostItemResponse a, _ConvQueryPostItemResponse b) {
       DateTime aDate = postCreatedAt[a.postId];
       DateTime bDate = postCreatedAt[b.postId];
       if (aDate == null || bDate == null) return 1; //shouldn't happen
@@ -136,13 +136,13 @@ abstract class _ConvQueryConvItemResponse extends Model {
 
 //entry in ConvQueryConvItemResponse
 @serializable
-abstract class _ConvQueryPostItemResponse extends Model {
+abstract class _ConvQueryPostItemResponse {
   String get postId;
   String get hitText; //post text surrounding the match phrase
 }
 
 @serializable
-abstract class _ConvGetRequest extends Model {
+abstract class _ConvGetRequest {
   _APIRequestBase get base;
   int get convId;
   String get mode; //U=unread, R=range, A=all
@@ -153,7 +153,7 @@ abstract class _ConvGetRequest extends Model {
 }
 
 @serializable
-abstract class _ConvGetResponse  extends Model {
+abstract class _ConvGetResponse  {
   _APIResponseBase get base;
   String get isManager; //Y if manager of owning proj/creator of owning event
   String get isJoined; //Y if joined else N
@@ -173,7 +173,7 @@ abstract class _ConvGetResponse  extends Model {
 
 //post element used in ConvGet
 @serializable
-abstract class _ConvGetPostItem extends Model {
+abstract class _ConvGetPostItem {
   String get iid; //uuid
   int get authorId;
   String get authorNick;
@@ -189,13 +189,13 @@ abstract class _ConvGetPostItem extends Model {
 }
 
 @serializable
-abstract class _ConvGetRulesRequest extends Model {
+abstract class _ConvGetRulesRequest {
   _APIRequestBase get base;
   int get convId;
 }
 
 @serializable
-abstract class _ConvGetRulesResponse  extends Model {
+abstract class _ConvGetRulesResponse  {
   _APIResponseBase get base;
   int get postMaxSize;
   int get userDailyMax;
@@ -203,7 +203,7 @@ abstract class _ConvGetRulesResponse  extends Model {
 }
 
 @serializable
-abstract class _ConvSaveRequest extends Model {
+abstract class _ConvSaveRequest {
   _APIRequestBase get base;
   int get convId; //null or 0 if new conv
   int get projectId;
@@ -216,13 +216,13 @@ abstract class _ConvSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ConvPostGetRequest extends Model {
+abstract class _ConvPostGetRequest {
   _APIRequestBase get base;
   String get postId;
 }
 
 @serializable
-abstract class _ConvPostGetResponse  extends Model {
+abstract class _ConvPostGetResponse  {
   _APIResponseBase get base;
   String get avatarUrl; //of author
   String get createdAtReadable; //including author timezone, example: '31 Dec 1999 17:05 (America/Denver)'
@@ -233,7 +233,7 @@ abstract class _ConvPostGetResponse  extends Model {
 }
 
 @serializable
-abstract class _ConvPostSaveRequest extends Model {
+abstract class _ConvPostSaveRequest {
   _APIRequestBase get base;
   int get convId;
   String get postId; //null/blank for new post
@@ -245,7 +245,7 @@ abstract class _ConvPostSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ConvPostImageSaveRequest extends Model {
+abstract class _ConvPostImageSaveRequest {
   _APIRequestBase get base;
   int get convId;
   String get ptext;
@@ -253,7 +253,7 @@ abstract class _ConvPostImageSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ConvPostUserSaveRequest extends Model {
+abstract class _ConvPostUserSaveRequest {
   _APIRequestBase get base;
   String get postId;
   String get reaction;
@@ -261,14 +261,14 @@ abstract class _ConvPostUserSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ConvSetReadPositionRequest extends Model {
+abstract class _ConvSetReadPositionRequest {
   _APIRequestBase get base;
   int get convId;
   String get positionWDT; //in wire-datetime format
 }
 
 @serializable
-abstract class _ConvUserSaveRequest extends Model {
+abstract class _ConvUserSaveRequest {
   _APIRequestBase get base;
   int get convId;
   String get status; //null indicates no change; only J or Q values allowed
@@ -277,32 +277,32 @@ abstract class _ConvUserSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ConvUserSaveResponse  extends Model {
+abstract class _ConvUserSaveResponse  {
   _APIResponseBase get base;
   String get action; //flag set when join was requested: 'J'=joined, 'R'=request sent, 'X'=disallowed
 }
 
 @serializable
-abstract class _DocQueryRequest extends Model {
+abstract class _DocQueryRequest {
   _APIRequestBase get base;
   String get mode; //kind of documents to look for: R=root (that's the only value supported for now)
 }
 
 @serializable
-abstract class _DocQueryResponse extends Model {
+abstract class _DocQueryResponse {
   _APIResponseBase get base;
   List<_DocQueryItem> get docs;
 }
 
 ///element in DocQueryResponse
 @serializable
-abstract class _DocQueryItem extends Model {
+abstract class _DocQueryItem {
   int get iid;
   String get title;
 }
 
 @serializable
-abstract class _DocGetRequest extends Model {
+abstract class _DocGetRequest {
   _APIRequestBase get base;
   int get docId;
   String get specialCode; //if given, docId is ignored and the doc is looked up by code
@@ -311,7 +311,7 @@ abstract class _DocGetRequest extends Model {
 }
 
 @serializable
-abstract class _DocGetResponse extends Model {
+abstract class _DocGetResponse {
   _APIResponseBase get base;
   int get docId;
   String get title;
@@ -329,13 +329,13 @@ abstract class _DocGetResponse extends Model {
 
 ///element used in DocGetResponse
 @serializable
-abstract class _DocGetVersionItem extends Model {
+abstract class _DocGetVersionItem {
   int get revisionNo;
   String get createdAtR; //when version created in readable format
 }
 
 @serializable
-abstract class _DocSaveRequest extends Model {
+abstract class _DocSaveRequest {
   _APIRequestBase get base;
   int get docId; //0 for new document
   int get projectId; //null for root doc, inspected for new docs only
@@ -346,14 +346,14 @@ abstract class _DocSaveRequest extends Model {
 }
 
 @serializable
-abstract class _DocRollbackRequest extends Model {
+abstract class _DocRollbackRequest {
   _APIRequestBase get base;
   int get docId;
   int get revisionNo; //must match latest revision_no
 }
 
 @serializable
-abstract class _EventQueryRequest extends Model {
+abstract class _EventQueryRequest {
   _APIRequestBase get base;
   String get title; //any part of title
   String get dateFrom;
@@ -364,14 +364,14 @@ abstract class _EventQueryRequest extends Model {
 }
 
 @serializable
-abstract class _EventQueryResponse extends Model {
+abstract class _EventQueryResponse {
   _APIResponseBase get base;
   List<_EventItemResponse> get events;
 }
 
 ///used in EventQueryResponse for 1 event
 @serializable
-abstract class _EventItemResponse extends Model {
+abstract class _EventItemResponse {
   int get iid;
   String get title;
   String get startTime; //in readable format
@@ -380,13 +380,13 @@ abstract class _EventItemResponse extends Model {
 }
 
 @serializable
-abstract class _EventRequest extends Model {
+abstract class _EventRequest {
   _APIRequestBase get base;
   int get eventId;
 }
 
 @serializable
-abstract class _EventGetResponse extends Model {
+abstract class _EventGetResponse {
   _APIResponseBase get base;
   String get title;
   String get description;
@@ -407,7 +407,7 @@ abstract class _EventGetResponse extends Model {
 
 ///used in EventGetResponse
 @serializable
-abstract class _EventGetUserResponse extends Model {
+abstract class _EventGetUserResponse {
   int get userId;
   String get nick;
   String get publicName;
@@ -418,7 +418,7 @@ abstract class _EventGetUserResponse extends Model {
 
 ///used in EventGetResponse for associated conv
 @serializable
-abstract class _EventGetConvResponse extends Model {
+abstract class _EventGetConvResponse {
   int get iid;
   String get open;
   String get title;
@@ -426,7 +426,7 @@ abstract class _EventGetConvResponse extends Model {
 }
 
 @serializable
-abstract class _EventSaveRequest extends Model {
+abstract class _EventSaveRequest {
   _APIRequestBase get base;
   int get eventId; //0 for new record
   String get title;
@@ -439,7 +439,7 @@ abstract class _EventSaveRequest extends Model {
 }
 
 @serializable
-abstract class _EventUserSaveRequest extends Model {
+abstract class _EventUserSaveRequest {
   _APIRequestBase get base;
   int get eventId;
   String get status;
@@ -448,21 +448,21 @@ abstract class _EventUserSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ProjectQueryRequest extends Model {
+abstract class _ProjectQueryRequest {
   _APIRequestBase get base;
   int get catId; //or null
   String get title; //any part of title
 }
 
 @serializable
-abstract class _ProjectQueryResponse  extends Model {
+abstract class _ProjectQueryResponse  {
   _APIResponseBase get base;
   List<_ProjectQueryItem> get projects;
 }
 
 ///element in ProjectQueryResponse
 @serializable
-abstract class _ProjectQueryItem extends Model {
+abstract class _ProjectQueryItem {
   int get projectId;
   String get title;
   String get description;
@@ -471,13 +471,13 @@ abstract class _ProjectQueryItem extends Model {
 }
 
 @serializable
-abstract class _ProjectGetRequest extends Model {
+abstract class _ProjectGetRequest {
   _APIRequestBase get base;
   int get projectId;
 }
 
 @serializable
-abstract class _ProjectGetResponse  extends Model {
+abstract class _ProjectGetResponse  {
   _APIResponseBase get base;
   String get active;
   String get leadership;
@@ -495,7 +495,7 @@ abstract class _ProjectGetResponse  extends Model {
 
 ///element in ProjectGetResponse
 @serializable
-abstract class _ProjectProposalItem extends Model {
+abstract class _ProjectProposalItem {
   int get iid;
   String get active;
   String get title;
@@ -504,7 +504,7 @@ abstract class _ProjectProposalItem extends Model {
 
 ///element in ProjectGetResponse
 @serializable
-abstract class _ProjectConvItem extends Model {
+abstract class _ProjectConvItem {
   int get iid;
   String get open;
   String get title;
@@ -513,13 +513,13 @@ abstract class _ProjectConvItem extends Model {
 
 ///element in ProjectGetResponse
 @serializable
-abstract class _ProjectDocItem extends Model {
+abstract class _ProjectDocItem {
   int get iid;
   String get title;
 }
 
 @serializable
-abstract class _ProjectSaveRequest extends Model {
+abstract class _ProjectSaveRequest {
   _APIRequestBase get base;
   int get projectId; //0 if new
   String get leadership;
@@ -530,7 +530,7 @@ abstract class _ProjectSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ProjectUserQueryRequest extends Model {
+abstract class _ProjectUserQueryRequest {
   _APIRequestBase get base;
   int get projectId;
   String get name; //matches any part of public name or nick
@@ -538,7 +538,7 @@ abstract class _ProjectUserQueryRequest extends Model {
 }
 
 @serializable
-abstract class _ProjectUserQueryResponse  extends Model {
+abstract class _ProjectUserQueryResponse  {
   _APIResponseBase get base;
   String get projectTitle;
   String get completeLoad; //Y or N denoting if the load was complete
@@ -548,7 +548,7 @@ abstract class _ProjectUserQueryResponse  extends Model {
 
 //element in ProjectUserQueryResponse
 @serializable
-abstract class _ProjectUserItem extends Model {
+abstract class _ProjectUserItem {
   int get userId;
   String get kind; //from project_xuser
   String get throttle; //readable description of throttling or null if none
@@ -559,7 +559,7 @@ abstract class _ProjectUserItem extends Model {
 }
 
 @serializable
-abstract class _ProjectUserSaveRequest extends Model {
+abstract class _ProjectUserSaveRequest {
   _APIRequestBase get base;
   int get projectId;
   int get userId; //not necessarily the current user
@@ -567,7 +567,7 @@ abstract class _ProjectUserSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ProjectUserUserSaveRequest extends Model {
+abstract class _ProjectUserUserSaveRequest {
   _APIRequestBase get base;
   int get projectId;
   int get aboutId; //the user being voted for
@@ -575,7 +575,7 @@ abstract class _ProjectUserUserSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ProposalQueryRequest extends Model {
+abstract class _ProposalQueryRequest {
   _APIRequestBase get base;
   String get mode; //one of 'A'(active ROOT and SYS proposals), 'P'(PROJ), 'S'(closed SYS by year)
   int get year; //required year for mode=S
@@ -583,27 +583,27 @@ abstract class _ProposalQueryRequest extends Model {
 }
 
 @serializable
-abstract class _ProposalQueryResponse  extends Model {
+abstract class _ProposalQueryResponse  {
   _APIResponseBase get base;
   List<_ProposalQueryItem> get items;
 }
 
 ///used in ProposalQueryResponse for one proposal
 @serializable
-abstract class _ProposalQueryItem extends Model {
+abstract class _ProposalQueryItem {
   int get iid;
   String get title;
   String get kind;
 }
 
 @serializable
-abstract class _ProposalGetRequest extends Model {
+abstract class _ProposalGetRequest {
   _APIRequestBase get base;
   int get proposalId;
 }
 
 @serializable
-abstract class _ProposalGetResponse  extends Model {
+abstract class _ProposalGetResponse  {
   _APIResponseBase get base;
   String get active;
   String get kind;
@@ -629,14 +629,14 @@ abstract class _ProposalGetResponse  extends Model {
 ///detail on one proposal option used in ProposalGetResponse; note that
 /// voteCount will be 0 or null if proposal is open
 @serializable
-abstract class _ProposalOptionItem extends Model {
+abstract class _ProposalOptionItem {
   int get optionNo;
   int get voteCount;
   String get optionDesc;
 }
 
 @serializable
-abstract class _ProposalSaveRequest extends Model {
+abstract class _ProposalSaveRequest {
   _APIRequestBase get base;
   String get kind; //see table def
   int get projectId; //for kind=PROJ only
@@ -648,20 +648,20 @@ abstract class _ProposalSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ProposalUserSaveRequest extends Model {
+abstract class _ProposalUserSaveRequest {
   _APIRequestBase get base;
   int get proposalId;
   int get vote; //may be null to delete vote
 }
 
 @serializable
-abstract class _PushQueueGetRequest extends Model {
+abstract class _PushQueueGetRequest {
   _APIRequestBase get base;
   String get depth; //L=light, F=full
 }
 
 @serializable
-abstract class _PushQueueGetResponse  extends Model {
+abstract class _PushQueueGetResponse  {
   _APIResponseBase get base;
   List<_PushQueueItem> get items;
   String get fullModeStatus; //normally null; if 'T' then full mode is disallowed based on timing
@@ -671,7 +671,7 @@ abstract class _PushQueueGetResponse  extends Model {
 // for each, since the client uses these in inter-window messaging
 // and it's better to avoid parsing complexity
 @serializable
-abstract class _PushQueueItem extends Model {
+abstract class _PushQueueItem {
   String get kind; //N=notify, U=unread, S=suggested, B=Bookmarked
   String get why; //why the item is in the queue: G=general, V=votable, I=invited, R=recommended
     //all kinds other than S should have why=G
@@ -683,7 +683,7 @@ abstract class _PushQueueItem extends Model {
 }
 
 @serializable
-abstract class _ResourceQueryRequest extends Model {
+abstract class _ResourceQueryRequest {
   _APIRequestBase get base;
   int get categoryId; //null to omit category searching
   String get title; //any part of title
@@ -691,14 +691,14 @@ abstract class _ResourceQueryRequest extends Model {
 }
 
 @serializable
-abstract class _ResourceQueryResponse  extends Model {
+abstract class _ResourceQueryResponse  {
   _APIResponseBase get base;
   List<_ResourceItem> get items;
 }
 
 ///resource used in ResourceQueryResponse
 @serializable
-abstract class _ResourceItem extends Model {
+abstract class _ResourceItem {
   int get iid;
   String get title;
   String get url;
@@ -706,13 +706,13 @@ abstract class _ResourceItem extends Model {
 }
 
 @serializable
-abstract class _ResourceGetRequest extends Model {
+abstract class _ResourceGetRequest {
   _APIRequestBase get base;
   int get iid;
 }
 
 @serializable
-abstract class _ResourceGetResponse  extends Model {
+abstract class _ResourceGetResponse  {
   _APIResponseBase get base;
   int get categoryId;
   int get userId;
@@ -730,7 +730,7 @@ abstract class _ResourceGetResponse  extends Model {
 }
 
 @serializable
-abstract class _ResourceSaveRequest extends Model {
+abstract class _ResourceSaveRequest {
   _APIRequestBase get base;
   int get iid; //0 for new record
   int get categoryId; //inspected for new resources only
@@ -741,34 +741,34 @@ abstract class _ResourceSaveRequest extends Model {
 }
 
 @serializable
-abstract class _ResourceTriageRequest extends Model {
+abstract class _ResourceTriageRequest {
   _APIRequestBase get base;
   int get iid;
   String get mode; //R=reset; D=delete
 }
 
 @serializable
-abstract class _ResourceUserSaveRequest extends Model {
+abstract class _ResourceUserSaveRequest {
   _APIRequestBase get base;
   int get iid;
   String get kind; //resource_xuser.kind
 }
 
 @serializable
-abstract class _UserQueryRequest extends Model {
+abstract class _UserQueryRequest {
   _APIRequestBase get base;
   String get name; //any part of name or nick
 }
 
 @serializable
-abstract class _UserQueryResponse  extends Model {
+abstract class _UserQueryResponse  {
   _APIResponseBase get base;
   List<_UserQueryItem> get users;
 }
 
 ///a user in UserQueryResponse
 @serializable
-abstract class _UserQueryItem extends Model {
+abstract class _UserQueryItem {
   int get iid;
   String get nick;
   String get kind;
@@ -777,7 +777,7 @@ abstract class _UserQueryItem extends Model {
 }
 
 @serializable
-abstract class _UserGetRequest extends Model {
+abstract class _UserGetRequest {
   _APIRequestBase get base;
   int get userId; //0 for blank data
   String get includeDetail; //Y or N; if Y, includes events, project, and resources
@@ -785,7 +785,7 @@ abstract class _UserGetRequest extends Model {
 }
 
 @serializable
-abstract class _UserGetResponse  extends Model {
+abstract class _UserGetResponse  {
   _APIResponseBase get base;
   String get status;
   String get nick;
@@ -805,7 +805,7 @@ abstract class _UserGetResponse  extends Model {
 }
 
 @serializable
-abstract class _UserSaveRequest extends Model {
+abstract class _UserSaveRequest {
   _APIRequestBase get base;
   String get isNew; //Y or N
   String get isDelete; //Y or N
@@ -821,19 +821,19 @@ abstract class _UserSaveRequest extends Model {
 }
 
 @serializable
-abstract class _UserAvatarSaveRequest extends Model {
+abstract class _UserAvatarSaveRequest {
   _APIRequestBase get base;
   List<int> get imageBytes;
 }
 
 @serializable
-abstract class _UserNotifySaveRequest extends Model {
+abstract class _UserNotifySaveRequest {
   _APIRequestBase get base;
   String get notifyId; //id to dismiss
 }
 
 @serializable
-abstract class _UserRecoverPasswordRequest extends Model {
+abstract class _UserRecoverPasswordRequest {
   _APIRequestBase get base;
   String get recoveryNick;
   String get mode; //E=send email to start recovery; V=validate code from the email
@@ -842,7 +842,7 @@ abstract class _UserRecoverPasswordRequest extends Model {
 }
 
 @serializable
-abstract class _UserUserSaveRequest extends Model {
+abstract class _UserUserSaveRequest {
   _APIRequestBase get base;
   int get aboutId; //the subject of the opinion being saved
   String get kind;

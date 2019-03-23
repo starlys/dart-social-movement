@@ -1,7 +1,18 @@
 import 'dart:async';
 import 'package:angel_framework/angel_framework.dart';
+//import 'package:angel_container/angel_container.dart';
+//import 'package:reflectable/reflectable.dart';
 import 'servant.dart';
 import '../models/models.dart';
+//import 'main.reflectable.dart'; // Import generated code.
+
+/*
+class ControllerReflector extends Reflectable {
+  const ControllerReflector()
+      : super(invokingCapability);
+}
+const Reflector controllerReflector = const ControllerReflector();
+*/
 
 ///exposed public API methods; this class only handles routing and serialization,
 /// calling servant for the implementation. See servant class for comments.

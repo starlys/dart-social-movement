@@ -1,7 +1,6 @@
 import 'dart:html';
 import 'dart:math';
 import 'dart:async';
-import 'package:dquery/dquery.dart';
 import 'root/pane_key.dart';
 import 'client_store.dart';
 import 'pane_factory.dart';

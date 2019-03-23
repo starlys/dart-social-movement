@@ -11,11 +11,12 @@ dependencies:
   postgres: "^1.0.2" #http://pub.dartlang.org/packages/postgres
   #conn_pool: ^2.1.9 #https://pub.dartlang.org/packages/conn_pool
   intl: any #http://pub.dartlang.org/packages/intl
-  timezone: any #http://pub.dartlang.org/packages/timezone
+  timezone: ^0.5.2 #http://pub.dartlang.org/packages/timezone
   mailer: any #http://pub.dartlang.org/packages/mailer
   diff_match_patch: any #http://pub.dartlang.org/packages/diff_match_patch
   image: any #http://pub.dartlang.org/packages/image
   http: any #http://pub.dartlang.org/packages/http
+  reflectable: any
 dev_dependencies:
   build_runner: ^1.1.2
   build_web_compilers: ^1.0.0

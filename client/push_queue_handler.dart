@@ -59,12 +59,12 @@ class PushQueueHandler {
       Globals.lastPollUtc = now;
 
       //call server
-      PushQueueGetRequest pushArgs = new PushQueueGetRequest()
-        ..depth = fullMode ? 'F' : 'L';
-      Map rawResponse = await RpcLib.rpcAsMap('PushQueueGet', pushArgs);
-      if (fullMode && rawResponse['fullModeStatus'] == null)
+      PushQueueGetRequest pushArgs = new PushQueueGetRequest(
+        depth: fullMode ? 'F' : 'L');
+      final pushQueueResponse = await RpcLib.pushQueueGet(pushArgs);
+      if (fullMode && pushQueueResponse.fullModeStatus == null)
         Globals.lastFullPollUtc = now; //only updating the poll time if it was allowed by server
-      List<PushQueueItem> items = _parseListOfRawItems(rawResponse['items']);
+      List<PushQueueItem> items = _filterListOfItems(pushQueueResponse.items);
       itemsReceived(fullMode, items, 'S');
 
       //UI when done polling
@@ -93,15 +93,10 @@ class PushQueueHandler {
     }
   }
 
-  ///given raw items (as provided by JSON parsing), put these into
-  /// nice class instances; also filter out notifications which are already open
-  static List<PushQueueItem> _parseListOfRawItems(List<Map> rawitems) {
-    if (rawitems == null) return new List();
-    List<PushQueueItem> niceitems = rawitems.map((i){
-      PushQueueItem qi = new PushQueueItem();
-      APIDeserializer.deserialize(i, qi, null);
-      return qi;
-    }).toList();
+  ///given items from server, filter out notifications which are already open
+  static List<PushQueueItem> _filterListOfItems(List<PushQueueItem> items) {
+    if (items == null) return new List();
+    final niceitems = List<PushQueueItem>.from(items);
 
     //filter out notifs that are already open
     niceitems.removeWhere((n) => Globals.panes.any((p) => p is NotifyPane && p.paneKey.part1 == n.sid));
@@ -112,8 +107,8 @@ class PushQueueHandler {
   /// a Map as parsed by JSON, so we need to copy it into a real class
   static void _receiveFromOtherWindow(dynamic obj) {
     String action = obj['action'];
-    List<Map> rawitems = obj['items'];
-    List<PushQueueItem> items = _parseListOfRawItems(rawitems);
+    final itemsUnfiltered = obj['items'].map((item) => PushQueueItemSerializer.fromMap(item));
+    final items = _filterListOfItems(itemsUnfiltered);
     if (action == 'A') itemsReceived(false, items, 'W');
     if (action == 'F') itemsReceived(true, items, 'W');
     if (action == 'R') for (PushQueueItem item in items) removeItem(item, 'W');
@@ -277,11 +272,11 @@ class PushQueueHandler {
   ///notify this class that a pane was opened; this removes it from the queue
   static void notifyPaneOpened(BasePane p) {
     //make partial item (only the linkPaneKey matters since it is being removed)
-    PushQueueItem item = new PushQueueItem() ..linkPaneKey = p.paneKey.full;
     if (p is NotifyPane) {
-      item.sid = p.paneKey.full.substring(7); //omit 'notify/'
+      final item = PushQueueItem(linkPaneKey: p.paneKey.full, sid: p.paneKey.full.substring(7)); //omit 'notify/'
       _removeNotifyItem(item, true);
     } else {
+      final item = PushQueueItem(linkPaneKey: p.paneKey.full);
       removeItem(item, 'O');
     }
   }

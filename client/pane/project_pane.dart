@@ -45,7 +45,7 @@ class ProjectPane extends BasePane {
       bodyElement.appendHtml('<h2><img src="images/panedoc.png"/>Documents</h2>');
       DivElement scroll = HtmlLib.appendScrollingDiv(bodyElement);
       for (ProjectDocItem doc in _project.docs) {
-        HtmlLib.appendLinkToPane(scroll, doc.title, 'doc/${doc.id}');
+        HtmlLib.appendLinkToPane(scroll, doc.title, 'doc/${doc.iid}');
       }
     }
     if (_project.convs != null && _project.convs.length > 0) {
@@ -53,14 +53,14 @@ class ProjectPane extends BasePane {
       DivElement scroll = HtmlLib.appendScrollingDiv(bodyElement);
       for (ProjectConvItem conv in _project.convs) {
         String titlePlus = conv.title + (conv.open != 'Y' ? ' (closed)' : '');
-        HtmlLib.appendLinkToPane(scroll, titlePlus, 'conv/${conv.id}');
+        HtmlLib.appendLinkToPane(scroll, titlePlus, 'conv/${conv.iid}');
       }
     }
     if (canView && _project.proposals != null && _project.proposals.length > 0) {
       bodyElement.appendHtml('<h2><img src="images/paneproposal.png"/>Proposals/Surveys</h2>');
       DivElement scroll = HtmlLib.appendScrollingDiv(bodyElement);
       for (ProjectProposalItem prop in _project.proposals) {
-        HtmlLib.appendLinkToPane(scroll, prop.title, 'proposal/${prop.id}');
+        HtmlLib.appendLinkToPane(scroll, prop.title, 'proposal/${prop.iid}');
       }
     }
 

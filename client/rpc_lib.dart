@@ -211,6 +211,20 @@ class RpcLib {
     Messages.showAPIError(response);
     return response;
   }
+  static Future<APIResponseBase> eventUserSave(EventUserSaveRequest req) async {
+    final requestMap = EventUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('EventUserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> eventDelete(EventRequest req) async {
+    final requestMap = EventRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('EventDelete', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
   static Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest req) async {
     final requestMap = ProjectQueryRequestSerializer.toMap(req); 
     Map responseMap = await rpcAsMap('ProjectQuery', requestMap);
@@ -274,6 +288,27 @@ class RpcLib {
     Messages.showAPIError(response);
     return response;
   }
+  static Future<APIResponseBase> proposalDelete(ProposalGetRequest req) async {
+    final requestMap = ProposalGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProposalDelete', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> proposalUserSave(ProposalUserSaveRequest req) async {
+    final requestMap = ProposalUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ProposalUserSave', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<PushQueueGetResponse> pushQueueGet(PushQueueGetRequest req) async {
+    final requestMap = PushQueueGetRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('PushQueueGet', requestMap);
+    final response = PushQueueGetResponseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response.base);
+    return response;
+  }
   static Future<ResourceQueryResponse> resourceQuery(ResourceQueryRequest req) async {
     final requestMap = ResourceQueryRequestSerializer.toMap(req); 
     Map responseMap = await rpcAsMap('ResourceQuery', requestMap);
@@ -291,6 +326,13 @@ class RpcLib {
   static Future<APIResponseBase> resourceTriage(ResourceTriageRequest req) async {
     final requestMap = ResourceTriageRequestSerializer.toMap(req); 
     Map responseMap = await rpcAsMap('ResourceTriage', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> resourceSave(ResourceSaveRequest req) async {
+    final requestMap = ResourceSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('ResourceSave', requestMap);
     final response = APIResponseBaseSerializer.fromMap(responseMap);
     Messages.showAPIError(response);
     return response;
@@ -340,6 +382,13 @@ class RpcLib {
   static Future<APIResponseBase> userRecoverPassword(UserRecoverPasswordRequest req) async {
     final requestMap = UserRecoverPasswordRequestSerializer.toMap(req); 
     Map responseMap = await rpcAsMap('UserRecoverPassword', requestMap);
+    final response = APIResponseBaseSerializer.fromMap(responseMap);
+    Messages.showAPIError(response);
+    return response;
+  }
+  static Future<APIResponseBase> userUserSave(UserUserSaveRequest req) async {
+    final requestMap = UserUserSaveRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('UserUserSave', requestMap);
     final response = APIResponseBaseSerializer.fromMap(responseMap);
     Messages.showAPIError(response);
     return response;

@@ -1,6 +1,6 @@
-import 'worker/mail_lib.dart';
-import 'dart:async';
-import 'dart:io';
+//import 'worker/mail_lib.dart';
+//import 'dart:async';
+//import 'dart:io';
 import 'worker/globals.dart';
 //import 'server/twotier/wlib.dart';
 //import 'server/config.dart';
@@ -10,8 +10,8 @@ main() async {
   await Globals.configLoader.init();
 
   //send mail
-  String err = await MailLib.send(Globals.configSettings, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
-  print(err);
+  //String err = await MailLib.send(Globals.configSettings, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
+  //print(err);
 
   //test infinite loop for mem leak
   //pulse();
@@ -19,20 +19,4 @@ main() async {
   Globals.configLoader.stopWatching();
 }
 
-//supervisor fast testing - no leaks
-Future pulse() async {
-  while (true) {
-    //new Timer.periodic(duration, callback)
-    sleep(new Duration(milliseconds: 1));
-    try {
-      //detect restart (as signaled from autzone script)
-      File f_restart = new File('restart.txt');
-      if (await f_restart.exists()) {
-        sleep(new Duration(seconds: 10));
-        print('found restart.txt');
-      }
-    } catch (ex) {
-      print('failed: ' + ex.toString());
-    }
-  }
-}
+

@@ -13,7 +13,8 @@ class DateLib {
 
   ///init DateLib
   static Future init() async {
-    String tzDataPath = 'packages/timezone/data/2015b.tzf'; //tz lib assumes the main script is in the app root
+    String tzDataPath = 'data/2018i.tzf'; //tz lib assumes the main script is in the app root
+    //String tzDataPath = 'packages/timezone/data/2015b.tzf'; //tz lib assumes the main script is in the app root
     await initializeTimeZone(tzDataPath); //local is UTC
   }
 

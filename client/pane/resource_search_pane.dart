@@ -51,7 +51,7 @@ class ResourceSearchPane extends BasePane {
         itemDiv.append(a);
         itemDiv.appendText(' ');
       }
-      HtmlLib.appendLinkToPane(itemDiv, res.title, 'resource/${res.id}', asDiv: false);
+      HtmlLib.appendLinkToPane(itemDiv, res.title, 'resource/${res.iid}', asDiv: false);
       itemDiv.appendText(' - ');
       HtmlLib.insertCollapsed1(itemDiv, res.description);
     }

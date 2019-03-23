@@ -24,7 +24,7 @@ class ProposalPane extends BasePane {
 
     //get proposal
     _proposalId = pk.part1AsInt;
-    ProposalGetResponse proposal = await RpcLib.proposalGet(new ProposalGetRequest() ..proposalId = _proposalId);
+    ProposalGetResponse proposal = await RpcLib.proposalGet(new ProposalGetRequest(proposalId: _proposalId));
 
     //build pane - readonly info
     buildSkeletonHtml2(paneClass: 'proposal', iconHoverText: 'Proposal', iconName: 'paneproposal', title: proposal.title);
@@ -91,7 +91,7 @@ class ProposalPane extends BasePane {
     //button bar - open root doc proposals: allow showing current full text and proposed new full text
     if (proposal.kind == 'ROOT' && proposal.active == 'Y') {
       paneMenuBar.addButton('Show Current Full Text', (e) async {
-        DocGetRequest req = new DocGetRequest()..docId = proposal.docId;
+        DocGetRequest req = new DocGetRequest(docId: proposal.docId);
         DocGetResponse doc = await RpcLib.docGet(req);
         ViewMarkdownDialog dlg = new ViewMarkdownDialog(doc.body);
         await dlg.show();
@@ -109,8 +109,8 @@ class ProposalPane extends BasePane {
         ConfirmDialog dlg = new ConfirmDialog('Really delete proposal?', ConfirmDialog.YesNoOptions);
         int btnIdx = await dlg.show();
         if (btnIdx == 0) {
-          ProposalGetRequest req = new ProposalGetRequest() ..proposalId = _proposalId;
-          APIResponseBase response = await RpcLib.command('ProposalDelete', req);
+          ProposalGetRequest req = new ProposalGetRequest(proposalId: _proposalId);
+          APIResponseBase response = await RpcLib.proposalDelete(req);
           if (response.isOK) PaneFactory.delete(this);
         }
       });
@@ -120,10 +120,10 @@ class ProposalPane extends BasePane {
   //record vote for optionNo or null
   Future _handleVote(int optionNo) async {
     if (!Messages.checkLoggedIn()) return;
-    ProposalUserSaveRequest req = new ProposalUserSaveRequest()
-      ..proposalId = _proposalId
-      ..vote = optionNo;
-    await RpcLib.command('ProposalUserSave', req);
+    ProposalUserSaveRequest req = new ProposalUserSaveRequest(
+      proposalId: _proposalId,
+      vote: optionNo);
+    await RpcLib.proposalUserSave(req);
     Messages.timed('We recorded your vote.');
   }
 }

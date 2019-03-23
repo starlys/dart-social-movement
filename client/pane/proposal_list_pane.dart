@@ -23,7 +23,7 @@ abstract class ProposalListPane extends BasePane {
     buildSkeletonHtml2(paneClass: paneClass, iconName: 'paneproposal', title: paneTitle);
     clearLoadingMessage();
     for (ProposalQueryItem item in proposals.items) {
-      HtmlLib.appendLinkToPane(bodyElement, item.title, 'proposal/${item.id}');
+      HtmlLib.appendLinkToPane(bodyElement, item.title, 'proposal/${item.iid}');
     }
     if (proposals.items.length == 0) bodyElement.appendText('(none found)');
     makeButtonBar();

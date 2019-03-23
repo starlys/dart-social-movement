@@ -40,10 +40,10 @@ class ProjectMembershipDialog extends DialogBox {
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('Change Membership', (e) async {
       ProjectUserSaveRequest req = new ProjectUserSaveRequest(
-        projectId = _projectId,
-        userId = Globals.userId,
-        kind = newRole.value);
-      APIResponseBase response = await RpcLib.command('ProjectUserSave', req);
+        projectId: _projectId,
+        userId: Globals.userId,
+        kind: newRole.value);
+      APIResponseBase response = await RpcLib.projectUserSave(req);
       if (response.isOK) {
         hide(true);
       }

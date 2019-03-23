@@ -21,8 +21,7 @@ class ResourceDialog extends DialogBox {
   Future build() async {
     //get resource or blank for new record
     bool isNew = resourceId == 0;
-    var resourceGetArgs = new ResourceGetRequest()
-      ..id = resourceId;
+    var resourceGetArgs = new ResourceGetRequest(iid: resourceId);
     ResourceGetResponse resource;
     if (!isNew) resource = await RpcLib.resourceGet(resourceGetArgs);
     else resource = new ResourceGetResponse();
@@ -58,14 +57,14 @@ class ResourceDialog extends DialogBox {
 
       //validate and save
       if (!isValid()) return;
-      ResourceSaveRequest saveArgs = new ResourceSaveRequest()
-        ..id = resourceId
-        ..categoryId = newCategoryId //ignored if this is an update of existing rec
-        ..title = trimInput(titleInput)
-        ..description = trimTextArea(descInput)
-        ..kind = kindInput.value
-        ..url = trimInput(urlInput);
-      APIResponseBase response = await RpcLib.command('ResourceSave', saveArgs);
+      ResourceSaveRequest saveArgs = new ResourceSaveRequest(
+        iid: resourceId,
+        categoryId: newCategoryId, //ignored if this is an update of existing rec
+        title: trimInput(titleInput),
+        description: trimTextArea(descInput),
+        kind: kindInput.value,
+        url: trimInput(urlInput));
+      APIResponseBase response = await RpcLib.resourceSave(saveArgs);
       if (response.isOK) {
         hide(true);
         if (isNew)

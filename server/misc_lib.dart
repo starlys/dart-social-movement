@@ -55,7 +55,7 @@ class MiscLib {
 
   ///queue up email to be sent by an occasional background process
   static Future queueEmail(PostgreSQLConnection db, String recipient, String subject, String body) async {
-    await db.query('insert into tomail(recipient,subject,body)values(@r,@s,@b)', substitutionValues:
+    await db.execute('insert into tomail(recipient,subject,body)values(@r,@s,@b)', substitutionValues:
       {'r': recipient, 's': subject, 'b': body});
   }
 
@@ -63,7 +63,7 @@ class MiscLib {
   /// which links to linkKey (for example 'user/3')
   static Future notify(PostgreSQLConnection db, int userId, String body,
     {String linkText:null, String linkKey:null}) async {
-    await db.query('insert into xuser_notify(id,xuser_id,body,link_text,link_key,emailed,created_at)values(uuid_generate_v4(),@uid,@body,@linktext,@linkkey,\'N\',@d)',
+    await db.execute('insert into xuser_notify(id,xuser_id,body,link_text,link_key,emailed,created_at)values(uuid_generate_v4(),@uid,@body,@linktext,@linkkey,\'N\',@d)',
       substitutionValues: {'uid': userId, 'body': body, 'linktext':linkText, 'linkkey':linkKey, 'd':WLib.utcNow()}
     );
   }
@@ -106,7 +106,7 @@ class MiscLib {
   static Future touchUser(PostgreSQLConnection db, int userId) async {
     DateTime now = WLib.utcNow();
     DateTime recent = now.subtract(new Duration(minutes:10));
-    await db.query('update xuser set last_activity=@t2 where id=${userId} and last_activity<@t1',
+    await db.execute('update xuser set last_activity=@t2 where id=${userId} and last_activity<@t1',
       substitutionValues: {'t1': recent, 't2': now});
   }
 

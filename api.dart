@@ -1,8 +1,8 @@
-import 'dart:io';
+import 'dart:io' as io;
 import 'package:angel_framework/angel_framework.dart';
 import 'package:angel_framework/http.dart';
 import 'package:angel_static/angel_static.dart';
-import 'package:file/local.dart';
+import 'package:file/local.dart' as file;
 import 'package:angel_container/mirrors.dart';
 import 'server/api_globals.dart';
 import 'server/pulse.dart';
@@ -38,7 +38,7 @@ main() async {
     angelHttp = AngelHttp(angelApp);
     print('developer mode, nonsecure');
   } else {
-    SecurityContext context = new SecurityContext();
+    final context = new io.SecurityContext();
     context.useCertificateChain('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
     context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
     String host = ApiGlobals.configSettings.domain;
@@ -54,8 +54,8 @@ main() async {
   //alternately?: await angelApp.mountController<Servant>();
 
   //add routes for static files
-  final fs = const LocalFileSystem();
-  final publicDir = Directory(ConfigLoader.rootPath() + '/public_html');
+  final fs = const file.LocalFileSystem();
+  final publicDir = fs.directory(ConfigLoader.rootPath() + '/public_html');
   final vDirRoot = CachingVirtualDirectory(angelApp, fs, publicPath: '/', indexFileNames: ['App.html'], source: publicDir);
   angelApp.fallback(vDirRoot.handleRequest);
   final vDirChild = CachingVirtualDirectory(angelApp, fs, publicPath: '/static', source: publicDir);
@@ -66,7 +66,7 @@ main() async {
   angelApp.get('/linkback/ValidateEmail', (req, resp) => Linkback.validateEmail(req, resp));
 
   //start listener
-  HttpServer server = await angelHttp.startServer();
+  final server = await angelHttp.startServer();
   print("Angel server listening at ${angelHttp.uri}");
 
   //start 30s pulse tasks and register app-ending code
@@ -77,8 +77,8 @@ main() async {
     //in testing, this method does end, but the dart process takes a couple more
     // minutes to actually end.
     //For now, really really force it
-    sleep(new Duration(seconds: 5));
-    exit(0);
+    io.sleep(new Duration(seconds: 5));
+    io.exit(0);
   });
   pulse.start();
 

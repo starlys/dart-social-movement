@@ -1991,7 +1991,7 @@ class Servant {
     if (authFail != null) return UserGetResponse(base: authFail);
 
     //declare return variables
-    String retKind, retNick, retStatus, retEmail, retPublicName, retIsSiteAdmin, retPrefEmailNotify,
+    String retKind, retNick, retStatus, retEmail, retPublicName, retIsSiteAdmin, retPrefEmailNotify = 'N',
       retTimeZone, retAvatarUrl, retUserUserKind;
     List<String> retAllTimeZones;
     Map<String, String> retPublicLinks;

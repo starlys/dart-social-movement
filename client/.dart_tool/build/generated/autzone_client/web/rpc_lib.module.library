@@ -1,0 +1,1 @@
+{"isEntrypoint":false,"deps":["autzone_client|web/messages.dart","models|lib/models.dart","autzone_client|web/root/globals.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["async","html","convert"]}

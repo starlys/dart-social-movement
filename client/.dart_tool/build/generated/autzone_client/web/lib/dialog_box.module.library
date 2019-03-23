@@ -1,0 +1,1 @@
+{"isEntrypoint":false,"deps":["autzone_client|web/lib/html_lib.dart","autzone_client|web/client_store.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["html","math","async"]}

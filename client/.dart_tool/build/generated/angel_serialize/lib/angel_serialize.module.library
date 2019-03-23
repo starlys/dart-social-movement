@@ -1,0 +1,1 @@
+{"isEntrypoint":true,"deps":["angel_model|lib/angel_model.dart","collection|lib/collection.dart","meta|lib/meta.dart","quiver_hashcode|lib/hashcode.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":[]}

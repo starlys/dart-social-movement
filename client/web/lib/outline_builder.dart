@@ -1,6 +1,6 @@
 import 'dart:html';
 
-typedef Future<dynamic> OutlineNodeHandler(Element);
+typedef void OutlineNodeHandler(Element);
 
 ///manages creating outlines (trees) with expand/collapse and node
 /// selection

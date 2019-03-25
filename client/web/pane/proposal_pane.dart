@@ -122,7 +122,8 @@ class ProposalPane extends BasePane {
     ProposalUserSaveRequest req = new ProposalUserSaveRequest(
       proposalId: _proposalId,
       vote: optionNo);
-    await RpcLib.proposalUserSave(req);
-    Messages.timed('We recorded your vote.');
+    final resp = await RpcLib.proposalUserSave(req);
+    if (resp.ok == 'Y')
+      Messages.timed('We recorded your vote.');
   }
 }

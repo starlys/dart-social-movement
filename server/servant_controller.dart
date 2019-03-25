@@ -69,7 +69,7 @@ class ServantController extends Controller {
     return APIResponseBaseSerializer.toMap(result);
   }
 
-  @Expose('CategoryMoveContents', method: 'POST')
+  @Expose('ConvQuery', method: 'POST')
   Future convQuery(RequestContext req) async {
     await req.parseBody();
     final args = ConvQueryRequestSerializer.fromMap(req.bodyAsMap);

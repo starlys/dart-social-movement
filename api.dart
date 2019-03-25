@@ -2,6 +2,7 @@ import 'dart:io' as io;
 import 'package:angel_framework/angel_framework.dart';
 import 'package:angel_framework/http.dart';
 import 'package:angel_static/angel_static.dart';
+import 'package:angel_cors/angel_cors.dart';
 import 'package:file/local.dart' as file;
 import 'package:angel_container/mirrors.dart';
 import 'server/api_globals.dart';
@@ -34,9 +35,11 @@ main() async {
   //set up Angel
   var angelApp = new Angel(reflector: MirrorsReflector());
   AngelHttp angelHttp;
+  int port;
   if (isDev) {
     angelHttp = AngelHttp(angelApp);
     print('developer mode, nonsecure');
+    port = 8081;
   } else {
     final context = new io.SecurityContext();
     context.useCertificateChain('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
@@ -44,14 +47,15 @@ main() async {
     String host = ApiGlobals.configSettings.domain;
     print('production mode - port 443 on host ${host}');
     angelHttp = AngelHttp.fromSecurityContext(angelApp, context);
+    port = 443;
   }
 
   //add routes for diagnostics
+  angelApp.fallback(cors());
   angelApp.get("/hello", (req, res) => "Hello, world!");
 
   //add routes for servant (the main api)
   await angelApp.configure(new ServantController().configureServer);
-  //alternately?: await angelApp.mountController<Servant>();
 
   //add routes for static files
   final fs = const file.LocalFileSystem();
@@ -66,7 +70,7 @@ main() async {
   angelApp.get('/linkback/ValidateEmail', (req, resp) => Linkback.validateEmail(req, resp));
 
   //start listener
-  final server = await angelHttp.startServer();
+  final server = await angelHttp.startServer(null, port);
   print("Angel server listening at ${angelHttp.uri}");
 
   //start 30s pulse tasks and register app-ending code

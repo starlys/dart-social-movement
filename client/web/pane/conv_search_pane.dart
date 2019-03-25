@@ -49,17 +49,20 @@ class ConvSearchPane extends BasePane {
       new ConvQueryRequest(term: _searchTerm));
     changePaneKey(new PaneKey('convs/s=' + _searchTerm));
     _resultDiv.innerHtml = '<h2>Conversations</h2>';
-    for (ConvQueryConvItemResponse conv in response.convs) {
-      DivElement itemDiv = new DivElement() ..className = 'space1';
-      _resultDiv.append(itemDiv);
-      HtmlLib.appendLinkToPane(itemDiv, conv.hitText, 'conv/${conv.convId}/h=${_searchTerm}');
-      DivElement indented = new DivElement() ..style.marginLeft = HtmlLib.asPx(18);
-      itemDiv.append(indented);
-      for (ConvQueryPostItemResponse post in conv.posts) {
-        indented.appendText(post.hitText);
-        indented.appendHtml('<br/>');
+    final hasAny = response.convs != null && response.convs.length > 0;
+    if (hasAny) {
+      for (final conv in response.convs) {
+        DivElement itemDiv = new DivElement() ..className = 'space1';
+        _resultDiv.append(itemDiv);
+        HtmlLib.appendLinkToPane(itemDiv, conv.hitText, 'conv/${conv.convId}/h=${_searchTerm}');
+        DivElement indented = new DivElement() ..style.marginLeft = HtmlLib.asPx(18);
+        itemDiv.append(indented);
+        for (final post in conv.posts) {
+          indented.appendText(post.hitText);
+          indented.appendHtml('<br/>');
+        }
       }
     }
-    if (response.convs.length == 0) _resultDiv.innerHtml = '(none)';
+    if (!hasAny) _resultDiv.innerHtml = '(none)';
   }
 }

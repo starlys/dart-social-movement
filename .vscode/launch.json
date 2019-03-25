@@ -14,8 +14,13 @@
             "name": "Worker",
             "program": "${workspaceRoot}/worker.dart",
             "request": "launch",
+            "type": "dart",            
+        },
+        {
+            "name": "Test ad hoc",
             "type": "dart",
-            
-        }
+            "request": "launch",
+            "program": "${workspaceRoot}/_test.dart"
+        },
     ]
 }

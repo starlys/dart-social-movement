@@ -161,8 +161,9 @@ class ConvLib {
         combined.addAll(rows);
       }
 
-      //sort and eliminate dups
-      combined = MiscLib.distinct(combined, (r) => r.id);
+      //sort and eliminate duplicate conv rows
+      String nominate(Map<String, dynamic> row) => row['id'];
+      combined = MiscLib.distinct(combined, nominate);
       combined.sort((a, b) => (a['created_at'] as DateTime).compareTo(b['created_at']));
       return combined;
   }

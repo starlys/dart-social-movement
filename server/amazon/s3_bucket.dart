@@ -45,7 +45,7 @@ class S3Bucket {
       .then((HttpClientRequest request) {
         DateTime now = new DateTime.now();
         request.headers.date = now;
-        Map amzHeaders = {};
+        Map<String, String> amzHeaders = {};
         var contentType = '';
         request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
         String authorization = _getAuthorization(path, 'DELETE', '', contentType,

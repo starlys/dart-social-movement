@@ -58,7 +58,7 @@ class ProjectMembersPane extends BasePane {
 
     //search either on server or by filtering previously loaded complete results
     if (_project != null && _project.completeLoad == 'Y') { //filter locally
-      _filteredUsers = _project.users.where((u) =>
+      _filteredUsers = _project.users.cast<ProjectUserItem>().where((u) =>
         u.nick.toLowerCase().contains(name) || u.publicName.toLowerCase().contains(name))
         .toList();
     } else { //reload
@@ -178,7 +178,7 @@ class ProjectMembersPane extends BasePane {
     ProjectUserQueryRequest req = new ProjectUserQueryRequest(projectId: _projectId,
       resultPage: _pageNo, name: nameFilter);
     _project = await RpcLib.projectUserQuery(req);
-    _filteredUsers = _project.users;
+    _filteredUsers = _project.users.cast<ProjectUserItem>();
     for (final user in _project.users) {
       _voteKindByUserId[user.userId] = user.voteKind;
       _userKindByUserId[user.userId] = user.kind;

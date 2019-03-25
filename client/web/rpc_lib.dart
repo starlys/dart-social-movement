@@ -9,13 +9,12 @@ import 'root/globals.dart';
 class RpcLib {
   static String serverBaseUrl;
 
-  ///init server URL - for development, if loaded from file://... then use
-  /// local server
+  ///init server URL - for development, use local server
   static init() {
-    if (window.location.protocol == "file:")
-      serverBaseUrl = 'http://localhost:8083/servant/v2/';
-    else
+    if (window.location.port == "443" || window.location.port == "80")
       serverBaseUrl = 'https://www.autistic.zone/servant/v2/';
+    else
+      serverBaseUrl = 'http://localhost:8081/servant/v2/';
   }
 
   ///add credentials to a Map version of the request wire object, and return it as a json string
@@ -27,14 +26,13 @@ class RpcLib {
   ///make the RPC call and return the results as a Map
   static Future<Map<String,dynamic>> rpcAsMap(String method, Map<String,dynamic> requestMap) async {
     String url = serverBaseUrl + method;
-    String requestJson =requestToJson(method, requestMap);
+    String requestJson = requestToJson(method, requestMap);
 
     //send json request
     Map<String, String> requestHeaders = {
       'Content-Type': "application/json"
     };
-    HttpRequest hreq = await HttpRequest.request(url, method:'POST', 
-      responseType: 'json',
+    final hreq = await HttpRequest.request(url, method:'POST', 
       requestHeaders: requestHeaders, 
       sendData: requestJson);
     Map responseMap = json.decode(hreq.responseText);
@@ -67,7 +65,15 @@ class RpcLib {
 
   static Future<AuthenticateResponse> authenticate(APIRequestBase req) async {
     final requestMap = APIRequestBaseSerializer.toMap(req);
-    var responseMap = await RpcLib.rpcAsMap('Authenticate', requestMap);
+    final url = serverBaseUrl + 'Authenticate';
+    final requestJson = json.encode(requestMap);
+    Map<String, String> requestHeaders = {
+      'Content-Type': "application/json"
+    };
+    final hreq = await HttpRequest.request(url, method:'POST', 
+      requestHeaders: requestHeaders, 
+      sendData: requestJson);
+    Map responseMap = json.decode(hreq.responseText);
     final response = AuthenticateResponseSerializer.fromMap(responseMap);
     return response;
   }

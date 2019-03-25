@@ -7,12 +7,14 @@ class HtmlLib {
 
   static final String MORE = 'More';
 
-  //convert a number N to string 'Npx'
-  static String asPx(int n) {
+  ///convert a number N to string 'Npx'
+  static String asPx(dynamic n) {
+    if (n is double)
+      return n.toInt().toString() + 'px';
     return n.toString() + 'px';
   }
 
-  //generate a unique ID for html elements
+  ///generate a unique ID for html elements
   static String uniqueId() {
     return 'e' + (++_maxid).toString();
   }
@@ -36,6 +38,7 @@ class HtmlLib {
   ///wrapper to insertCollapsed2 with a single string and collapse position
   static void insertCollapsed1(Element parent, String collapsible,
     {int collapsePosition:150, String moreMessage:null, bool hideInitial:false}) {
+    collapsible = collapsible ?? '';
     if (collapsible.length > collapsePosition + 20) {
       String first = collapsible.substring(0, collapsePosition);
       String second = collapsible.substring(collapsePosition);
@@ -96,7 +99,7 @@ class HtmlLib {
 
   ///parse a text area into a list of strings, allowing for \r\n or \n delimiters
   static List<String> textAreaValueToLines(TextAreaElement el, {bool removeBlanks: false}) {
-    List lines = el.value.split('\n').map((s) => s.replaceAll('\r', '')).toList();
+    var lines = el.value.split('\n').map((s) => s.replaceAll('\r', '')).cast<String>().toList();
     if (removeBlanks) {
       lines = lines.map((o) => o.trim()).where((o) => o.length > 0).toList();
     }

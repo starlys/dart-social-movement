@@ -170,7 +170,7 @@ class Servant {
     if (authFail != null) return ConvQueryResponse(base: authFail);
 
     //process args (prevent sql injection)
-    String searchTerm = args.term.replaceAll('\'', '');
+    String searchTerm = (args.term ?? '').replaceAll('\'', '');
 
     List<ConvQueryConvItemResponse> convs;
     final dbresult = await Database.safely('ConvQuery', (db) async {
@@ -191,10 +191,9 @@ class Servant {
     //declare return values
     String retParentTitle, retParentPaneKey, retReadPositionWDT, retTitle,
       retReplyAllowedDesc, retDeleteMessage;
-    bool retIsManager, retIsJoined, retAnySkipped, retReplyAllowed, retLike, retBookmarked;
+    bool retIsManager, retIsJoined = false, retAnySkipped, retReplyAllowed = false, retLike = false, retBookmarked = false;
     int retReplyMaxLength;
     final retPosts = new List<ConvGetPostItem>();
-
 
     final dbresult = await Database.safely('ConvGet', (db) async {
       //function to load joinRow
@@ -233,7 +232,7 @@ class Servant {
 
       //get title/pane key of parent proj/event
       if (eventId != null) {
-        retParentPaneKey = await MiscLib.queryScalar(db, 'select title from event where id=${eventId}', null);
+        retParentTitle = await MiscLib.queryScalar(db, 'select title from event where id=${eventId}', null);
         retParentPaneKey = 'event/${eventId}';
       }
       if (projectId != null) {
@@ -267,23 +266,19 @@ class Servant {
       }
 
       //set top level items in output
-      retIsJoined = false;
       retReadPositionWDT = WLib.dateTimeToWire(readPosition);
       retTitle = convRow['title'];
-      retReplyAllowed = false;
       retReplyAllowedDesc = '';
       DateTime deleteTime = convRow['delete_time'];
       retDeleteMessage = convRow['open'] == 'Y'
         ? (deleteTime != null ? 'Will be closed on ${DateLib.formatSoonDate(deleteTime)}' : 'Open')
         : 'Closed';
-      retLike = false;
-      retBookmarked = false;
       if (joinRow != null) {
         if (joinRow['status'] == 'J') retIsJoined = true;
         retLike = joinRow['like'] == 'Y';
         retBookmarked = joinRow['bookmarked'] == 'Y';
       }
-      if (postPermissions != null && retIsJoined == 'Y') {
+      if (postPermissions != null && retIsJoined) {
         retReplyAllowed = postPermissions.allowedNow;
         retReplyAllowedDesc = postPermissions.explanation;
         retReplyMaxLength = postPermissions.charLimit;
@@ -1233,14 +1228,14 @@ class Servant {
       retProposals = (await MiscLib.query(db, 'select id,active,title,created_at from proposal where project_id=${args.projectId} order by created_at desc', null))
         .map((row) => new ProjectProposalItem(iid: row['id'], active: row['active'], title: row['title'],
         createdAtR: DateLib.formatDateTime(row['created_at'], tzName)
-        ));
+        )).toList();
       retConvs = (await MiscLib.query(db, 'select id,open,title,last_activity from conv where project_id=${args.projectId} order by last_activity desc', null))
         .map((row) => new ProjectConvItem(iid: row['id'], open: row['open'], title: row['title'],
         lastActivity: DateLib.formatDateTime(row['last_activity'], tzName)
-        ));
+        )).toList();
       retDocs = (await MiscLib.query(db, 'select id,title from doc where project_id=${args.projectId} order by title', null))
         .map((row) => new ProjectDocItem(iid: row['id'], title: row['title']
-        ));
+        )).toList();
     });
     return ProjectGetResponse(base: dbBase(dbresult),
       active: retActive,
@@ -1539,14 +1534,14 @@ class Servant {
       retCreatedByAvatarUrl = ImageLib.getAvatarUrl(retCreatedBy, userRow['avatar_no']);
 
       //unpack options and votes maps
-      Map<String, String> optionsMap = row['options'];
-      Map<String, int> countMap = row['vote_counts'];
+      Map<String, dynamic> optionsMap = MiscLib.jsonToMap(row['options']);
+      Map<String, dynamic> countMap = MiscLib.jsonToMap(row['vote_counts']);
       optionsMap.forEach((opt, desc) {
         int optN = int.parse(opt);
         int voteCount = 0;
         if (countMap != null && countMap.containsKey(opt))
           voteCount = countMap[opt];
-        var item = new ProposalOptionItem(optionNo: optN, optionDesc: desc, voteCount: voteCount);
+        var item = new ProposalOptionItem(optionNo: optN, optionDesc: desc.toString(), voteCount: voteCount);
         retOptions.add(item);
       });
 
@@ -2019,7 +2014,8 @@ class Servant {
         retIsSiteAdmin = userRow['site_admin'];
         retPublicName = userRow['public_name'];
         retPrefEmailNotify = userRow['pref_email_notify'];
-        retPublicLinks = userRow['public_links'];
+        final publicLinksMap = MiscLib.jsonToMap(userRow['public_links']);
+        retPublicLinks = Map<String, String>.from(publicLinksMap);
         retTimeZone = userRow['timezone'];
         retAvatarUrl = ImageLib.getAvatarUrl(args.userId, userRow['avatar_no']);
       }
@@ -2115,7 +2111,7 @@ class Servant {
         //store (with false password, and get id from db)
         userId = await MiscLib.queryScalar(db, 'insert into xuser(status,nick,password,kind,public_name,public_links,timezone,pref_email_notify,created_at,last_activity,last_recommend,sitewide_rank,site_admin,avatar_no)'
           ' values(\'A\',@nick,\'temp-pw\',@kind,@name,@links,@tz,@pref1,@d1,@d2,@d3,0,\'N\',0) returning id',
-          {'nick': args.saveNick, 'kind': args.kind, 'name': args.publicName, 'links': args.publicLinks,
+          {'nick': args.saveNick, 'kind': args.kind, 'name': args.publicName, 'links': MiscLib.jsonParameter(args.publicLinks),
           'tz': args.timeZone, 'pref1': args.prefEmailNotify, 'd1':now, 'd2':now, 'd3':now});
       }
 
@@ -2124,7 +2120,7 @@ class Servant {
         userId = ai.id;
         await db.execute('update xuser set kind=@kind,public_name=@name,public_links=@links,timezone=@tz,pref_email_notify=@pref1'
           ' where id=${userId}',
-          substitutionValues: {'kind': args.kind, 'name': args.publicName, 'links': args.publicLinks,
+          substitutionValues: {'kind': args.kind, 'name': args.publicName, 'links': MiscLib.jsonParameter(args.publicLinks),
           'tz': args.timeZone, 'pref1': args.prefEmailNotify});
         Authenticator.invalidate(ai.nick);
       }
@@ -2135,7 +2131,8 @@ class Servant {
         var rand = new Random();
         int code = 10000 + rand.nextInt(89999);
         var proposedEmail = {'email': args.email, 'code': code.toString()};
-        await db.execute('update xuser set proposed_email=@p where id=${userId}', substitutionValues: {'p': proposedEmail});
+        await db.execute('update xuser set proposed_email=@p where id=${userId}', 
+          substitutionValues: {'p': MiscLib.jsonParameter(proposedEmail)});
 
         //email the code to args.email
         var settings = ApiGlobals.configSettings;
@@ -2205,7 +2202,7 @@ class Servant {
         //email it
         String email1 = userRow['email'] ?? '';
         String email2 = null;
-        Map proposedEmail = userRow['proposed_email'];
+        final proposedEmail = MiscLib.jsonToMap(userRow['proposed_email']);
         if (proposedEmail != null) email2 = proposedEmail['email'];
         List<String> allEmails = new List<String>();
         if (email1.length > 0) allEmails.add(email1);

@@ -36,8 +36,8 @@ class PaneFactory {
     return await create(new PaneKey(pkfull));
   }
 
-  //create a pane from a pane key, add to globals,
-  // show on screen and initialize
+  ///create a pane from a pane key, add to globals,
+  /// show on screen and initialize
   static Future<BasePane> create(PaneKey pk, {bool doScroll: true}) async {
     //record activity
     Globals.lastActivityUtc = WLib.utcNow();
@@ -60,7 +60,7 @@ class PaneFactory {
     }
 
     //delete panes if >500 total
-    while(Globals.panes.length > 5000) delete(Globals.panes[0]);
+    while(Globals.panes.length > 500) delete(Globals.panes[0]);
 
     //collapse panes to ensure only 10 are expanded
     int numExpanded = Globals.panes.where((p) => !p.isCollapsed).length;
@@ -123,11 +123,17 @@ class PaneFactory {
     PushQueueHandler.notifyPaneOpened(p);
 
     //scroll to new pane (with possible delay)
-    var goSmoothScroll = () {
-      main1.animate([{"scrollTop": priorScrollHeight + 30}], {
-        "duration": 500,
-        "fill": "forwards"
-      });
+    final goSmoothScroll = () {
+      final int startAt = main1.scrollTop, endAt = priorScrollHeight + 30;
+      if (endAt > startAt + 30) {
+        main1.scrollTop = startAt + 10;
+        Timer(Duration(milliseconds: 30), () => main1.scrollTop = startAt + 10);
+        Timer(Duration(milliseconds: 60), () => main1.scrollTop = startAt + 20);
+        Timer(Duration(milliseconds: 90), () => main1.scrollTop = startAt + 30);
+        Timer(Duration(milliseconds: 120), () => main1.scrollTop = endAt);
+      } else {
+        main1.scrollTop = endAt;
+      }
     };
     if (doScroll && !isReopeningLastPane) {
       if (waitForCloseAnimation)
@@ -156,7 +162,11 @@ class PaneFactory {
       if (isLast)
         p.borderElement.remove();
       else {
-        var effect = p.borderElement.animate([{"height": 0, 'margin-top': 0, 'margin-bottom': 0}], {
+        var effect = p.borderElement.animate(
+          [
+            {"height": HtmlLib.asPx(actualHeight), 'margin-top': 0, 'margin-bottom': 0},
+            {"height": "0", 'margin-top': 0, 'margin-bottom': 0}
+          ], {
           "duration": 300,
           "fill": "forwards"
         });

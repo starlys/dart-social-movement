@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  angel_cors:
+    dependency: "direct main"
+    description:
+      name: angel_cors
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   angel_framework:
     dependency: "direct main"
     description:

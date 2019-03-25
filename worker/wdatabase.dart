@@ -89,7 +89,7 @@ class WDatabase extends Database {
     //print("debug5");
 
     //declare notification text
-    final String infoMessage = 'Site administrators are chosen automatically by the system each week.'
+    final String infoMessage = 'Site administrators are chosen automatically by the system each week. '
       'It is not a vote, and the role assignments can change at any time. '
       'Generally, managers of the projects having the most membership are the ones who are selected to be administrators. ';
     final String demoteMessage = 'You are no longer a site administrator. ' + infoMessage;

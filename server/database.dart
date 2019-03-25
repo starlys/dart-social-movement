@@ -39,7 +39,7 @@ abstract class Database {
   ///create and open one database connection
   static Future<PostgreSQLConnection> _createOne() async {
     bool isDev = ApiGlobals.configLoader.isDev;
-    final dbsettings = isDev ? ApiGlobals.configSettings.database :ApiGlobals.configSettings.database_dev;
+    final dbsettings = isDev ? ApiGlobals.configSettings.database_dev :ApiGlobals.configSettings.database;
 
     //open connections and
     //initialize the uuid-ossp extension for each connection; this hack exists

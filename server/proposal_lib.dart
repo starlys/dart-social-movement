@@ -41,7 +41,7 @@ class ProposalLib {
       ' values(\'Y\',\'${kind}\',\'${eligible}\',@title,@sum,@sumhtml,${passTarget},${failTarget},'
       '@opt,@timeout,\'${timeoutAction}\',@now,${createdBy})'
       ' returning id',
-      {'title': title, 'sum': summary, 'sumhtml': summaryHtml, 'opt': optionsMap,
+      {'title': title, 'sum': summary, 'sumhtml': summaryHtml, 'opt': MiscLib.jsonParameter(optionsMap),
       'timeout': timeout, 'now': WLib.utcNow()});
     return id;
   }
@@ -60,7 +60,7 @@ class ProposalLib {
 
     //write table_name, col_values, key_prefix
     await db.execute('update proposal set table_name=@t, col_values=@v, key_prefix=@kp where id=${proposalId}',
-      substitutionValues: {'t':tableName, 'v':colValues, 'kp': keyPrefix});
+      substitutionValues: {'t': tableName, 'v': MiscLib.jsonParameter(colValues), 'kp': keyPrefix});
 
     return proposalId;
   }
@@ -105,7 +105,7 @@ class ProposalLib {
       'title': 'System change: ${changeTitle}',
       'summary': changeSummary,
       'pass_target': config.operation.root_doc_vote_min,
-      'options': _stringsToMap(options),
+      'options': MiscLib.jsonParameter(_stringsToMap(options)),
       '*timeout': votePeriodDays,
       'timeout_action': 'M',
       '*created_at': 0,
@@ -193,7 +193,7 @@ class ProposalLib {
       'summary_html': changeHtml,
       'dtext': newBody,
       'pass_target': config.operation.root_doc_vote_min,
-      'options': _stringsToMap(_yesNoOptions()),
+      'options': MiscLib.jsonParameter(_stringsToMap(_yesNoOptions())),
       '*timeout': votePeriodDays,
       'timeout_action': 'M',
       '*created_at': 0,
@@ -334,7 +334,7 @@ class ProposalLib {
 
     //close it and record results
     await db.execute('update proposal set active=\'N\',vote_counts=@counts,winning_option=${winOption} where id=${proposalId}',
-      substitutionValues: {'counts': voteCounts});
+      substitutionValues: {'counts': MiscLib.jsonParameter(voteCounts)});
     await delete(db, proposalId, false);
 
     //specific actions by proposal type
@@ -358,7 +358,7 @@ class ProposalLib {
   /// as marked by 'special cases' in-line
   static Future _finalizeKindNew(PostgreSQLConnection db, int proposalId, Map<String, dynamic> proposalRow, int winOption) async {
     //create a colValues map that undoes the magic column names (see datase doc)
-    Map<String, dynamic> colValuesWithMagic = proposalRow['col_values'];
+    Map<String, dynamic> colValuesWithMagic = MiscLib.jsonToMap(proposalRow['col_values']);
     Map<String, dynamic> colValues = new Map<String, dynamic>();
     colValuesWithMagic.forEach((colName, value) {
       if (colName.startsWith('*')) {
@@ -492,7 +492,7 @@ class ProposalLib {
   static Future _finalizeKindProj(PostgreSQLConnection db, int proposalId, Map<String, dynamic> proposalRow, int winOption) async {
     //get the results in readable form
     String title = proposalRow['title'];
-    Map options = proposalRow['options'];
+    final options = MiscLib.jsonToMap(proposalRow['options']);
     String winOptionS = winOption.toString();
     String winOptionText = options.containsKey(winOptionS) ? options[winOptionS] : 'Unknown';
     String body = 'A project poll has completed and is now closed. The winning option is "${winOptionText}". Poll: ${title}';
@@ -528,6 +528,4 @@ class ProposalLib {
     for (int userId in userIds)
       await MiscLib.notify(db, userId, body, linkKey: link, linkText: 'Open document');
   }
-
-
 }

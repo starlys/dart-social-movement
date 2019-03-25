@@ -17,7 +17,7 @@ import 'dialog/user_dialog.dart';
 import 'main_menu_handler.dart';
 import 'push_queue_handler.dart';
 
-//main controller of client app
+///main controller of client app
 class MainController {
 
   //font & color themes; note that the readable names list corresponds to the
@@ -27,7 +27,7 @@ class MainController {
   static List<String> colorThemes = ['', 'theme-dark', 'theme-muted', 'theme-princess', 'theme-forest'];
   static List<String> colorThemeNames = ['Default', 'Dark', 'Muted', 'Princess', 'Forest'];
 
-  //initialize app
+  ///initialize app
   static Future startApp() async {
 
     //init libraries
@@ -81,7 +81,7 @@ class MainController {
     } catch (ex) {} //can't abort startapp if this fails
 
     //show menus appropriate for login status and screen size
-    if (Globals.isLargeScreen) {
+    if (Globals.isLargeScreen ?? false) {
       if (Globals.nick == null) {
         showMenu();
       } else {
@@ -304,14 +304,14 @@ class MainController {
     if (isLoggedIn) {
       logInOut.text = 'Log Out';
       hello.appendText('Hello ${Globals.publicName} ');
-      $('#button-next').style.visibility = 'visible';
-      $('#button-mystuff').style.visibility = 'visible';
+      $('#button-next').style.display = 'inline-block';
+      $('#button-mystuff').style.display = 'inline-block';
     } else {
       logInOut.text = 'Log In';
       hello.appendText('(not logged in) ');
-      $('#mystuff1').style.visibility = 'hidden';
-      $('#button-next').style.visibility = 'hidden';
-      $('#button-mystuff').style.visibility = 'hidden';
+      $('#mystuff1').style.display = 'none';
+      $('#button-next').style.display = 'none';
+      $('#button-mystuff').style.display = 'none';
     }
     hello.append(logInOut);
     MainMenuHandler.setVisibility(isLoggedIn);
@@ -335,7 +335,7 @@ class MainController {
     bool wasShowing = Globals.myStuffShowing;
     hideMenuPanels();
     if (allowHide && wasShowing) return;
-    $('#mystuff1').style.visibility = 'visible';
+    $('#mystuff1').style.display = 'inline-block';
     Globals.myStuffShowing = true;
     _showPopupConnector($('#button-mystuff'));
   }
@@ -345,7 +345,7 @@ class MainController {
     bool wasShowing = Globals.menuShowing;
     hideMenuPanels();
     if (allowHide && wasShowing) return;
-    querySelector('#menu1').style.visibility = 'visible';
+    querySelector('#menu1').style.display = 'inline-block';
     Globals.menuShowing = true;
     _showPopupConnector(querySelector('#button-menu'));
   }

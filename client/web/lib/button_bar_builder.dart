@@ -15,8 +15,8 @@ class ButtonBarBuilder {
     parent.append(_buttonsDiv);
   }
 
-  ///add a button to the bar with handler
-  ButtonElement addButton(String text, Future handler(MouseEvent)) {
+  ///add a button to the bar with handler; the handler should accept dynamic and cast it to MouseEvent
+  ButtonElement addButton(String text, Future handler(dynamic)) {
     var b = new ButtonElement() ..text = text ..className = 'button';
 
     //wrap handler in a function that does systemwide things

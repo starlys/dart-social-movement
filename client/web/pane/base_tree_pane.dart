@@ -42,7 +42,7 @@ class BaseTreePane extends BasePane {
     //load categories, which comes back as a flat list; then convert to
     //tree-shaped data
     CategoryQueryResponse cats = await RpcLib.categoryQuery(new CategoryQueryRequest(kind: categoryKind));
-    _allCats = cats.categories;
+    _allCats = cats.categories.cast<CategoryItemResponse>();
     List<CategoryNode> convertImmediateChildren(int parentId) {
       return _allCats.where((c) => c.parentId == parentId)
         .map((c) => new CategoryNode() ..title = c.title ..description = c.description ..id = c.iid)
@@ -69,7 +69,9 @@ class BaseTreePane extends BasePane {
   }
 
   ///handle node selection: create detail box
-  Future _nodeSelectHandler(Element node) async {
+  void _nodeSelectHandler(dynamic node0) async {
+    final node = node0 as Element;
+
     //delete old detail box
     if (_detailBox != null) _detailBox.remove();
 
@@ -110,7 +112,7 @@ class BaseTreePane extends BasePane {
   void insertDetailButtons(ButtonBarBuilder bar, int catId) {}
 
   ///delete selected category after confirmation
-  Future deleteCategoryHandler(MouseEvent e) async {
+  Future deleteCategoryHandler(dynamic e0) async {
     ConfirmDialog dialog = new ConfirmDialog('Delete category? Items at this level will be moved up a level', ConfirmDialog.YesNoOptions);
     int btnNo = await dialog.show();
     if (btnNo != 0) return;
@@ -120,14 +122,14 @@ class BaseTreePane extends BasePane {
   }
 
   ///create a new category as a sister or child of the selected one
-  Future createCategoryHandler(MouseEvent e) async {
+  Future createCategoryHandler(dynamic e0) async {
     CategoryDialog dlg = new CategoryDialog(categoryKind, null, null, null, _selectedCatId, _selectedCat.title);
     bool saved = await dlg.show();
     if (saved) recreatePane(); //hack, might be better to update this pane so the same cat stays selected
   }
 
   ///edit the title/desc of the selected category
-  Future editCategoryHandler(MouseEvent e) async {
+  Future editCategoryHandler(dynamic e0) async {
     CategoryDialog dlg = new CategoryDialog(categoryKind, _selectedCatId, _selectedCat.title,
       _selectedCat.description, null, null);
     bool saved = await dlg.show();
@@ -135,7 +137,7 @@ class BaseTreePane extends BasePane {
   }
 
   ///move the selected category to the sister or child position relative to another reference category
-  Future moveCategoryHandler(MouseEvent e) async {
+  Future moveCategoryHandler(dynamic e0) async {
     //select the reference cat
     NodeSelectDialog dlg = new NodeSelectDialog(_topCats, 'Choose the target category (where this category will move to)');
     int referenceCatId = await dlg.show();
@@ -160,7 +162,7 @@ class BaseTreePane extends BasePane {
   }
 
   ///move some/all of the projects/resources in this category to another category
-  Future moveContentsHandler(MouseEvent e) async {
+  Future moveContentsHandler(dynamic e0) async {
     //chose projects/resources to move
     SelectMultipleDialog dlg1 = new SelectMultipleDialog(getContentTitles(), 'Choose items to move to a new category');
     List<String> titlesToMove = await dlg1.show();
@@ -197,31 +199,4 @@ class BaseTreePane extends BasePane {
   List<int> getContentIds(List<String> contentTitles) {
     return null;
   }
-
-  //experimental DWT tree
-  /* styles copied from DWT resource/clean/clean.css */
-   /*  Tree tree = createTree();
-       HtmlPanel bodyDwt = new HtmlPanel('');
-       bodyDwt.setElement(bodyElement);
-       bodyDwt.add(tree);
-       //import 'package:dart_web_toolkit/ui.dart';
-       //import 'package:dart_web_toolkit/event.dart';
-   */
-/*  Tree createTree() {
-    Tree tree = new Tree();
-    var itemA = tree.addTextItem('aaaaaaaaa');
-    itemA.addTextItem('Argentina');
-    var itemB = tree.addTextItem('bbbbb');
-    var itemC = tree.addTextItem('ccccccccc');
-    var itemCongo = itemC.addTextItem('Congo');
-    //new SelectionHandler<TreeItem>()..onSelection(event)
-    tree.addSelectionHandler(new SelectionHandlerAdapter((SelectionEvent e) {
-      TreeItem sel = e.getSelectedItem();
-      sel.getElement().text = 'got selected';
-    }));
-    itemCongo.getElement().onClick.listen((e) => window.alert('Congo'));
-    //RootPanel.get();
-    //Dom.getClientWidth()
-    return tree;*/
-
 }

@@ -68,7 +68,7 @@ class ResourceTreePane extends BaseTreePane {
   @override
   List<int> getContentIds(List<String> contentTitles) {
     return contentTitles.map((s) {
-      List<ResourceItem> matches = _resources.items.where((i) => i.title == s).toList();
+      final matches = _resources.items.where((i) => i.title == s).toList();
       if (matches.length > 0) return matches[0].iid;
       return null;
     })

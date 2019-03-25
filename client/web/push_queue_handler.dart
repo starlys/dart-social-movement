@@ -64,7 +64,7 @@ class PushQueueHandler {
       final pushQueueResponse = await RpcLib.pushQueueGet(pushArgs);
       if (fullMode && pushQueueResponse.fullModeStatus == null)
         Globals.lastFullPollUtc = now; //only updating the poll time if it was allowed by server
-      List<PushQueueItem> items = _filterListOfItems(pushQueueResponse.items);
+      List<PushQueueItem> items = _filterListOfItems(pushQueueResponse.items.cast<PushQueueItem>().toList());
       itemsReceived(fullMode, items, 'S');
 
       //UI when done polling
@@ -95,7 +95,7 @@ class PushQueueHandler {
 
   ///given items from server, filter out notifications which are already open
   static List<PushQueueItem> _filterListOfItems(List<PushQueueItem> items) {
-    if (items == null) return new List();
+    if (items == null) return new List<PushQueueItem>();
     final niceitems = List<PushQueueItem>.from(items);
 
     //filter out notifs that are already open

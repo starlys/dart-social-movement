@@ -43,7 +43,7 @@ class EventPane extends BasePane {
     //find logged in user's RSVP
     String myStatus = 'D', myStatusDesc = '';
     if (loggedIn) {
-      Iterable<EventGetUserResponse> myselfs = event.users.where((u) => u.userId == Globals.userId);
+      final myselfs = event.users.where((u) => u.userId == Globals.userId);
       if (myselfs.length > 0) {
         myStatus = myselfs.first.status;
         myStatusDesc = myselfs.first.statusDesc;

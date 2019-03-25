@@ -27,7 +27,7 @@ class Linkback {
       final row = await MiscLib.queryRow(db, 'select proposed_email from xuser where id=@i',
         {'i':id});
       if (row != null) {
-        Map proposedEmail = row['proposed_email'];
+        final proposedEmail = MiscLib.jsonToMap(row['proposed_email']);
         if (proposedEmail != null) {
           email = proposedEmail['email'];
           actualCode = proposedEmail['code'];

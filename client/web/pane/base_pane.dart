@@ -112,7 +112,7 @@ class BasePane {
     paneBody.text = 'loading...';
     paneMenuBar = new ButtonBarBuilder(pane, className: 'pane-menubar');
     paneMenuBar.addElement(paneMin);
-    paneMenuBar.addElement(paneClose);
+    //paneMenuBar.addElement(paneClose); //disabled; see note below; styles still exist
     paneMenuBar.addElement(paneReopen);
 
     //add to DOM
@@ -127,9 +127,9 @@ class BasePane {
     paneReopen.onClick.listen((e) {
       recreatePane();
     });
-    paneClose.onClick.listen((e) {
-      PaneFactory.delete(this);
-    });
+    //paneClose.onClick.listen((e) { //disabled because people should collapse panes to allow undo; closing is too permanent
+      //PaneFactory.delete(this);
+    //});
   }
 
   ///change the pane title

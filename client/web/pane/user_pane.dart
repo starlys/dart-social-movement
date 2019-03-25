@@ -84,9 +84,9 @@ class UserPane extends BasePane {
       assocBox.appendHtml('<h3><img src="images/${iconName}.png" /> ${sectName}</h3>');
       for (APIResponseAssociation assoc in assocs) HtmlLib.appendLinkToPane(assocBox, assoc.linkText, assoc.linkPaneKey);
     }
-    build1AssocSection('Events attending', user.events, 'paneevent');
-    build1AssocSection('Projects', user.projects, 'paneproject');
-    build1AssocSection('Resources submitted', user.resources, 'paneresource');
+    build1AssocSection('Events attending', user.events.cast<APIResponseAssociation>(), 'paneevent');
+    build1AssocSection('Projects', user.projects.cast<APIResponseAssociation>(), 'paneproject');
+    build1AssocSection('Resources submitted', user.resources.cast<APIResponseAssociation>(), 'paneresource');
 
     //button bar
     if (loggedIn && Globals.nick == user.nick) {

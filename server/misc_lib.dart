@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/models.dart';
 
+typedef nomineeFunc<T, mT> = mT Function(T);
+
 ///misc helper functions for API and worker
 class MiscLib {
 
@@ -74,7 +76,7 @@ class MiscLib {
     return managerRows.map((row) => row['xuser_id']).toList();
   }
 
-  //get the password hash for the given raw password
+  ///get the password hash for the given raw password
   static String passwordHash(String s) {
     if (s == null) return '';
     List<int> pwBytes = sha256.convert(utf8.encode(s)).bytes;
@@ -82,16 +84,30 @@ class MiscLib {
     return hashed;
   }
 
-  //Get distinct items based on a map function. The map should return a
-  // simple type that is checked for equality.
-  static List distinct(List i, Function map) {
-    final set = new Set();
+  ///Get distinct items in list of T based on a nominee function. The nominee should return a
+  /// member of T, which is a simple type mT that is checked for equality.
+  static List distinct<T, mT>(List<T> i, nomineeFunc<T, mT> nominee) {
+    final set = new Set<mT>();
     return i.where((e) {
-      var key = map(e);
+      final key = nominee(e);
       bool isNew = !set.contains(key);
       if (isNew) set.add(key);
       return isNew;
     }).toList();
+  }
+
+  ///convert a Map to a jsonb parameter for SQL statements
+  static String jsonParameter(Map<String, dynamic> content) => json.encode(content);
+
+  ///convert a database jsonb column (may be null) value to a Map
+  static Map<String, dynamic> jsonToMap(dynamic fieldValue) {
+    if (fieldValue == null)
+      return Map<String, dynamic>();
+    if (fieldValue is Map)
+      return fieldValue as Map<String, dynamic>;
+    if (fieldValue is String)
+      return json.decode(fieldValue) as Map<String, dynamic>;
+    throw Exception('Expected String or Map in jsonToMap; got ${fieldValue.runtimeType}');
   }
 
   ///get a list of all non-deleted user ids

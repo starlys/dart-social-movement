@@ -19,7 +19,7 @@ main() async {
   print("starting autzone API listener");
 
   //set up globals and other initializers
-  ApiGlobals.configLoader.init();
+  ApiGlobals.configLoader.init(true);
   bool isDev = ApiGlobals.configLoader.isDev;
   await DateLib.init();
   ImageLib.init(ApiGlobals.configSettings);
@@ -50,8 +50,8 @@ main() async {
     port = 443;
   }
 
-  //add routes for diagnostics
-  angelApp.fallback(cors());
+  //add routes for diagnostics/dev-mode
+  if (isDev) angelApp.fallback(cors());
   angelApp.get("/hello", (req, res) => "Hello, world!");
 
   //add routes for servant (the main api)
@@ -60,10 +60,12 @@ main() async {
   //add routes for static files
   final fs = const file.LocalFileSystem();
   final publicDir = fs.directory(ConfigLoader.rootPath() + '/public_html');
-  final vDirRoot = CachingVirtualDirectory(angelApp, fs, publicPath: '/', indexFileNames: ['App.html'], source: publicDir);
-  angelApp.fallback(vDirRoot.handleRequest);
-  final vDirChild = CachingVirtualDirectory(angelApp, fs, publicPath: '/static', source: publicDir);
-  angelApp.fallback(vDirChild.handleRequest);
+  final vDirRoot = CachingVirtualDirectory(angelApp, fs, source: publicDir);
+  angelApp.get('images/*', vDirRoot.handleRequest);
+  angelApp.get('js/*', vDirRoot.handleRequest);
+  angelApp.get('styles/*', vDirRoot.handleRequest);
+  angelApp.get('/', vDirRoot.handleRequest);
+  angelApp.get('/main.dart.js', vDirRoot.handleRequest);
 
   //attach the link-back style requests to the router (these include any
   // methods not served in the RPC style, such as links sent by email)
@@ -77,6 +79,7 @@ main() async {
   pulse.init(() async {
     await server.close(force: true);
     ApiGlobals.configLoader.stopWatching();
+    await Database.dispose();
 
     //in testing, this method does end, but the dart process takes a couple more
     // minutes to actually end.
@@ -85,5 +88,4 @@ main() async {
     io.exit(0);
   });
   pulse.start();
-
 }

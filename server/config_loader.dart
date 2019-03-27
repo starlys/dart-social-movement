@@ -28,11 +28,12 @@ class ConfigLoader {
     }
 
     ///load settings
-    init() {
+    init(bool watchForChanges) {
       _load();
 
       //set up recurring action to check file date every 1 min and reload
-      _timer = new Timer.periodic(new Duration(minutes:1), _timerTick);
+      if (watchForChanges)
+        _timer = new Timer.periodic(new Duration(minutes:1), _timerTick);
     }
 
     void _load() {

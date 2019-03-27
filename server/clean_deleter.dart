@@ -62,7 +62,7 @@ class CleanDeleter {
     await db.execute('delete from xuser_xuser where about_id=${userId}');
     await db.execute('delete from resource_xuser where xuser_id=${userId}');
     await db.execute('delete from conv_xuser where xuser_id=${userId}');
-    await db.execute('delete from conv_post_xuser where xuser_id=${userId}');
+    await db.execute('delete from conv_post_xuser where created_by=${userId}');
     await db.execute('delete from project_xuser where xuser_id=${userId}');
     await db.execute('delete from project_xuser_xuser where owner_id=${userId}');
     await db.execute('delete from project_xuser_xuser where about_id=${userId}');

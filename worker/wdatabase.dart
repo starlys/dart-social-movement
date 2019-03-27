@@ -3,7 +3,8 @@ import 'dart:math';
 import 'dart:io';
 import 'package:postgres/postgres.dart';
 import '../server/config_loader.dart';
-import 'globals.dart';
+import 'worker_globals.dart';
+import '../server/api_globals.dart';
 import '../server/misc_lib.dart';
 import '../server/database.dart';
 import '../models/models.dart';
@@ -14,7 +15,7 @@ import '../server/clean_deleter.dart';
 import '../server/logger.dart';
 
 ///worker database operations
-class WDatabase extends Database {
+class WDatabase {
 
   ///for debugging, write a 'worker_starting' or 'worker_finished' file
   /// containing the task name
@@ -22,7 +23,7 @@ class WDatabase extends Database {
     try {
       if (taskDesc == 'sendmail') return; //this gets called from sendmail script which is not interesting to debug now
       String fname2 = starting ? 'starting' : 'finished';
-      File f = new File(ConfigLoader.rootPath() + '/worker_' + fname2 + Globals.logFileSuffix);
+      File f = new File(ConfigLoader.rootPath() + '/worker_' + fname2 + WorkerGlobals.logFileSuffix);
       await f.writeAsString(WLib.utcNow().toIso8601String() + ' ' + taskDesc);
     }
     catch (ex) {
@@ -55,7 +56,7 @@ class WDatabase extends Database {
   ///calculate site leadership (aka. site admins)
   static Future assignSiteLeadership(PostgreSQLConnection db) async {
     //get settings
-    var adminSettings = Globals.configSettings.site_admin;
+    var adminSettings = ApiGlobals.configSettings.site_admin;
     int minAdmins = adminSettings.min;
     int maxAdmins = adminSettings.max;
     double fracAdmins = adminSettings.percent / 100.0;
@@ -80,12 +81,12 @@ class WDatabase extends Database {
     int leaderCount = max(minAdmins, min(maxAdmins, (userCount * fracAdmins).round()));
     //print("debug3");
     final rows1 = await MiscLib.query(db, 'select id from xuser order by sitewide_rank desc limit ${leaderCount}', null);
-    List<int> newLeaderIds = rows1.map((r) => r['id']).toList();
+    List<int> newLeaderIds = rows1.map((r) => r['id'] as int).toList();
     //print("debug4");
 
     //load in existing site admins
     final rows2 = await MiscLib.query(db, 'select id from xuser where site_admin=\'Y\'', null);
-    List<int> oldLeaderIds = rows2.map((r) => r['id']).toList();
+    List<int> oldLeaderIds = rows2.map((r) => r['id'] as int).toList();
     //print("debug5");
 
     //declare notification text
@@ -132,11 +133,11 @@ class WDatabase extends Database {
   ///recalculate things affected by conv_post.reaction
   static Future recalcReactions(PostgreSQLConnection db) async {
     //get settings
-    int reactionWeightDays = Globals.configSettings.spam.reaction_weight_days;
+    int reactionWeightDays = ApiGlobals.configSettings.spam.reaction_weight_days;
 
     //get the unique posts having new reactions
     final rows1 = await MiscLib.query(db, 'select distinct conv_post_id from conv_post_xuser where processed=\'N\' and reaction=\'X\'', null);
-    List<String> postIds = rows1.map((r) => r['conv_post_id']).toList();
+    List<String> postIds = rows1.map((r) => r['conv_post_id'].toString()).toList();
 
     //get the unique project_xuser records for the authors of each of the posts having new reactions
     final authorRows = await MiscLib.query(db, 'select distinct conv.project_id,conv_post.author_id'
@@ -192,8 +193,8 @@ class WDatabase extends Database {
     if (oldSpamCount == newSpamCount) return;
 
     //get restiction level info for old and new
-    RestrictionInfo oldRestrictions = Permissions.spamCountToRestrictions(Globals.configSettings, oldSpamCount);
-    RestrictionInfo newRestrictions = Permissions.spamCountToRestrictions(Globals.configSettings, newSpamCount);
+    RestrictionInfo oldRestrictions = Permissions.spamCountToRestrictions(ApiGlobals.configSettings, oldSpamCount);
+    RestrictionInfo newRestrictions = Permissions.spamCountToRestrictions(ApiGlobals.configSettings, newSpamCount);
 
     //save new spam count
     await db.execute('update project_xuser set spam_count=${newSpamCount} where project_id=${projectId} and xuser_id=${userId}');
@@ -317,7 +318,7 @@ class WDatabase extends Database {
   static Future countResourceVotes(PostgreSQLConnection db) async {
     //get list of unique resource ids having uncounted votes
     final rows1 = await MiscLib.query(db, 'select distinct resource_id from resource_xuser where processed<>\'Y\'', null);
-    List<int> resourceIds = rows1.map((r) => r['resource_id']).toList();
+    List<int> resourceIds = rows1.map((r) => r['resource_id'] as int).toList();
     if (resourceIds.length == 0) return;
 
     //recalc important_count
@@ -339,7 +340,7 @@ class WDatabase extends Database {
     DateTime cutoff = now.subtract(new Duration(hours:1));
     final rows1 = await MiscLib.query(db, 'select id from xuser where last_activity>last_recommend and last_recommend<@t',
       {'t': cutoff});
-    List<int> userIds = rows1.map((r) => r['id']).toList();
+    List<int> userIds = rows1.map((r) => r['id'] as int).toList();
 
     //recommendations by user
     for (int userId in userIds) {
@@ -356,7 +357,7 @@ class WDatabase extends Database {
   static Future _recommendProjectConversations(PostgreSQLConnection db, int userId) async {
     //find convs in all projects the user is already in
     final rows1 = await MiscLib.query(db, 'select id from conv where project_id in (select project_id from project_xuser where xuser_id=${userId} and kind<>\'N\')', null);
-    List<int> convIds = rows1.map((r) => r['id']).toList();
+    List<int> convIds = rows1.map((r) => r['id'] as int).toList();
     if (convIds.length == 0) return;
 
     //for those potential convs, get the exiting status
@@ -378,7 +379,7 @@ class WDatabase extends Database {
   static Future _recommendSpawnedConversations(PostgreSQLConnection db, int userId) async {
     //find convs the user is already in
     final rows1 = await MiscLib.query(db, 'select conv_id from conv_xuser where xuser_id=${userId} and status=\'J\'', null);
-    List<int> sourceConvIds = rows1.map((r) => r['conv_id']).toList();
+    List<int> sourceConvIds = rows1.map((r) => r['conv_id'] as int).toList();
     if (sourceConvIds.length == 0) return;
 
     //load ids of all convs spawned from those
@@ -400,7 +401,7 @@ class WDatabase extends Database {
     //get all convs liked by users being followed
     final rows1 = await MiscLib.query(db, 'select distinct conv_id from conv_xuser inner join xuser_xuser on conv_xuser.xuser_id=xuser_xuser.about_id'
       ' where xuser_xuser.owner_id=${userId} and xuser_xuser.kind=\'F\' and conv_xuser.like=\'I\'', null);
-    List<int> convIds = rows1.map((r) => r['conv_id']).toList();
+    List<int> convIds = rows1.map((r) => r['conv_id'] as int).toList();
     if (convIds.length == 0) return;
 
     //for those potential convs, get the exiting status
@@ -425,11 +426,11 @@ class WDatabase extends Database {
     final rows = await MiscLib.query(db, 'select id,created_at,last_activity from conv where open=\'Y\'', null);
 
     //get config values
-    var opSettings = Globals.configSettings.operation;
+    var opSettings = ApiGlobals.configSettings.operation;
     int convInactiveDays = opSettings.conv_inactive_days;
     int convOldDays = opSettings.conv_old_days;
     int convTooBig = opSettings.conv_too_big;
-    int deleteDays = Globals.configSettings.deletion.conv_days;
+    int deleteDays = ApiGlobals.configSettings.deletion.conv_days;
 
     //loop and determine if it should be closed
     DateTime activityCutoff = WLib.utcNow().subtract(new Duration(days: convInactiveDays));
@@ -485,7 +486,7 @@ class WDatabase extends Database {
   ///email new notifciations to user who request it
   static Future emailNotifications(PostgreSQLConnection db) async {
     //get config settings
-    String siteName = Globals.configSettings.siteName;
+    String siteName = ApiGlobals.configSettings.siteName;
 
     //get user ids having any un-emailed notifications
     final distinctUserRows = await MiscLib.query(db, 'select id,pref_email_notify,email from xuser where exists(select * from xuser_notify where xuser_id=xuser.id and emailed=\'N\')', null);

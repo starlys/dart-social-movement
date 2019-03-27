@@ -2,22 +2,25 @@ import 'dart:async';
 import 'package:postgres/postgres.dart';
 import 'models/models.dart';
 import 'worker/wdatabase.dart';
-import 'worker/globals.dart';
+import 'server/api_globals.dart';
 import 'worker/mail_lib.dart';
 import 'server/misc_lib.dart';
+import 'server/database.dart';
 
 ///entry point for sending mail; this script sends all queued mail
-/// and erases old sent mail
 Future main() async {
   print("starting autzone sendmail");
 
-  //set up globals
-  await Globals.configLoader.init();
+  //set up 
+  await ApiGlobals.configLoader.init(false);
+  await Database.init();
+  await Database.loadGlobals();
 
   //run
   await WDatabase.safely('sendmail', _sendAll, loggingFilePrefix: 'sendmail');
-  //io.exit(0);
-  Globals.configLoader.stopWatching();
+
+  //clean up
+  await Database.dispose();
 }
 
 //process all emails
@@ -31,7 +34,7 @@ Future _sendAll(PostgreSQLConnection db) async {
     final tomailRows = await MiscLib.query(db, 'select * from tomail where sent_at is null limit 100', null);
     if (tomailRows.length == 0) break;
     for (final tomailRow in tomailRows) {
-      await MailLib.send(Globals.configSettings, tomailRow['recipient'], tomailRow['subject'], tomailRow['body']);
+      await MailLib.send(ApiGlobals.configSettings, tomailRow['recipient'], tomailRow['subject'], tomailRow['body']);
       await db.execute('update tomail set sent_at=@d where id=${tomailRow['id']}', substitutionValues: {'d': WLib.utcNow()});
     }
   }

@@ -9,7 +9,6 @@ Duration _mailInterval = new Duration(minutes:2);
 /// It cooperates with the 'autzone' shell script to start/stop the services
 Future main(List<String> args) async {
   log("starting autzone supervisor");
-  //await endBoth();
   timerTick();
 }
 

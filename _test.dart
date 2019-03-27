@@ -1,8 +1,8 @@
 //import 'worker/mail_lib.dart';
-import 'dart:async';
+//import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'worker/globals.dart';
+//import 'worker/worker_globals.dart';
 //import 'server/twotier/wlib.dart';
 //import 'server/config.dart';
 import 'models/models.dart';
@@ -23,9 +23,7 @@ main() async {
 
 
 
-  Map<String, String> requestHeaders = {
-    'Content-Type': "application/json"
-  };
+ 
   final req = APIRequestBase(nick: 'indira', password: '12345');
   final requestMap = APIRequestBaseSerializer.toMap(req);
   final requestJson = json.encode(requestMap);

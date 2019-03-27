@@ -96,7 +96,7 @@ class BasePane {
       paneSubheader = new DivElement()..className = 'pane-subheader',
       paneBody = new DivElement()..id = bodyId ..className = 'pane-body';
     ButtonElement paneReopen = new ButtonElement() ..className = 'pane-reopen' ..title = 'Refresh',
-      paneClose = new ButtonElement()..className = 'pane-close' ..title = 'Close',
+      //paneClose = new ButtonElement()..className = 'pane-close' ..title = 'Close',
       paneMin = new ButtonElement()..className = 'pane-min' ..title = 'Collapse';
 
     //add parent-child relationships and other spans/links

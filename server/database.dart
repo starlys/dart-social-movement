@@ -36,10 +36,18 @@ abstract class Database {
     }
   }
 
+  ///close all connections
+  static Future dispose() async {
+    final toClose = List<DatabasePoolItem>.from(_pool);
+    _pool.clear();
+    for (final p in toClose)
+      await p.connection.close();
+  }
+
   ///create and open one database connection
   static Future<PostgreSQLConnection> _createOne() async {
     bool isDev = ApiGlobals.configLoader.isDev;
-    final dbsettings = isDev ? ApiGlobals.configSettings.database_dev :ApiGlobals.configSettings.database;
+    final dbsettings = isDev ? ApiGlobals.configSettings.database_dev : ApiGlobals.configSettings.database;
 
     //open connections and
     //initialize the uuid-ossp extension for each connection; this hack exists
@@ -54,8 +62,13 @@ abstract class Database {
     return db;
   }
 
+  static void _throwNotInitialized() {
+    if (_pool.length < poolSize) throw Exception('Database.init must be called first');
+  }
+
   ///find next available pool item, or null if they are all in use
   static DatabasePoolItem _findAvailable() {
+    _throwNotInitialized();
     for (int nTries = 0; nTries < poolSize; ++nTries) {
       if (++lastUsedIndex >= poolSize) lastUsedIndex = 0;
       if (!_pool[lastUsedIndex].inUse) return _pool[lastUsedIndex];

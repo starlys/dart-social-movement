@@ -22,5 +22,11 @@
             "request": "launch",
             "program": "${workspaceRoot}/_test.dart"
         },
+        {
+            "name": "Sendmail",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceRoot}/sendmail.dart"
+        },
     ]
 }

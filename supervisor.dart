@@ -24,15 +24,15 @@ Future endBoth() async {
   //tell procs to stop
   log("supervisor: initiating stop");
   await writeDebugTaskFile(true, 'endBoth');
-  File f_stop = new File('stop.txt');
+  File f_stop = new File('status/stop.txt');
   await f_stop.writeAsString("!");
 
   //wait a while for them to stop
   DateTime waitUntil = utcNow().add(new Duration(seconds: 30));
   while (waitUntil.isAfter(utcNow())) {
     sleep(new Duration(seconds:3));
-    File f_api = new File('api_alive.txt');
-    File f_bg = new File('worker_alive.txt');
+    File f_api = new File('status/api_alive.txt');
+    File f_bg = new File('status/worker_alive.txt');
     bool stillRunning = (await f_api.exists()) || (await f_bg.exists());
     if (!stillRunning) break;
   }
@@ -46,12 +46,12 @@ Future endBoth() async {
   //on Exception { }
 
   try {
-    File f_api = new File('api_alive.txt');
+    File f_api = new File('status/api_alive.txt');
     await f_api.delete();
   }
   catch (ex) {}
   try {
-    File f_bg = new File('worker_alive.txt');
+    File f_bg = new File('status/worker_alive.txt');
     await f_bg.delete();
   }
   catch (ex) {}
@@ -88,7 +88,7 @@ void timerTickLater() {
 Future timerTick() async {
   try {
     //detect restart (as signaled from autzone script)
-    File f_restart = new File('restart.txt');
+    File f_restart = new File('status/restart.txt');
     if (await f_restart.exists()) {
       log("supervisor: restart detected");
       await f_restart.delete();
@@ -97,9 +97,9 @@ Future timerTick() async {
     }
 
     //if restarting or either proc crashed, restart it
-    bool apiAlive = await isRunning('api_alive.txt', 3);
+    bool apiAlive = await isRunning('status/api_alive.txt', 3);
     if (!apiAlive) await startApi();
-    bool workerAlive = await isRunning('worker_alive.txt', 8);
+    bool workerAlive = await isRunning('status/worker_alive.txt', 8);
     if (!workerAlive) await startWorker();
 
     //if it's time to send mail, run that process
@@ -115,7 +115,7 @@ Future timerTick() async {
 
   ///write to supervisor_alive.txt for debugging
   try {
-    File f = new File(rootPath() + '/supervisor_alive.txt');
+    File f = new File(rootPath() + '/status/supervisor_alive.txt');
     await f.writeAsString("!");
   }
   catch (ex) {
@@ -154,7 +154,7 @@ void log(String message) {
 Future writeDebugTaskFile(bool starting, String taskDesc) async {
   try {
     String fname2 = starting ? 'starting' : 'finished';
-    File f = new File(rootPath() + '/supervisor_' + fname2 + '.txt');
+    File f = new File(rootPath() + '/status/supervisor_' + fname2 + '.txt');
     await f.writeAsString(utcNow().toIso8601String() + ' ' + taskDesc);
   }
   catch (ex) {

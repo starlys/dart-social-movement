@@ -539,14 +539,14 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.4"
+    version: "0.7.4+1"
   shelf_web_socket:
     dependency: transitive
     description:
       name: shelf_web_socket
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2+4"
+    version: "0.2.2+5"
   source_gen:
     dependency: transitive
     description:
@@ -581,14 +581,14 @@ packages:
       name: stream_channel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.8"
+    version: "1.7.0"
   stream_transform:
     dependency: transitive
     description:
       name: stream_transform
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.15"
+    version: "0.0.17"
   string_scanner:
     dependency: transitive
     description:
@@ -658,7 +658,7 @@ packages:
       name: web_socket_channel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.9"
+    version: "1.0.12"
   xml:
     dependency: transitive
     description:

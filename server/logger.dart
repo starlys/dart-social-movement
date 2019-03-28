@@ -24,7 +24,7 @@ class Logger{
       String dateS = nameFormatter.format(d);
       var fullFormatter = new DateFormat('y-MM-dd hh-mm-ss');
       String dateTimeS = fullFormatter.format(d);
-      String fullName = ConfigLoader.rootPath() + '/' + namePrefix + dateS + '.txt';
+      String fullName = ConfigLoader.rootPath() + '/status/' + namePrefix + dateS + '.txt';
 
       //write message
       File f = new File(fullName);

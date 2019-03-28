@@ -72,12 +72,27 @@ main() async {
   angelApp.get('/linkback/ValidateEmail', (req, resp) => Linkback.validateEmail(req, resp));
 
   //start listener
-  final server = await angelHttp.startServer(null, port);
+  final server = await angelHttp.startServer('0.0.0.0', port);
   print("Angel server listening at ${angelHttp.uri}");
+
+  //start redirector on port 80 to force main page to be secure
+  io.HttpServer nonSucureRedirectServer;
+  if (!isDev) {
+    final angelNonsecureRedirector = Angel();
+    angelNonsecureRedirector.get('/.well-known/acme-challenge/*', vDirRoot.handleRequest); //this is for certbot
+    //http://localhost:8087/.well-known/acme-challenge/index.html
+    angelNonsecureRedirector.fallback((req, resp) {
+      if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
+      resp.redirect(ApiGlobals.configSettings.homeUrl);
+    });
+    final nonsecureHttp = AngelHttp(angelNonsecureRedirector);
+    nonSucureRedirectServer = await nonsecureHttp.startServer('0.0.0.0', 80);
+  }
 
   //start 30s pulse tasks and register app-ending code
   pulse.init(() async {
     await server.close(force: true);
+    await nonSucureRedirectServer.close(force: true);
     ApiGlobals.configLoader.stopWatching();
     await Database.dispose();
 

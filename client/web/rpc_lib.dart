@@ -11,7 +11,7 @@ class RpcLib {
 
   ///init server URL - for development, use local server
   static init() {
-    if (window.location.port == "443" || window.location.port == "80")
+    if (window.location.host.contains('autistic.zone'))
       serverBaseUrl = 'https://www.autistic.zone/servant/v2/';
     else
       serverBaseUrl = 'http://localhost:8081/servant/v2/';

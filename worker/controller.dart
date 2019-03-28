@@ -18,7 +18,7 @@ class Controller {
     //infinite loop
     while (true) {
       //exit if stop file exists
-      File stopFile = new File(ConfigLoader.rootPath() + '/stop.txt');
+      File stopFile = new File(ConfigLoader.rootPath() + '/status/stop.txt');
       if (await stopFile.exists()) {
         ApiGlobals.configLoader.stopWatching();
         await writeAliveFile(false);
@@ -61,7 +61,7 @@ class Controller {
   ///write to worker_alive.txt so the supervisor can detect if this process is running
   Future writeAliveFile(bool makeExist) async {
     try {
-      File f = new File(ConfigLoader.rootPath() + '/worker_alive.txt');
+      File f = new File(ConfigLoader.rootPath() + '/status/worker_alive.txt');
       if (makeExist){
         await f.writeAsString("!");
       } else {
@@ -74,7 +74,7 @@ class Controller {
 
     //for debugging also write *alive file with unique name for this process
     try {
-      File f = new File(ConfigLoader.rootPath() + '/worker_alive' + WorkerGlobals.logFileSuffix);
+      File f = new File(ConfigLoader.rootPath() + '/status/worker_alive' + WorkerGlobals.logFileSuffix);
       if (makeExist){
         await f.writeAsString("!");
       } else {

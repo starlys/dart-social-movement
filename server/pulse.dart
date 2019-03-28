@@ -20,7 +20,7 @@ class Pulse {
 
   Future _timerTick() async {
     //exit app if stop file exists
-    File stopFile = new File(ConfigLoader.rootPath() + '/stop.txt');
+    File stopFile = new File(ConfigLoader.rootPath() + '/status/stop.txt');
     if (await stopFile.exists()) {
       await writeAliveFile(false);
       _stopEvent();
@@ -38,7 +38,7 @@ class Pulse {
   ///write to api_alive.txt so the supervisor job can detect if this process is running
   Future writeAliveFile(bool makeExist) async {
     try {
-      File f = new File(ConfigLoader.rootPath() + '/api_alive.txt');
+      File f = new File(ConfigLoader.rootPath() + '/status/api_alive.txt');
       if (makeExist){
         await f.writeAsString("!");
       } else {

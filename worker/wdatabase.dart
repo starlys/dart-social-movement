@@ -23,7 +23,7 @@ class WDatabase {
     try {
       if (taskDesc == 'sendmail') return; //this gets called from sendmail script which is not interesting to debug now
       String fname2 = starting ? 'starting' : 'finished';
-      File f = new File(ConfigLoader.rootPath() + '/worker_' + fname2 + WorkerGlobals.logFileSuffix);
+      File f = new File(ConfigLoader.rootPath() + '/status/worker_' + fname2 + WorkerGlobals.logFileSuffix);
       await f.writeAsString(WLib.utcNow().toIso8601String() + ' ' + taskDesc);
     }
     catch (ex) {

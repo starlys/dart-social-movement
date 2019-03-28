@@ -14,5 +14,4 @@ class ApiGlobals {
 
   //debugging
   static Random random = new Random(new DateTime.now().millisecondsSinceEpoch);
-  //static String logFileSuffix = (random.nextInt(9000) + 999).toString() + '.txt'; //such as '1234.txt'
 }

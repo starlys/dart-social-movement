@@ -128,7 +128,7 @@ abstract class Database {
   /// containing the task name
   static Future _writeDebugTaskFile(bool starting, String taskDesc, String randomNamePart) async {
     try {
-      File f = new File(ConfigLoader.rootPath() + '/api_active' + randomNamePart + '.txt');
+      File f = new File(ConfigLoader.rootPath() + '/status/api_active' + randomNamePart + '.txt');
       if (starting) {
         await f.writeAsString(WLib.utcNow().toIso8601String() + ' ' + taskDesc);
         //sleep(new Duration(seconds:4)); //DEBUG to test this function only

@@ -1,9 +1,8 @@
 import 'dart:async';
-//import 'dart:io';
 import 'package:image/image.dart';
-import 'package:amazon_s3/amazon_s3.dart';
-import 'package:postgresql/postgresql.dart';
-import 'config.dart';
+import 'package:postgres/postgres.dart';
+import 'amazon/s3_bucket.dart';
+import 'config_settings.dart';
 import 'misc_lib.dart';
 
 ///functions for handling avatar and post images, saving to Amazon S3 buckets
@@ -12,15 +11,15 @@ class ImageLib {
   static S3Bucket _avatarBucket, _postBucket;
 
   ///initialize library
-  static void init(Config cfg) {
-    String endpoint = cfg.settings['amazonS3']['endpoint'];
-    String id = cfg.settings['amazonS3']['id'];
-    String key = cfg.settings['amazonS3']['key'];
-    String avatarBucketName = cfg.settings['amazonS3Avatar']['bucket'];
-    String postBucketName = cfg.settings['amazonS3Post']['bucket'];
+  static void init(ConfigSettings cfg) {
+    String endpoint = cfg.amazonS3.endpoint;
+    String id = cfg.amazonS3.id;
+    String key = cfg.amazonS3.key;
+    String avatarBucketName = cfg.amazonS3Avatar.bucket;
+    String postBucketName = cfg.amazonS3Post.bucket;
 
-    _avatarUrlBase = cfg.settings['amazonS3Avatar']['url'];
-    _postUrlBase = cfg.settings['amazonS3Post']['url'];
+    _avatarUrlBase = cfg.amazonS3Avatar.url;
+    _postUrlBase = cfg.amazonS3Post.url;
 
     _avatarBucket = new S3Bucket('username', id, key, endpoint, avatarBucketName);
     _postBucket = new S3Bucket('username', id, key, endpoint, postBucketName);
@@ -28,7 +27,7 @@ class ImageLib {
 
   ///resize given image file to 100x100 and save as jpg in the user-avatar bucket; increment avatar_no;
   /// user record must already exist
-  static Future saveAvatar(Connection db, int userId, List<int> imageBytes) async {
+  static Future saveAvatar(PostgreSQLConnection db, int userId, List<int> imageBytes) async {
     //convert to 100x100
     Image img1 = decodeImage(imageBytes);
     Image img2 = copySquare(img1);
@@ -36,7 +35,7 @@ class ImageLib {
     imageBytes = encodeJpg(img3, quality: 92);
 
     //get and increment avatar_no
-    int avatarNo = await MiscLib.queryScalar(db, 'update xuser set avatar_no=avatar_no+1 where id=${userId} returning avatar_no');
+    int avatarNo = await MiscLib.queryScalar(db, 'update xuser set avatar_no=avatar_no+1 where id=${userId} returning avatar_no', null);
     if (avatarNo == null) throw new Exception('Cannot save avatar for missing user');
 
     //save to S3

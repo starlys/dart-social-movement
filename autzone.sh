@@ -1,19 +1,9 @@
 #!/bin/sh
 if [ $1 = "start" ]; then
   echo "starting in production mode"
-  #pkill -f api.dart
-  #pkill -f worker.dart
   pkill -f supervisor.dart
   sleep 1
   dart supervisor.dart
-fi
-if [ $1 = "dev" ]; then
-  echo "starting in dev mode"
-  pkill -f api.dart
-  pkill -f worker.dart
-  pkill -f supervisor.dart
-  sleep 1
-  dart supervisor.dart dev
 fi
 if [ $1 = "restart" ]; then
   echo "restarting"

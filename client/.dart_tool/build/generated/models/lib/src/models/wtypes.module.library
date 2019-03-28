@@ -1,0 +1,1 @@
+{"isEntrypoint":false,"deps":["angel_serialize|lib/angel_serialize.dart"],"parts":["models|lib/src/models/wtypes.g.dart"],"conditionalDeps":[],"sdkDeps":[]}

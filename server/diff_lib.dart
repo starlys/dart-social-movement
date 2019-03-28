@@ -1,8 +1,8 @@
 import "dart:async";
 import "dart:convert";
-import 'package:postgresql/postgresql.dart';
 import 'package:diff_match_patch/diff_match_patch.dart';
-import 'twotier/wlib.dart';
+import 'package:postgres/postgres.dart';
+import '../models/models.dart';
 import 'misc_lib.dart';
 
 ///structure to store 2 versions of a doc
@@ -17,14 +17,14 @@ class DocDiffInfo {
 class DiffLib {
 
   ///get any revision of a given document; pass revisionNo=null for latest
-  static Future<String> getDocument(Connection db, int id, int revisionNo) async {
+  static Future<String> getDocument(PostgreSQLConnection db, int id, int revisionNo) async {
     DocDiffInfo info = await load(db, id, revisionNo, false);
     return info.after;
   }
 
   ///build change-review text in HTML with highlighted changes from the
   /// prior version to the given version of the document
-  static Future<String> getDiffHtml(Connection db, int id, int revisionNo) async {
+  static Future<String> getDiffHtml(PostgreSQLConnection db, int id, int revisionNo) async {
     DocDiffInfo info = await load(db, id, revisionNo, true);
     String before = info.before ?? '';
     String after = info.after ?? '';
@@ -59,7 +59,7 @@ class DiffLib {
   }
 
   ///save a new document; returns doc id
-  static Future<int> saveNewDocument(Connection db, int projectId, String title, String body) async {
+  static Future<int> saveNewDocument(PostgreSQLConnection db, int projectId, String title, String body) async {
     int id = await MiscLib.queryScalar(db, 'insert into doc(project_id,title,body,revision_no,created_at)'
       'values(${projectId},@t,@b,1,@d) returning id',
       {'t': title, 'b': body, 'd': WLib.utcNow()});
@@ -68,7 +68,7 @@ class DiffLib {
 
   ///save an update to a document - writes new doc_revision record and updates doc record;
   /// proposalId can be null; if whereProjectId is nonnull it is used in the where clause only
-  static Future reviseDocument(Connection db, int id, String title, String body, int proposalId,
+  static Future reviseDocument(PostgreSQLConnection db, int id, String title, String body, int proposalId,
     int whereProjectId) async {
     //get currently committed version ("prior")
     DocDiffInfo info = await load(db, id, null, false);
@@ -80,18 +80,18 @@ class DiffLib {
     // body to rebuild the prior body
     String patch = makePatch(body, priorBody);
 
-    await db.runInTransaction(() async {
+    await db.transaction((ctx) async {
       //update doc record
       String whereClause3 = whereProjectId == null ? '' : ' and project_id=${whereProjectId}';
-      int count = await db.execute('update doc set title=@t,body=@b,revision_no=${newRevNo},created_at=@d'
+      int count = await ctx.execute('update doc set title=@t,body=@b,revision_no=${newRevNo},created_at=@d'
         ' where id=${id} and revision_no=${priorRevNo} ${whereClause3}',
-        {'t':title, 'b':body, 'd':WLib.utcNow()});
+        substitutionValues: {'t':title, 'b':body, 'd':WLib.utcNow()});
       if (count < 1) throw new Exception('Could not update document because another user updated it at the same time.');
 
       //add rev record
-      count = await db.execute('insert into doc_revision(doc_id,revision_no,diff,created_at,proposal_id)'
+      count = await ctx.execute('insert into doc_revision(doc_id,revision_no,diff,created_at,proposal_id)'
         ' values(${id},${priorRevNo},@b,@d,@prop)',
-        {'b': patch, 'd': info.afterCreatedAt, 'prop': proposalId});
+        substitutionValues: {'b': patch, 'd': info.afterCreatedAt, 'prop': proposalId});
       if (count < 1) throw new Exception('Could not save document revision because another user updated it at the same time.');
     });
   }
@@ -99,21 +99,21 @@ class DiffLib {
   ///undo a document revision, restoring its previous state; revisionNo
   /// should match the current revision_no and is used to check for simultaneous
   /// rollbacks
-  static Future unreviseDocument(Connection db, int id, int revisionNo) async {
+  static Future unreviseDocument(PostgreSQLConnection db, int id, int revisionNo) async {
     //get things from current latest version & the one before that;
     //info.after* is from the doc record; info.before* is from the latest doc_revision
     DocDiffInfo info = await load(db, id, null, true);
     if (info.afterRevNo != revisionNo) throw new Exception('You can only roll back the latest version.');
 
-    await db.runInTransaction(() async {
+    await db.transaction((ctx) async {
       //delete revision
       int count = await db.execute('delete from doc_revision where doc_id=${id} and revision_no=${info.beforeRevNo}');
       if (count < 1) throw new Exception('Could not delete document revision because another user deleted it at the same time.');
 
       //rollback doc
-      count = await db.execute('update doc set body=@b,revision_no=${info.beforeRevNo},created_at=@d'
+      count = await ctx.execute('update doc set body=@b,revision_no=${info.beforeRevNo},created_at=@d'
         ' where id=${id} and revision_no=${info.afterRevNo}',
-        {'b':info.before, 'd':info.beforeCreatedAt});
+        substitutionValues: {'b':info.before, 'd':info.beforeCreatedAt});
       if (count < 1) throw new Exception('Could not roll back document because another user updated it at the same time.');
     });
   }
@@ -220,39 +220,39 @@ class DiffLib {
   /// if alsoLoadPrior is true, then also load the version before that into 'before';
   /// pass reqRevisionNo=null for latest;
   /// if there are no prior revisions, beforeRevNo will be null
-  static Future<DocDiffInfo> load(Connection db, int id, int reqRevisionNo, bool alsoLoadPrior) async {
+  static Future<DocDiffInfo> load(PostgreSQLConnection db, int id, int reqRevisionNo, bool alsoLoadPrior) async {
     DocDiffInfo info = new DocDiffInfo();
 
     //get latest; return it if this is the requested revision
-    Row docRow = await MiscLib.querySingleChecked(db, 'select body,revision_no,created_at from doc where id=${id}', 'Document does not exist');
-    String body = docRow.body;
-    int rev = docRow.revision_no;
+    final docRow = await MiscLib.queryRowChecked(db, 'select body,revision_no,created_at from doc where id=${id}', 'Document does not exist', null);
+    String body = docRow['body'];
+    int rev = docRow['revision_no'];
     if (reqRevisionNo == null) reqRevisionNo = rev;
     info.afterRevNo = rev;
     if (rev == reqRevisionNo) {
       info.after = body;
       info.afterRevNo = rev;
-      info.afterCreatedAt = docRow.created_at;
+      info.afterCreatedAt = docRow['created_at'];
       if(!alsoLoadPrior) return info;
     }
     if (reqRevisionNo > rev) throw new Exception('Requested revision is greater than the current revision');
 
     //loop old revs backwards and apply patches
     int loadThrough = alsoLoadPrior ? reqRevisionNo - 1 : reqRevisionNo;
-    List<Row> revRows = await db.query('select revision_no,diff,created_at,proposal_id from doc_revision where doc_id=${id} and revision_no>=${loadThrough} order by revision_no desc').toList();
-    for (Row revRow in revRows) {
-      if (--rev != revRow.revision_no) throw new Exception('Database corruption: missing or duplicate doc_revision record for id ${id}');
-      body = applyPatch(body, revRow.diff);
+    final revRows = await MiscLib.query(db, 'select revision_no,diff,created_at,proposal_id from doc_revision where doc_id=${id} and revision_no>=${loadThrough} order by revision_no desc', null);
+    for (final revRow in revRows) {
+      if (--rev != revRow['revision_no']) throw new Exception('Database corruption: missing or duplicate doc_revision record for id ${id}');
+      body = applyPatch(body, revRow['diff']);
       if (rev == reqRevisionNo) {
         info.after = body;
         info.afterRevNo = rev;
-        info.afterCreatedAt = revRow.created_at;
+        info.afterCreatedAt = revRow['created_at'];
       }
       if (alsoLoadPrior && rev == reqRevisionNo - 1) {
         info.before = body;
         info.beforeRevNo = rev;
-        info.beforeCreatedAt = revRow.created_at;
-        info.beforeProposalId = revRow.proposal_id;
+        info.beforeCreatedAt = revRow['created_at'];
+        info.beforeProposalId = revRow['proposal_id'];
       }
     }
     return info;

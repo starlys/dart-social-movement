@@ -1,38 +1,41 @@
-//import 'dart:io' as io;
 import 'dart:async';
-import 'server/twotier/wlib.dart';
-import 'worker/database.dart';
-import 'worker/globals.dart';
+import 'package:postgres/postgres.dart';
+import 'models/models.dart';
+import 'worker/wdatabase.dart';
+import 'server/api_globals.dart';
 import 'worker/mail_lib.dart';
-import 'package:postgresql/postgresql.dart';
+import 'server/misc_lib.dart';
+import 'server/database.dart';
 
 ///entry point for sending mail; this script sends all queued mail
-/// and erases old sent mail
 Future main() async {
   print("starting autzone sendmail");
 
-  //set up globals
-  await Globals.config.init();
+  //set up 
+  await ApiGlobals.configLoader.init(false);
+  await Database.init();
+  await Database.loadGlobals();
 
   //run
-  await Database.safely('sendmail', _sendAll, loggingFilePrefix: 'sendmail');
-  //io.exit(0);
-  Globals.config.stopWatching();
+  await WDatabase.safely('sendmail', _sendAll, loggingFilePrefix: 'sendmail');
+
+  //clean up
+  await Database.dispose();
 }
 
 //process all emails
-Future _sendAll(Connection db) async {
+Future _sendAll(PostgreSQLConnection db) async {
   //erase old ones
   DateTime old = WLib.utcNow().subtract(new Duration(days: 10));
-  await db.execute('delete from tomail where sent_at is not null and sent_at<@d', {'d': old});
+  await db.execute('delete from tomail where sent_at is not null and sent_at<@d', substitutionValues: {'d': old});
 
   //loop for 100 at a time
   while (true) {
-    List<Row> tomailRows = await db.query('select * from tomail where sent_at is null limit 100').toList();
+    final tomailRows = await MiscLib.query(db, 'select * from tomail where sent_at is null limit 100', null);
     if (tomailRows.length == 0) break;
-    for (Row tomailRow in tomailRows) {
-      await MailLib.send(Globals.config, tomailRow.recipient, tomailRow.subject, tomailRow.body);
-      await db.execute('update tomail set sent_at=@d where id=${tomailRow.id}', {'d': WLib.utcNow()});
+    for (final tomailRow in tomailRows) {
+      await MailLib.send(ApiGlobals.configSettings, tomailRow['recipient'], tomailRow['subject'], tomailRow['body']);
+      await db.execute('update tomail set sent_at=@d where id=${tomailRow['id']}', substitutionValues: {'d': WLib.utcNow()});
     }
   }
 }

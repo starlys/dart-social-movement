@@ -1,38 +1,45 @@
-import 'worker/mail_lib.dart';
-import 'dart:async';
+//import 'worker/mail_lib.dart';
+//import 'dart:async';
 import 'dart:io';
-import 'worker/globals.dart';
+import 'dart:convert';
+//import 'worker/worker_globals.dart';
 //import 'server/twotier/wlib.dart';
 //import 'server/config.dart';
+import 'models/models.dart';
 
 //scratchpad/tests
 main() async {
-  await Globals.config.init();
+  //await Globals.configLoader.init();
 
   //send mail
-  String err = await MailLib.send(Globals.config, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
-  print(err);
+  //String err = await MailLib.send(Globals.configSettings, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
+  //print(err);
 
   //test infinite loop for mem leak
   //pulse();
 
-  Globals.config.stopWatching();
+  //Globals.configLoader.stopWatching();
+
+
+
+
+ 
+  final req = APIRequestBase(nick: 'indira', password: '12345');
+  final requestMap = APIRequestBaseSerializer.toMap(req);
+  final requestJson = json.encode(requestMap);
+  HttpClient().post('localhost', 8081, 'servant/v2/Authenticate')
+    .then((HttpClientRequest r) async { 
+      r.headers.contentType = ContentType.json;
+      r.write(requestJson);
+      return r.close(); 
+    })
+    .then((HttpClientResponse resp) async {
+      resp.transform(Utf8Decoder()).listen(print);
+  });
+  //final authResponse = AuthenticateResponseSerializer.fromMap(responseMap);
+  //print(authResponse.publicName);
 }
 
-//supervisor fast testing - no leaks
-Future pulse() async {
-  while (true) {
-    //new Timer.periodic(duration, callback)
-    sleep(new Duration(milliseconds: 1));
-    try {
-      //detect restart (as signaled from autzone script)
-      File f_restart = new File('restart.txt');
-      if (await f_restart.exists()) {
-        sleep(new Duration(seconds: 10));
-        print('found restart.txt');
-      }
-    } catch (ex) {
-      print('failed: ' + ex.toString());
-    }
-  }
-}
+
+
+

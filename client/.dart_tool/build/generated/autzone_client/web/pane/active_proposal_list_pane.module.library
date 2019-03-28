@@ -1,0 +1,1 @@
+{"isEntrypoint":false,"deps":["models|lib/models.dart","autzone_client|web/rpc_lib.dart","autzone_client|web/pane/proposal_list_pane.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["async"]}

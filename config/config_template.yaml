@@ -2,7 +2,7 @@
 # and the database where it has the word USER_HERE and PASSWORD_HERE below, (3) remove this comment
 
 dev: "Y" #Y or N = developer mode (affects which config entries are used)
-homeUrl: "http://www.autistic.zone"
+homeUrl: "https://www.autistic.zone"
 linkbackUrl: "https://www.autistic.zone"
 domain: "www.autistic.zone" #domain name for SSL binding
 siteName: "Autistic Zone"
@@ -23,8 +23,17 @@ smtp:
   password: "PASSWORD_HERE"
   from: "star@divergentlabs.org" #amazon SES only works with preverified senders
 database:
-  connection: "postgres://postgres:PASSWORD_HERE@autistic.zone:5432/autzone"
-  connection_dev: "postgres://star:@localhost:5432/autzone"
+  host: autistic.zone
+  port: 5432
+  dbname: autzone
+  user: postgres
+  password:
+database_dev:
+  host: localhost
+  port: 5432
+  dbname: autzone
+  user: star
+  password:
 deletion: #constants determining when to delete records
   conv_days: 365 #days after which convs are deleted counting from the date they are closed
 site_admin: #constants determining assignment of site admins

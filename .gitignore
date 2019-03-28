@@ -16,3 +16,5 @@ worker_finis*.txt
 worker_start*.txt
 
 config/config.yaml
+.dart_tool/*
+models/.dart_tool/*

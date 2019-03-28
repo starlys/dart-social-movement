@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "API",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceRoot}/api.dart"
+        },
+        {
+            "name": "Worker",
+            "program": "${workspaceRoot}/worker.dart",
+            "request": "launch",
+            "type": "dart",            
+        },
+        {
+            "name": "Test ad hoc",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceRoot}/_test.dart"
+        },
+        {
+            "name": "Sendmail",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceRoot}/sendmail.dart"
+        },
+    ]
+}

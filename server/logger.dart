@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'config.dart';
-import 'twotier/wlib.dart';
+import 'config_loader.dart';
+import '../models/models.dart';
 
 ///error logger
 class Logger{
@@ -24,11 +24,11 @@ class Logger{
       String dateS = nameFormatter.format(d);
       var fullFormatter = new DateFormat('y-MM-dd hh-mm-ss');
       String dateTimeS = fullFormatter.format(d);
-      String fullName = Config.rootPath() + '/' + namePrefix + dateS + '.txt';
+      String fullName = ConfigLoader.rootPath() + '/status/' + namePrefix + dateS + '.txt';
 
       //write message
       File f = new File(fullName);
-      IOSink wri = f.openWrite(mode:APPEND);
+      IOSink wri = f.openWrite(mode: FileMode.append);
       wri.writeln(dateTimeS + ':' + message);
       await wri.close();
     }

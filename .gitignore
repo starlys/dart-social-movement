@@ -14,7 +14,11 @@ worker20*.txt
 sendmail20*.txt
 worker_finis*.txt
 worker_start*.txt
+*.dart.snapshot
+.packages
 
 config/config.yaml
-.dart_tool/*
+**/.dart_tool/*
+autzone_client/.dart_tool/*
+autzone_client/build/*
 models/.dart_tool/*

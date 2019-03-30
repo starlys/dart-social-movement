@@ -1,1 +1,0 @@
-{"isEntrypoint":false,"deps":["autzone_client|web/pane/base_pane.dart","autzone_client|web/root/pane_key.dart","autzone_client|web/lib/html_lib.dart","models|lib/models.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["async"]}

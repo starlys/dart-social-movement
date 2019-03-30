@@ -1,0 +1,15 @@
+name: autzone_worker
+description: Civil rights social platform - background processes
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
+  postgres: "^1.0.2" #http://pub.dartlang.org/packages/postgres
+  mailer: any
+  http: any
+  autzone_models:
+    path: ../autzone_models
+  autzone_common:
+    path: ../autzone_common 
+dev_dependencies:
+transformers:
+homepage: http://www.divergentlabs.org

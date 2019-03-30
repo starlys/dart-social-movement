@@ -1,0 +1,16 @@
+name: autzone_sendmail
+description: Civil rights social platform - mailer script
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
+  postgres: "^1.0.2" #http://pub.dartlang.org/packages/postgres
+  http: any
+  autzone_models:
+    path: ../autzone_models
+  autzone_common:
+    path: ../autzone_common 
+  autzone_worker:
+    path: ../autzone_worker
+dev_dependencies:
+transformers:
+homepage: http://www.divergentlabs.org 

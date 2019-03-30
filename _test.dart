@@ -1,11 +1,11 @@
 //import 'worker/mail_lib.dart';
 //import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
+//import 'dart:convert';
 //import 'worker/worker_globals.dart';
 //import 'server/twotier/wlib.dart';
 //import 'server/config.dart';
-import 'models/models.dart';
+//import 'autzone_models/lib/autzone_models.dart';
 
 //scratchpad/tests
 main() async {
@@ -20,11 +20,12 @@ main() async {
 
   //Globals.configLoader.stopWatching();
 
-
+  print('hey, using lots of memory');
+  stdin.readLineSync();
 
 
  
-  final req = APIRequestBase(nick: 'indira', password: '12345');
+  /* final req = APIRequestBase(nick: 'indira', password: '12345');
   final requestMap = APIRequestBaseSerializer.toMap(req);
   final requestJson = json.encode(requestMap);
   HttpClient().post('localhost', 8081, 'servant/v2/Authenticate')
@@ -35,7 +36,7 @@ main() async {
     })
     .then((HttpClientResponse resp) async {
       resp.transform(Utf8Decoder()).listen(print);
-  });
+  }); */
   //final authResponse = AuthenticateResponseSerializer.fromMap(responseMap);
   //print(authResponse.publicName);
 }

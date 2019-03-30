@@ -8,11 +8,11 @@
             "name": "API",
             "type": "dart",
             "request": "launch",
-            "program": "${workspaceRoot}/api.dart"
+            "program": "${workspaceRoot}/autzone_api/bin/autzone_api.dart"
         },
         {
             "name": "Worker",
-            "program": "${workspaceRoot}/worker.dart",
+            "program": "${workspaceRoot}/autzone_worker/bin/autzone_worker.dart",
             "request": "launch",
             "type": "dart",            
         },
@@ -26,7 +26,7 @@
             "name": "Sendmail",
             "type": "dart",
             "request": "launch",
-            "program": "${workspaceRoot}/sendmail.dart"
+            "program": "${workspaceRoot}/autzone_sendmail/bin/autzone_sendmail.dart"
         },
     ]
 }

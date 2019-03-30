@@ -12,7 +12,7 @@ Future main(List<String> args) async {
   timerTick();
 }
 
-///get the root path for the apps (that is, the dir where pubspec.yaml lives)
+///get the root path for the apps (that is, the dir containing all the packages)
 /// return value does NOT have final slash
 String rootPath() {
   List<String> segs = Platform.script.pathSegments;
@@ -66,7 +66,7 @@ Future startBoth() async {
 Future startApi() async {
   log("supervisor: starting api");
   await writeDebugTaskFile(true, 'startApi');
-  await Process.start('dart', ['api.dart'], mode: ProcessStartMode.detached);
+  await Process.start('dart', ['autzone_api/bin/autzone_api.dart.snapshot'], mode: ProcessStartMode.detached);
   await writeDebugTaskFile(false, 'startApi');
   sleep(new Duration(seconds: 2));
 }
@@ -74,7 +74,7 @@ Future startApi() async {
 Future startWorker() async {
   log("supervisor: starting worker");
   await writeDebugTaskFile(true, 'startWorker');
-  await Process.start('dart', ['worker.dart'], mode: ProcessStartMode.detached);
+  await Process.start('dart', ['autzone_worker/bin/autzone_worker.dart.snapshot'], mode: ProcessStartMode.detached);
   await writeDebugTaskFile(false, 'startWorker');
   sleep(new Duration(seconds: 2));
 }
@@ -106,7 +106,7 @@ Future timerTick() async {
     if (utcNow().isAfter(_nextMailUtc)) {
       await writeDebugTaskFile(true, 'sendmail');
       //log("supervisor: starting sendmail");
-      Process.start('dart', [rootPath() + '/sendmail.dart'], workingDirectory: rootPath(), mode: ProcessStartMode.detached);
+      Process.start('dart', [rootPath() + 'autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: rootPath(), mode: ProcessStartMode.detached);
       _nextMailUtc = utcNow().add(_mailInterval);
       await writeDebugTaskFile(false, 'sendmail');
     }

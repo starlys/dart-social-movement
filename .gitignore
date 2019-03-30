@@ -1,9 +1,11 @@
 .DS_Store
+.com.apple*
 .pub/*
 client/.pub/*
 packages/*
 client/packages/*
 .idea/**
+.vscode/**
 
 *active*.txt
 *alive*.txt
@@ -22,3 +24,4 @@ config/config.yaml
 autzone_client/.dart_tool/*
 autzone_client/build/*
 models/.dart_tool/*
+

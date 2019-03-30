@@ -1,1 +1,0 @@
-{"isEntrypoint":false,"deps":["autzone_client|web/lib/dialog_box.dart","autzone_client|web/lib/button_bar_builder.dart","autzone_client|web/lib/form_builder.dart","autzone_client|web/lib/html_lib.dart","autzone_client|web/root/globals.dart","autzone_client|web/rpc_lib.dart","models|lib/models.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["html","async"]}

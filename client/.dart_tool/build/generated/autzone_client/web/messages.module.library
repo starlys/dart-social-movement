@@ -1,1 +1,0 @@
-{"isEntrypoint":false,"deps":["autzone_client|web/lib/js_interop.dart","autzone_client|web/root/globals.dart","autzone_client|web/dialog/confirm_dialog.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["async"]}

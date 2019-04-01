@@ -16,7 +16,7 @@ class ResourcePane extends BasePane {
   bool _clickedInCode = false;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //get resource
@@ -83,6 +83,7 @@ class ResourcePane extends BasePane {
         recreatePane();
       });
     }
+    return apiResultToPaneInitResult(resource.base);
   }
 
   //record vote

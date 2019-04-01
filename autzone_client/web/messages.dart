@@ -16,12 +16,6 @@ class Messages {
     jGrowl(s, new JGrowlOptions(life: 5000));
   }
 
-  ///show a message only if the given object has an error state
-  static void showAPIError(dynamic r) {
-    if (r.isOK) return;
-    timed(r.errorMessage ?? r.errorCode);
-  }
-
   ///returns false if not logged in, and shows timed message
   static bool checkLoggedIn() {
     if (Globals.nick != null) return true;

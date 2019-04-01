@@ -35,7 +35,7 @@ class BaseTreePane extends BasePane {
   int get selectedCatId => _selectedCatId;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
     buildSkeletonHtml2(paneClass: paneClass, iconName: paneIconName, title: paneTitle);
 
@@ -66,6 +66,7 @@ class BaseTreePane extends BasePane {
       }
     }
     for (CategoryNode node in _topCats) addToOutlineRecur(null, node, 0);
+    return PaneInitResult.ok;
   }
 
   ///handle node selection: create detail box

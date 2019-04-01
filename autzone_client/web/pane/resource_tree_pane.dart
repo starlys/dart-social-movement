@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:html';
+import 'base_pane.dart';
 import 'base_tree_pane.dart';
 import '../root/pane_key.dart';
 import '../rpc_lib.dart';
@@ -16,12 +17,12 @@ class ResourceTreePane extends BaseTreePane {
   ResourceQueryResponse _resources;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     paneClass = 'resourcetree';
     paneTitle = 'Resource Categories';
     paneIconName = 'paneresource';
     categoryKind = 'R';
-    await super.init(pk);
+    return await super.init(pk);
   }
 
   @override

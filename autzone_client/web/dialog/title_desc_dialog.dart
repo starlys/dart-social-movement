@@ -9,12 +9,12 @@ import '../root/globals.dart';
 /// Returns true if accepted, then caller may inspect title/desc vars
 /// for the entered values
 class TitleDescDialog extends DialogBox {
-  String _prompt;
+  String _topPrompt, _descPrompt;
   bool _titleEditable;
   String title = '';
   String description = '';
 
-  TitleDescDialog(this._prompt, this._titleEditable) : super() {
+  TitleDescDialog(this._topPrompt, this._descPrompt, this._titleEditable) : super() {
   }
 
   @override int dialogHeight() { return 150; }
@@ -22,10 +22,10 @@ class TitleDescDialog extends DialogBox {
   @override
   Future build() async {
     //main content
-    FormBuilder form = new FormBuilder(frame, _prompt);
+    FormBuilder form = new FormBuilder(frame, _topPrompt);
     InputElement titleInput = form.addInput('Title', typicalControlWidth(), Globals.maxTitleLength, title); //lengths not actually limited by databse, so these are fairly long
     if (!_titleEditable) titleInput.readOnly = true;
-    TextAreaElement descInput = form.addTextArea('Description', typicalControlWidth(), 80, 10000, description);
+    TextAreaElement descInput = form.addTextArea(_descPrompt, typicalControlWidth(), 80, 10000, description);
 
     //buttons
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);

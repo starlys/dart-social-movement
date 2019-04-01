@@ -14,4 +14,7 @@ class WorkerGlobals {
   //debugging
   static Random random = new Random(new DateTime.now().millisecondsSinceEpoch);
   static String logFileSuffix = (random.nextInt(9000) + 999).toString() + '.txt'; //such as '1234.txt'
+
+  //other
+  static bool isSiteSmall = false; //true when activity is low (causes spam checks to be relaxed)
 }

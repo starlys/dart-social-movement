@@ -10,7 +10,7 @@ class Controller {
 
   ///start all tasks
   Future start() async {
-    Duration aSecond = new Duration(seconds:1);
+    final aSecond = new Duration(seconds:1);
     await writeAliveFile(true);
 
     //infinite loop
@@ -34,6 +34,7 @@ class Controller {
     if (now.isAfter(WorkerGlobals.next30s)) {
       await writeAliveFile(true);
       await WDatabase.safely('findUnreads', WDatabase.findUnreads);
+      await WDatabase.safely('smallSiteAccelerate', WDatabase.smallSiteAccelerate);
       WorkerGlobals.next30s = WLib.utcNow().add(new Duration(seconds:30));
     } else if (now.isAfter(WorkerGlobals.next1h)) {
       await WDatabase.safely('timeoutProposals', WDatabase.timeoutProposals);
@@ -42,6 +43,7 @@ class Controller {
       await WDatabase.safely('recommendConversations', WDatabase.recommendConversations);
       WorkerGlobals.next1h = WLib.utcNow().add(new Duration(hours:1));
     } else if (now.isAfter(WorkerGlobals.next24h)) {
+      await WDatabase.safely('loadDailyGlobals', WDatabase.loadDailyGlobals);
       await WDatabase.safely('dailyDelete', WDatabase.dailyDelete);
       await WDatabase.safely('assignProjectLeadership', WDatabase.assignProjectLeadership);
       await WDatabase.safely('closeConversations', WDatabase.closeConversations);

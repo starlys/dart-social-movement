@@ -17,7 +17,7 @@ class UserPane extends BasePane {
   bool _clickedInCode = false;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
     bool loggedIn = Globals.userId != 0;
 
@@ -79,20 +79,20 @@ class UserPane extends BasePane {
     //associations
     DivElement assocBox = new DivElement() ..className = 'associations';
     bodyElement.append(assocBox);
-    void build1AssocSection(String sectName, List<APIResponseAssociation> assocs, String iconName) {
+    void _build1AssocSection(String sectName, List<APIResponseAssociation> assocs, String iconName) {
       if (assocs == null || assocs.length == 0) return;
       assocBox.appendHtml('<h3><img src="images/${iconName}.png" /> ${sectName}</h3>');
       for (APIResponseAssociation assoc in assocs) HtmlLib.appendLinkToPane(assocBox, assoc.linkText, assoc.linkPaneKey);
     }
-    build1AssocSection('Events attending', user.events.cast<APIResponseAssociation>(), 'paneevent');
-    build1AssocSection('Projects', user.projects.cast<APIResponseAssociation>(), 'paneproject');
-    build1AssocSection('Resources submitted', user.resources.cast<APIResponseAssociation>(), 'paneresource');
+    _build1AssocSection('Events attending', user.events?.cast<APIResponseAssociation>(), 'paneevent');
+    _build1AssocSection('Projects', user.projects?.cast<APIResponseAssociation>(), 'paneproject');
+    _build1AssocSection('Resources submitted', user.resources?.cast<APIResponseAssociation>(), 'paneresource');
 
     //button bar
     if (loggedIn && Globals.nick == user.nick) {
       paneMenuBar.addButton('Edit', (e) async {
         var editDialog = new UserDialog(_userId);
-        bool dialogOk = await editDialog.show();
+        bool dialogOk = await editDialog.show(); 
         if (dialogOk) recreatePane();
       });
       paneMenuBar.addButton('Change Avatar', (e) async {
@@ -101,6 +101,8 @@ class UserPane extends BasePane {
         if (dialogOk) recreatePane();
       });
     }
+
+    return apiResultToPaneInitResult(user.base);
   }
 
   //record vote

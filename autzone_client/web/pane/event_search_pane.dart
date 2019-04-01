@@ -15,7 +15,7 @@ class EventSearchPane extends BasePane {
   bool _myLocKnown = false; //true when my location is known
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
     _myLocKnown = ClientStore.lon != 0;
 
@@ -92,6 +92,8 @@ class EventSearchPane extends BasePane {
       if (_myLocKnown) locCheck.checked = true;
     });
     paneMenuBar.addButton('Search', (e) => _doSearch());
+
+    return PaneInitResult.ok;
   }
 
 

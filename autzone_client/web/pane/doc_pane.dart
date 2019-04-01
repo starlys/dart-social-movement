@@ -26,7 +26,7 @@ class DocPane extends BasePane {
   //String _editedBody; //edited doc content (markdown), only set if _hasEdits is true
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //get doc
@@ -102,10 +102,12 @@ class DocPane extends BasePane {
         }
       });
     }
+    
+    return apiResultToPaneInitResult(_doc.base);
   }
 
   Future _proposeRootDocChanges(String newbody) async {
-    TitleDescDialog titleDialog = new TitleDescDialog('Enter short summary of your changes for voting', false)
+    TitleDescDialog titleDialog = new TitleDescDialog('For voting purposes, please summarize your changes', 'Why did you make the change?', false)
       ..title = 'Changes proposed to: ${_doc.title}';
     bool ok = await titleDialog.show();
     if (!ok) return;

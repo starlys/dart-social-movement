@@ -20,7 +20,7 @@ class ProjectMembersPane extends BasePane {
   final _userKindByUserId = Map<int, String>();
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
     _projectId = pk.part1AsInt;
 
@@ -49,6 +49,8 @@ class ProjectMembersPane extends BasePane {
 
     //initial autosearch results
     _buildOutputTable();
+
+    return apiResultToPaneInitResult(_project.base);
   }
 
   ///do the search and recreate _resultTable
@@ -58,7 +60,8 @@ class ProjectMembersPane extends BasePane {
 
     //search either on server or by filtering previously loaded complete results
     if (_project != null && _project.completeLoad == 'Y') { //filter locally
-      _filteredUsers = _project.users.cast<ProjectUserItem>().where((u) =>
+      final source = _project.users?.cast<ProjectUserItem>() ?? List<ProjectUserItem>();
+      _filteredUsers = source.where((u) =>
         u.nick.toLowerCase().contains(name) || u.publicName.toLowerCase().contains(name))
         .toList();
     } else { //reload
@@ -72,6 +75,7 @@ class ProjectMembersPane extends BasePane {
   ///build output table from _filteredUsers
   void _buildOutputTable() {
     _resultTable.innerHtml = '<tr><th>Type</th><th></th><th>Vote</th><th>Nickname (name)</th></tr>';
+    if (_filteredUsers == null) return;
     for (ProjectUserItem user in _filteredUsers) {
       TableRowElement tr = _resultTable.addRow();
       TableCellElement td = tr.addCell();
@@ -178,10 +182,12 @@ class ProjectMembersPane extends BasePane {
     ProjectUserQueryRequest req = new ProjectUserQueryRequest(projectId: _projectId,
       resultPage: _pageNo, name: nameFilter);
     _project = await RpcLib.projectUserQuery(req);
-    _filteredUsers = _project.users.cast<ProjectUserItem>();
-    for (final user in _project.users) {
-      _voteKindByUserId[user.userId] = user.voteKind;
-      _userKindByUserId[user.userId] = user.kind;
+    _filteredUsers = _project.users?.cast<ProjectUserItem>();
+    if (_project.users != null) {
+      for (final user in _project.users) {
+        _voteKindByUserId[user.userId] = user.voteKind;
+        _userKindByUserId[user.userId] = user.kind;
+      }
     }
   }
 

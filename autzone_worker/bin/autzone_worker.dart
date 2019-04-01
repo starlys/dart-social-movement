@@ -9,7 +9,7 @@ main() async {
   ApiGlobals.configLoader.init(true);
   await Database.init();
   await Database.loadGlobals();
-
+  
   //run
   Controller c = new Controller();
   await c.start();

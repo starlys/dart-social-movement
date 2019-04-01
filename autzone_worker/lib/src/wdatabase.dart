@@ -45,6 +45,13 @@ class WDatabase {
     }
   }
   
+  ///load globals that could change as often as daily
+  static Future loadDailyGlobals(PostgreSQLConnection db) async {
+    //warning this query is not indexed
+    int usersOnToday = await MiscLib.queryScalar(db, 'select count(*) from xuser where last_activity>@p', {'p': WLib.utcNow().subtract(Duration(days: 1))});
+    WorkerGlobals.isSiteSmall = usersOnToday < 20;
+  }
+
   ///calculate site leadership (aka. site admins)
   static Future assignSiteLeadership(PostgreSQLConnection db) async {
     //get settings
@@ -63,23 +70,18 @@ class WDatabase {
     await db.execute('update project set member_count=0 where active=\'N\'');
 
     //set sitewide_rank for all users = sum of project members for all projects they are managers of
-    //print("debug1");
     await db.execute('update xuser set sitewide_rank=(select coalesce(sum(member_count),0) from project where exists(select * from project_xuser where project_id=project.id and xuser_id=xuser.id and kind=\'M\'))');
-    //print("debug2");
 
     //load in the top ~25% users, but not exceeding min/max range, in sitewide_rank order
     int userCount = await MiscLib.queryScalar(db, 'select count(*) from xuser', null);
     userCount = userCount ?? 0;
     int leaderCount = max(minAdmins, min(maxAdmins, (userCount * fracAdmins).round()));
-    //print("debug3");
     final rows1 = await MiscLib.query(db, 'select id from xuser order by sitewide_rank desc limit ${leaderCount}', null);
     List<int> newLeaderIds = rows1.map((r) => r['id'] as int).toList();
-    //print("debug4");
 
     //load in existing site admins
     final rows2 = await MiscLib.query(db, 'select id from xuser where site_admin=\'Y\'', null);
     List<int> oldLeaderIds = rows2.map((r) => r['id'] as int).toList();
-    //print("debug5");
 
     //declare notification text
     final String infoMessage = 'Site administrators are chosen automatically by the system each week. '
@@ -91,7 +93,6 @@ class WDatabase {
     //for each "demoted" leader, update xuser and notify them
     for (int id in oldLeaderIds) {
       if (!newLeaderIds.contains(id)) {
-        //print("debug6 " + id.toString());
         await db.execute('update xuser set site_admin=\'N\' where id=${id}');
         await MiscLib.notify(db, id, demoteMessage);
       }
@@ -139,10 +140,10 @@ class WDatabase {
 
     //update conv_post.inappropriate_count for all affected posts
     for (String postId in postIds) {
-      await db.execute('update conv_post set inappropriate_count=(select count(*) from conv_post_xuser where conv_post_id=\'${postId}\' and reaction=\'X\')');
+      await db.execute('update conv_post set inappropriate_count=(select count(*) from conv_post_xuser where conv_post_id=conv_post.id and reaction=\'X\') where id=\'${postId}\'');
     }
 
-    //loop suspicious authors
+    ///loop suspicious authors
     DateTime utcNow = WLib.utcNow();
     DateTime oldReactionCutoff = utcNow.subtract(new Duration(days:reactionWeightDays));
     for(final authorRow in authorRows) {
@@ -153,7 +154,7 @@ class WDatabase {
       //- this query counts all the reactions even if they were processed before
       //- if a downvoter voted against multiple posts of the author, only the latest downvote counts
       //- weight the downvotes so that older ones don't count as much
-      final downVoteRows = await MiscLib.query(db, 'select max(conv_post.created_at)'
+      final downVoteRows = await MiscLib.query(db, 'select max(conv_post.created_at) as mca'
         ' from (conv_post_xuser inner join conv_post on conv_post_xuser.conv_post_id=conv_post.id)'
         ' inner join conv on conv_post.conv_id=conv.id'
         ' where conv_post_xuser.reaction=\'X\' and conv.project_id=${projectId} and conv_post.author_id=${authorId}'
@@ -162,7 +163,7 @@ class WDatabase {
         {'cutoff': oldReactionCutoff});
       double weightedDownVotes = 0.0;
       for (final downVoteRow in downVoteRows) {
-        DateTime postDate = downVoteRow['created_at']; //date of post, not of reaction
+        DateTime postDate = downVoteRow['mca']; //date of post, not of reaction
         int daysOld = utcNow.difference(postDate).inDays;
         int daysNew = reactionWeightDays - daysOld; //newer is larger
         if (daysNew >= reactionWeightDays) { weightedDownVotes += 1; }
@@ -211,6 +212,13 @@ class WDatabase {
     final rows = await MiscLib.query(db, 'select id from proposal where active=\'Y\' and timeout<@d',
       {'d': WLib.utcNow()});
     for (final row in rows) await ProposalLib.closeProposal(db, row['id']);
+  }
+
+  ///check for NEW proposals on small sites: shorten their duration such that they get approved quicker
+  static Future smallSiteAccelerate(PostgreSQLConnection db) async {
+    if (!WorkerGlobals.isSiteSmall) return;
+    db.execute('update proposal set timeout=@t where active=\'Y\' and kind=\'NEW\' and timeout>@u', 
+      substitutionValues: { 't': WLib.utcNow(), 'u': WLib.utcNow() });
   }
 
   ///delete old data - to be called daily (also see weeklyDelete)
@@ -511,7 +519,6 @@ class WDatabase {
           await MiscLib.queueEmail(db, emailAddress, '${siteName} - Notifications', body.toString());
         }
       }
-
     }
 
     //set all notifications for all users to emailed=Y

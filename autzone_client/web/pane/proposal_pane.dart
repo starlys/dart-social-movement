@@ -17,7 +17,7 @@ class ProposalPane extends BasePane {
   bool _clickedInCode = false;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
     bool loggedIn = Globals.userId != 0;
 
@@ -114,6 +114,8 @@ class ProposalPane extends BasePane {
         }
       });
     }
+
+    return apiResultToPaneInitResult(proposal.base);
   }
 
   //record vote for optionNo or null

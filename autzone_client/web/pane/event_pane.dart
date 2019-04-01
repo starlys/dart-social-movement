@@ -19,7 +19,7 @@ class EventPane extends BasePane {
   int _eventId;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //get event
@@ -122,6 +122,7 @@ class EventPane extends BasePane {
         PaneFactory.createFromString('conv/${convId}');
       });
     }
+    return apiResultToPaneInitResult(event.base);
   }
 
 }

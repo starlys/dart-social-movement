@@ -11,12 +11,12 @@ class NotifyPane extends BasePane {
   PushQueueItem _item;
 
   @override
-  Future init(PaneKey pk) async {
-    //find already-loaded notification or throw exception
+  Future<PaneInitResult> init(PaneKey pk) async {
+    //find already-loaded notification or die
     await super.init(pk);
     String notifyId = pk.part1;
     _item = Globals.pushQueue.firstWhere((i) => i.sid == notifyId && i.kind == 'N', orElse: () => null);
-    if (_item == null) return;
+    if (_item == null) return PaneInitResult.unknownFailure;
 
     //build pane
     buildSkeletonHtml2(paneClass: 'notify', iconHoverText: 'Notification', iconName: 'panenotify', title: _item.text);
@@ -37,6 +37,8 @@ class NotifyPane extends BasePane {
       dismiss();
       paneMenuBar.addElement(new SpanElement() ..text = 'Dismissed');
     });
+
+    return PaneInitResult.ok;
   }
 
   ///send server message to dismiss notification

@@ -8,6 +8,8 @@ import 'package:autzone_models/autzone_models.dart';
 
 typedef void PaneHandler(BasePane);
 
+enum PaneInitResult { ok, requiresLogin, unknownFailure}
+
 ///base class for all panes; see programmer doc for DOM layout notes
 class BasePane {
   //private vars
@@ -41,10 +43,11 @@ class BasePane {
   ///true if pane is collapsed
   bool get isCollapsed => _isCollapsed;
 
-  ///initialize pane.
+  ///initialize pane; return ok or the reason the pane could not be shown.
   /// Derived classes must add pane HTML to DOM.
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     paneKey = pk;
+    return Future.value(PaneInitResult.ok);
   }
 
   ///change this pane's key and raise event
@@ -154,4 +157,10 @@ class BasePane {
     PaneFactory.create(paneKey);
   }
 
+  ///convert server failure result to PaneInitResult
+  PaneInitResult apiResultToPaneInitResult(APIResponseBase r) {
+    if (r.isOK) return PaneInitResult.ok;
+    if (r.errorCode == 'auth') return PaneInitResult.requiresLogin;
+    return PaneInitResult.unknownFailure;
+  }
 }

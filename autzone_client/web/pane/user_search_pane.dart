@@ -12,7 +12,7 @@ class UserSearchPane extends BasePane {
   DivElement _resultsDiv;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //build pane
@@ -24,6 +24,8 @@ class UserSearchPane extends BasePane {
 
     //buttons
     paneMenuBar.addButton('Search', (e) => _doSearch(trimInput(nickInp)));
+
+    return PaneInitResult.ok;
   }
 
   //do the search and recreate _resultsDiv

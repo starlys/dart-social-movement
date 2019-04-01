@@ -41,7 +41,7 @@ class ConvPane extends BasePane {
    *      .post-expand-wrap
    */
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     //parse pane key
     _convId = pk.part1AsInt;
     if (pk.length > 2) {
@@ -102,6 +102,8 @@ class ConvPane extends BasePane {
         Globals.doOnUserAction[_autoReadPositionKey] = action;
       }
     }
+
+    return apiResultToPaneInitResult(_conv.base);
   }
 
   ///report given read position to server and update visuals on this pane;

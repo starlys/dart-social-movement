@@ -64,8 +64,10 @@ class PushQueueHandler {
       final pushQueueResponse = await RpcLib.pushQueueGet(pushArgs);
       if (fullMode && pushQueueResponse.fullModeStatus == null)
         Globals.lastFullPollUtc = now; //only updating the poll time if it was allowed by server
-      List<PushQueueItem> items = _filterListOfItems(pushQueueResponse.items.cast<PushQueueItem>().toList());
-      itemsReceived(fullMode, items, 'S');
+      if (pushQueueResponse.items != null) {
+        final items = _filterListOfItems(pushQueueResponse.items.cast<PushQueueItem>().toList());
+        itemsReceived(fullMode, items, 'S');
+      }
 
       //UI when done polling
       _showHideRefreshButton(true);
@@ -107,7 +109,8 @@ class PushQueueHandler {
   /// a Map as parsed by JSON, so we need to copy it into a real class
   static void _receiveFromOtherWindow(dynamic obj) {
     String action = obj['action'];
-    final itemsUnfiltered = obj['items'].map((item) => PushQueueItemSerializer.fromMap(item));
+    var itemsUnfiltered = List<PushQueueItem>();
+    if (obj['items'] != null) itemsUnfiltered = obj['items'].map((item) => PushQueueItemSerializer.fromMap(item));
     final items = _filterListOfItems(itemsUnfiltered);
     if (action == 'A') itemsReceived(false, items, 'W');
     if (action == 'F') itemsReceived(true, items, 'W');

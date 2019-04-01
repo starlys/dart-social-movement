@@ -99,7 +99,11 @@ class PaneFactory {
     if (p == null) return null;
 
     //initialize pane
-    await p.init(pk);
+    var initResult = PaneInitResult.ok;
+    try { initResult = await p.init(pk); }
+    catch (e) {
+      initResult = PaneInitResult.unknownFailure;
+    }
     Globals.panes.add(p);
 
     //change page URL
@@ -143,6 +147,14 @@ class PaneFactory {
     }
 
     MainController.sizeScrollSpace(false);
+
+    //on failure, remove it; and for case of no login, allow trying again after login
+    if (initResult != PaneInitResult.ok) delete(p);
+    if (initResult == PaneInitResult.requiresLogin && Globals.userId == 0 && Globals.pageLoadUtc.add(Duration(seconds: 8)).isAfter(WLib.utcNow())) {
+      await MainController.toggleLogin();
+      if (Globals.userId != 0) return await create(pk, doScroll: doScroll);
+    }
+    
     return p;
   }
 

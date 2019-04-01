@@ -21,7 +21,7 @@ class ProjectPane extends BasePane {
   ProjectGetResponse _project;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //get project
@@ -62,6 +62,11 @@ class ProjectPane extends BasePane {
       }
     }
 
+    //if there are no convs, suggest starting one
+    if (canView && _project.convs.length == 0) {
+      bodyElement.appendHtml('<h2><br/>Warning</h2>No one can currently join the project because there are no conversations yet. Please start a new conversation so that others can join the project.');
+    }
+
     //buttons
     if (_project.userKind == 'M') {
       paneMenuBar.addButton('Edit', (e) => _editHandler());
@@ -73,6 +78,8 @@ class ProjectPane extends BasePane {
       paneMenuBar.addButton('My Role', (e) => _myRoleHandler());
     }
     paneMenuBar.addButton('Members', (e) => _membersHandler());
+
+    return apiResultToPaneInitResult(_project.base);
   }
 
   //button handlers

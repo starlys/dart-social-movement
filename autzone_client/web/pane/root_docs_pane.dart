@@ -10,7 +10,7 @@ import '../rpc_lib.dart';
 class RootDocsPane extends BasePane {
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //get all root docs
@@ -22,6 +22,8 @@ class RootDocsPane extends BasePane {
     for (DocQueryItem item in docs.docs) {
       HtmlLib.appendLinkToPane(bodyElement, item.title, 'doc/${item.iid}');
     }
+
+    return apiResultToPaneInitResult(docs.base);
   }
 
 }

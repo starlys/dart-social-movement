@@ -75,11 +75,15 @@ class ProposalLib {
 
   ///write proposal of kind JOIN (note caller must handle writing conv_xuser record)
   static Future proposeJoinConv(PostgreSQLConnection db, int userId, String nick, int projectId, int convId) async {
-    //write proposal requiring 1 pass vote or 9 fail votes to reject;
-    //timeout in a month; fail if no votes after timeout
+    //if proposal for same user+project exists, exit (UI will still show that a new proposal was created)
+    String existingKind = await MiscLib.queryScalar(db, 'select kind from proposal where kind=\'JOIN\' and created_by=$userId and project_id=$projectId', null);
+    if (existingKind == 'JOIN') return;
+
+    //write proposal requiring 1 pass vote or 3 fail votes to reject;
+    //timeout in 14days; fail if no votes after timeout
     int proposalId = await _writeProposal(db, 'JOIN', 'L', 'Request to join project',
       'User ${nick} would like to join the project.', '', 1,
-      9, _yesNoOptions(), 30, 'F', userId);
+      3, _yesNoOptions(), 14, 'F', userId);
     await db.execute('update proposal set project_id=${projectId} where id=${proposalId}');
   }
 
@@ -306,8 +310,8 @@ class ProposalLib {
     String timeoutAction = proposalRow['timeout_action'];
     int winOption = null;
     if (timeoutAction == 'F') { //fast track (proposal closed early if either target reached)
-      if (passTargetReached) winOption = 0;
-      else winOption = 1; //else if fail target reached or neither target reached, then fail
+      if (failTargetReached) winOption = 1;
+      else winOption = 0; //else if pass target reached or neither target reached, then pass
     }
     else if (timeoutAction == '0') { //autopass (unless fail target reached)
       if (failTargetReached) winOption = 1;

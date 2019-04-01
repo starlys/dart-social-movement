@@ -13,7 +13,7 @@ abstract class ProposalListPane extends BasePane {
   ProposalQueryResponse proposals;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //load proposals
@@ -27,6 +27,7 @@ abstract class ProposalListPane extends BasePane {
     }
     if (proposals.items.length == 0) bodyElement.appendText('(none found)');
     makeButtonBar();
+    return PaneInitResult.ok;
   }
 
   ///when overridden, sets all class vars defined in this class, and loads the proposals

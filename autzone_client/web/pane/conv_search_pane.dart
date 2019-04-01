@@ -14,7 +14,7 @@ class ConvSearchPane extends BasePane {
   String _searchTerm;
 
   @override
-  Future init(PaneKey pk) async {
+  Future<PaneInitResult> init(PaneKey pk) async {
     await super.init(pk);
 
     //build pane
@@ -38,6 +38,7 @@ class ConvSearchPane extends BasePane {
         _doSearch();
       }
     }
+    return PaneInitResult.ok;
   }
 
   //do the search and recreate _resultTable

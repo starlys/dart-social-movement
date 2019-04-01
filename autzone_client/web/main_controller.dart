@@ -127,7 +127,7 @@ class MainController {
   }
 
   ///log in or out (called from hello link)
-  static void toggleLogin() {
+  static Future toggleLogin() async {
     //log out
     if (Globals.nick != null) {
       logOut(true, true);
@@ -143,7 +143,7 @@ class MainController {
 
     //ask for credentials
     LoginDialog dlg = new LoginDialog(loginHandlerFromDialog);
-    dlg.show();
+    await dlg.show();
   }
 
   ///attempt login; return true on success

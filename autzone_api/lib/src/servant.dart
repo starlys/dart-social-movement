@@ -1286,7 +1286,7 @@ class Servant {
 
     //declare return variables
     String retProjectTitle;
-    bool retEditable;
+    bool retEditable = false;
     final retUsers = new List<ProjectUserItem>();
 
     final dbresult = await Database.safely('ProjectUserQuery', (db) async {

@@ -55,6 +55,9 @@ class Globals {
   ///panes now showing
   static List<BasePane> panes = new List<BasePane>();
 
+  ///time when page loaded
+  static final DateTime pageLoadUtc = WLib.utcNow();
+  
   ///last activity time
   static DateTime lastActivityUtc = WLib.utcNow();
 

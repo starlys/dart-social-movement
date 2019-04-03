@@ -96,6 +96,15 @@ Future timerTick() async {
       sleep(new Duration(seconds: 10));
     }
 
+    //detect perish (as signaled from autzone script)
+    File f_perish = new File('status/perish.txt');
+    if (await f_perish.exists()) {
+      log("supervisor: perish detected");
+      await f_perish.delete();
+      await endBoth();
+      exit(0);
+    }
+
     //if restarting or either proc crashed, restart it
     bool apiAlive = await isRunning('status/api_alive.txt', 3);
     if (!apiAlive) await startApi();

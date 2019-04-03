@@ -6,6 +6,7 @@ packages/*
 client/packages/*
 .idea/**
 .vscode/**
+/deploy
 
 *active*.txt
 *alive*.txt

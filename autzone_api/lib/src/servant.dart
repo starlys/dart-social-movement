@@ -198,10 +198,16 @@ class Servant {
       int eventId = convRow['event_id']; //null ok
       await loadJoinRow();
 
-      //if was invited, treat opening the conv as an implicit acceptance of the
-      // invite
+      //if was invited, treat opening the conv as an implicit acceptance of the invite
       if (joinRow != null && joinRow['status'] == 'I') {
         db.execute('update conv_xuser set status=\'J\' where conv_id=${args.convId} and xuser_id=${ai.id}');
+        await loadJoinRow();
+      }
+
+      //if was recommended, treat opening the conv as an implicit decline of the invite 
+      //(it might have been set private since the recommendation was made so we can't auto join)
+      if (joinRow != null && joinRow['status'] == 'R') {
+        db.execute('update conv_xuser set status=\'Q\' where conv_id=${args.convId} and xuser_id=${ai.id}');
         await loadJoinRow();
       }
 

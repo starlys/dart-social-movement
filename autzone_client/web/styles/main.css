@@ -13,7 +13,7 @@ input, select {color:#333;background-color:white;}
 /* for elements with static IDs */
 
 #page {}
-#header {position:relative;height:48px;max-width:1200px;color:white;border-radius:5px;margin-left:8px;background:black url(../images/logo.png);background-repeat:no-repeat;}
+#header {position:relative;height:48px;max-width:1200px;color:white;border-radius:5px;margin-left:8px;background-repeat:no-repeat;} /*image applied in html*/
 #title {font-size:1.4em;font-weight:bold;display:inline-block;position:absolute;top:2px;left:250px;}
 #subtitle {font-size:1.2em;display:inline-block;position:relative;top:26px;left:250px;}
 #hello {position:absolute;display:inline-block;right:12px;top:20px;}
@@ -144,7 +144,7 @@ button.pane-min {background-image:url(../images/pane-minimize.png);}
 .theme-princess .pane, .theme-princess table {color:#a88 !important;background-color:#fef;}
 /*FOREST: green and brown on light green panes; dark green outside of panes*/
 .theme-forest {background-color:#080;}
-.theme-forest .pane, .theme-forest table, {color:green !important;background-color:#dec;}
+.theme-forest .pane, .theme-forest table {color:green !important;background-color:#dec;}
 
 /* jGrowl overrides */
 .jGrowl.bottom-left {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:js' as js;
 import '../pane/base_pane.dart';
 import 'package:autzone_models/autzone_models.dart';
 
@@ -7,7 +8,9 @@ typedef Future UserActionFunc();
 ///application-wide globals (no methods)
 class Globals {
 
-  static final String appTitle = 'autistic.zone'; //future feature: derive this from server config
+  static final String appTitle1 = js.context['window'].site_title1;
+  static final String appTitle2 = js.context['window'].site_title2;
+  static final String siteCode = js.context['window'].site_code;
 
   ///max length of titles, unless database specifies a shorter limit
   static final int maxTitleLength = 500;

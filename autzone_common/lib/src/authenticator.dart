@@ -2,6 +2,7 @@ import 'dart:async';
 import 'database.dart';
 import 'misc_lib.dart';
 import 'package:autzone_models/autzone_models.dart';
+import 'package:autzone_common/autzone_common.dart';
 
 //tried to use 2 dart libs for memcache, and gave up for now. memcached_client
 //is bulky and lacks documentation. memcache has no constructor except if
@@ -53,11 +54,13 @@ class Authenticator {
     ai..nick = nick ..password = password;
     ai.passwordHash = MiscLib.passwordHash(password);
     await Database.safely('x', (db) async {
-      final rows = await MiscLib.query(db, 'select id,nick,site_admin,public_name,timezone from xuser where status=\'A\' and lower(nick)=@n and password=@p',
+      final rows = await MiscLib.query(db, 'select id,nick,site_admin,public_name,timezone,site_id from xuser where status=\'A\' and lower(nick)=@n and password=@p',
         {'n':nick.toLowerCase(), 'p':ai.passwordHash});
       if (rows.length > 0) {
         final row = rows[0];
+        final site = await ApiGlobals.sites.byId(row['site_id']);
         ai..id = row['id']
+          ..site = site
           ..nick = row['nick'] //fixes capitalization compared to nick parameter
           ..isSiteAdmin = row['site_admin'] == 'Y'
           ..publicName = row['public_name']
@@ -108,6 +111,7 @@ class Authenticator {
 ///authentication results as provided by Authenticator
 class AuthInfo {
   int id;
+  SiteRecord site;
   String nick;
   String password;
   String publicName;

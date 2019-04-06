@@ -248,7 +248,7 @@ class PushQueueHandler {
 
     //browser title
     String titlePrefix = num.length > 0 ? '(' + num + ') ' : '';
-    document.title = titlePrefix + Globals.appTitle;
+    document.title = titlePrefix + Globals.appTitle1;
   }
 
   ///show next item in push queue

@@ -4,8 +4,8 @@ import 'misc_lib.dart';
 import 'conv_lib.dart';
 import 'diff_lib.dart';
 import 'permissions.dart';
-import 'config_settings.dart';
 import 'package:autzone_models/autzone_models.dart';
+import 'package:autzone_common/autzone_common.dart';
 
 ///centralizes access to proposal table with logic for various specific
 /// proposal types
@@ -97,7 +97,7 @@ class ProposalLib {
   }
 
   ///write proposal of kind NEW for a proposal of kind SYS
-  static Future proposeSystemChange(ConfigSettings config, PostgreSQLConnection db, int userId,
+  static Future proposeSystemChange(SiteRecord config, PostgreSQLConnection db, int userId,
     String changeTitle, String changeSummary, List<String> options) async {
     //put together all the values that will eventually go into the proposal
     // table for this system proposal
@@ -182,7 +182,7 @@ class ProposalLib {
   ///write proposal of kind NEW for a proposal of kind ROOT;
   ///changeSummary is in the proposer's own words while changeHtml is the change proposed
   /// in html; newBody is the complete document proposed
-  static Future proposeRootDocumentChange(ConfigSettings config, PostgreSQLConnection db, int userId, int docId,
+  static Future proposeRootDocumentChange(SiteRecord config, PostgreSQLConnection db, int userId, int docId,
     String docTitle, String changeSummary, String changeHtml, String newBody) async {
 
     //put together all the values that will eventually go into the proposal

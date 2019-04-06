@@ -243,7 +243,7 @@ class Servant {
       //get posting permissions, or null
       RestrictionInfo postPermissions = null;
       if (isVisible && joinRow != null) {
-          postPermissions = await Permissions.getConvPostPermissions(ApiGlobals.configSettings, db, ai.id, args.convId, convRow);
+          postPermissions = await Permissions.getConvPostPermissions(ai.site, db, ai.id, args.convId, convRow);
       }
 
       //load posts
@@ -476,7 +476,7 @@ class Servant {
       if (projectId != null) {
         final projectUserRow = await MiscLib.queryRowChecked(db, 'select spam_count from project_xuser where project_id=${projectId} and xuser_id=${authorId}', 'User is not joined to project', null);
         int spamCount = projectUserRow['spam_count'];
-        RestrictionInfo ri = Permissions.spamCountToRestrictions(ApiGlobals.configSettings, spamCount);
+        RestrictionInfo ri = Permissions.spamCountToRestrictions(ai.site, spamCount);
         if (ri.restrictionLevel > 0)
           retThrottleDescription = 'User is permitted one post every ${ri.restDays} day(s).';
       }
@@ -553,7 +553,7 @@ class Servant {
         authorId = ai.id;
 
         //check permissions
-        await Permissions.checkConvPostPermissions(ApiGlobals.configSettings, db, ai.id, convId, convRow, projectId, args.ptext.length);
+        await Permissions.checkConvPostPermissions(ai.site, db, ai.id, convId, convRow, projectId, args.ptext.length);
 
         //write it
         final twarning = args.triggerWarning ?? '';
@@ -591,7 +591,7 @@ class Servant {
       int projectId = convRow['project_id']; //null ok
 
       //check permissions
-      await Permissions.checkConvPostPermissions(ApiGlobals.configSettings, db, ai.id, args.convId, convRow, projectId, args.ptext.length);
+      await Permissions.checkConvPostPermissions(ai.site, db, ai.id, args.convId, convRow, projectId, args.ptext.length);
 
       //write it
       String postId = await ConvLib.writeConvPost(db, args.convId, ai.id, args.ptext, null, true, WLib.utcNow());
@@ -727,7 +727,7 @@ class Servant {
       final docRow = await MiscLib.queryRowChecked(db, 'select id,title,project_id,revision_no from doc where ${whereClause}', 'Document does not exist', null);
       retDocId = docRow['id'];
       retProjectId = docRow['project_id'];
-      if (retProjectId == ApiGlobals.rootProjectId) retProjectId = null;
+      if (retProjectId == ai.site.rootProjectId) retProjectId = null;
       retTitle = docRow['title'];
       int latestRevisionNo = docRow['revision_no'];
 
@@ -870,7 +870,7 @@ class Servant {
       else {
         if (args.docId == 0) throw new Exception('Cannot create new root document'); //they have to exist in the database by manual means
         String changeHtml = DiffLib.buildReviewHtml(diffInfo.after, args.body);
-        await ProposalLib.proposeRootDocumentChange(ApiGlobals.configSettings, db, ai.id, args.docId, args.title, args.summary,
+        await ProposalLib.proposeRootDocumentChange(ai.site, db, ai.id, args.docId, args.title, args.summary,
           changeHtml, args.body);
       }
     });
@@ -1331,7 +1331,7 @@ class Servant {
       for (final row in userRows) {
         if (row['kind'] == 'N') continue; //as if never joined
         String throttle = '';
-        RestrictionInfo spamInfo = Permissions.spamCountToRestrictions(ApiGlobals.configSettings, row['spam_count']);
+        RestrictionInfo spamInfo = Permissions.spamCountToRestrictions(ai.site, row['spam_count']);
         if (spamInfo.restrictionLevel > 0) {
           throttle = 'User may post every ${spamInfo.restDays} days (max ${spamInfo.charLimit} chars)';
         }
@@ -1600,7 +1600,7 @@ class Servant {
         newId = proposalId;
       }
       else if (args.kind == 'SYS') {
-        await ProposalLib.proposeSystemChange(ApiGlobals.configSettings, db, ai.id, args.title, args.summary, args.options);
+        await ProposalLib.proposeSystemChange(ai.site, db, ai.id, args.title, args.summary, args.options);
       }
     });
     return dbBase(dbresult, newId: newId);
@@ -2130,9 +2130,9 @@ class Servant {
           substitutionValues: {'p': MiscLib.jsonParameter(proposedEmail)});
 
         //email the code to args.email
-        var settings = ApiGlobals.configSettings;
-        String link = settings.linkbackUrl + '/linkback/ValidateEmail?id=${userId}&code=${code}';
-        String body = 'Automated message from ${settings.siteName}'
+        var settings = ai.site;
+        String link = settings.homeUrl + '/linkback/ValidateEmail?id=${userId}&code=${code}';
+        String body = 'Automated message from ${settings.title1}'
           '\r\n\r\nIf you intended to associate this email address with the account "${args.saveNick}",'
           '\r\nplease click on the link below or copy it into a browser to verify that you own'
           '\r\nthe email address.'

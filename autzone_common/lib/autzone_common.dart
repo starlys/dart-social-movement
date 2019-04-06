@@ -17,3 +17,4 @@ export 'src/misc_lib.dart';
 export 'src/permissions.dart';
 export 'src/proposal_lib.dart';
 export 'src/query_clause_builder.dart';
+export 'src/site_cache.dart';

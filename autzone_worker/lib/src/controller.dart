@@ -18,7 +18,6 @@ class Controller {
       //exit if stop file exists
       File stopFile = new File(ConfigLoader.rootPath() + '/status/stop.txt');
       if (await stopFile.exists()) {
-        ApiGlobals.configLoader.stopWatching();
         await writeAliveFile(false);
         return;
       }

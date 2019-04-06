@@ -32,9 +32,10 @@ class Servant {
 
   ///get all categories matching kind; no authentication
   Future<CategoryQueryResponse> categoryQuery(CategoryQueryRequest args) async {
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
     final cats = List<CategoryItemResponse>();
     final dbresult = await Database.safely('CategoryQuery', (db) async {
-      final rows = await MiscLib.query(db, 'select * from category where kind=@k order by title',
+      final rows = await MiscLib.query(db, 'select * from category where kind=@k and site_id=${site.id} order by title',
         {'k': args.kind});
       for (final row in rows) {
         var item = new CategoryItemResponse(
@@ -72,11 +73,11 @@ class Servant {
         await db.execute(sql, substitutionValues: {'k':args.kind, 't':args.title, 'd':args.description});
       } else {
         //create
-        String sql = 'insert into category(parent_id,kind,title,description)values(@p,@k,@t,@d)';
+        String sql = 'insert into category(site_id,parent_id,kind,title,description)values(@si,@p,@k,@t,@d)';
         int parentId = null;
         if (args.referenceMode == 'C') parentId = args.referenceId;
         if (args.referenceMode == 'S') parentId = parentOfRef;
-        await db.execute(sql, substitutionValues: {'p':parentId, 'k':args.kind, 't':args.title, 'd':args.description});
+        await db.execute(sql, substitutionValues: {'si': ai.site.id, 'p':parentId, 'k':args.kind, 't':args.title, 'd':args.description});
       }
     });
     return dbBase(dbresult);
@@ -93,12 +94,12 @@ class Servant {
     final dbresult = await Database.safely('CategoryDelete', (db) async {
       //get parent cat (which is null if top level)
       int catToDelete = args.catId;
-      int parentOfDeleted = await MiscLib.queryScalar(db, 'select parent_id from category where id=${catToDelete} and kind=@k',
+      int parentOfDeleted = await MiscLib.queryScalar(db, 'select parent_id from category where site_id=${ai.site.id} id=${catToDelete} and kind=@k',
         {'k': args.kind});
 
       //get whether deleting cat has projects or resources
-      int countProjects = (await MiscLib.queryScalar(db, 'select count(*) from project where category_id=${catToDelete}', null) ?? 0);
-      int countResources = (await MiscLib.queryScalar(db, 'select count(*) from resource where category_id=${catToDelete}', null) ?? 0);
+      int countProjects = (await MiscLib.queryScalar(db, 'select count(*) from project where category_id=${catToDelete}', null)) ?? 0;
+      int countResources = (await MiscLib.queryScalar(db, 'select count(*) from resource where category_id=${catToDelete}', null)) ?? 0;
 
       //fail if has proj/resources and is top level (it wouldn't be possible to reparent
       // those records)
@@ -106,7 +107,7 @@ class Servant {
         throw new Exception('Cannot delete top level category that has projects or resources');
 
       //fail if this is the only cat left
-      int countOtherCats = (await MiscLib.queryScalar(db, 'select count(*) from category where kind=@k and id<>${catToDelete}',
+      int countOtherCats = (await MiscLib.queryScalar(db, 'select count(*) from category where site_id=${ai.site.id} kind=@k and id<>${catToDelete}',
         {'k': args.kind}) ?? 0);
       if (countOtherCats == 0) throw new Exception('Cannot delete last category');
 
@@ -142,10 +143,12 @@ class Servant {
     final dbresult = await Database.safely('CategoryMoveContents', (db) async {
       //relink projects and resources
       if (args.kind == 'P') {
-        await db.execute('update project set category_id=${args.catId} where id in (${inClause})');
+        await db.execute('update project set category_id=${args.catId} where site_id=${ai.site.id} and id in (${inClause})');
       }
       if (args.kind == 'R') {
-        await db.execute('update resource set category_id=${args.catId} where id in (${inClause})');
+        //TODO add resource.site_if eliminate this: final int siteOfCat = await MiscLib.queryScalar(db, 'select site_id from category where id=${args.catId}', null);
+        if (siteOfCat == ai.site.id)
+          await db.execute('update resource set category_id=${args.catId} where id in (${inClause})');
       }
     });
     return dbBase(dbresult);
@@ -2117,7 +2120,7 @@ class Servant {
           ' where id=${userId}',
           substitutionValues: {'kind': args.kind, 'name': args.publicName, 'links': MiscLib.jsonParameter(args.publicLinks),
           'tz': args.timeZone, 'pref1': args.prefEmailNotify});
-        Authenticator.invalidate(ai.nick);
+        Authenticator.invalidate(ai.site.code, ai.nick);
       }
 
       //if email provided (either on new user or updated)...
@@ -2219,7 +2222,7 @@ class Servant {
           throw new Exception('Recovery code is not correct.');
         await db.execute('update xuser set password=@p where id=${userId}',
           substitutionValues: {'p': MiscLib.passwordHash(args.recoveryPassword)});
-        Authenticator.invalidate(args.recoveryNick);
+        Authenticator.invalidate(args.base.siteCode, args.recoveryNick);
       }
     });
     return dbBase(dbresult);

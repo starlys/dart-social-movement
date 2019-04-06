@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:math';
 import 'dart:async';
+import 'dart:js'as js;
 import 'root/pane_key.dart';
 import 'client_store.dart';
 import 'pane_factory.dart';
@@ -29,6 +30,13 @@ class MainController {
 
   ///initialize app
   static Future startApp() async {
+
+    //set globals from the javascript inlined on index.html
+    final pageConsts = new js.JsObject(js.context['getSiteInfo']);
+    Globals.siteCode = pageConsts['siteCode'];
+    Globals.appTitle1 = pageConsts['title1'];
+    Globals.appTitle2 = pageConsts['title2'];
+    print('debug 1 ${Globals.siteCode}');
 
     //init libraries
     RpcLib.init();

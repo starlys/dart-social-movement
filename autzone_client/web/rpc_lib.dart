@@ -20,7 +20,7 @@ class RpcLib {
 
   ///add credentials to a Map version of the request wire object, and return it as a json string
   static String requestToJson(String method, Map<String,dynamic> requestMap) {
-    requestMap['base'] = { 'nick': Globals.nick, 'password': Globals.password };
+    requestMap['base'] = { 'nick': Globals.nick, 'password': Globals.password, 'site_code': Globals.siteCode };
     return json.encode(requestMap);
   }
 

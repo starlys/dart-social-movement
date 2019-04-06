@@ -19,11 +19,14 @@
   <link rel="icon" href="site_AUT/favicon.png?ver=28">
 
   <!--autzone app-->
+  <script type="text/javascript">
+    window.getSiteInfo=function() {return {siteCode: '$code$', title1: '$title1$', title2: '$title2$'};}; 
+  </script>
   <script type="text/javascript" src="main.dart.js?ver=28"></script>
 </head>
 <body>
   <div id="page">
-    <div id="header" style="background:black url(site_AUT/logo.png)">
+    <div id="header" style="background:black url(site_AUT/logo.png);background-repeat:no-repeat;">
       <span id="hello"></span>
       <span id="title">$title1$</span>
       <span id="subtitle">$title2</span>
@@ -64,6 +67,5 @@
       </div>
     </div>
   </div>
-  <script>window.site_code='$code$'; window.site_title1='$title1$'; window.site_title2='$title2$'</script>
 </body>
 </html>

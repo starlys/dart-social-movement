@@ -3,12 +3,14 @@ import 'dart:io';
 import 'database.dart';
 import 'misc_lib.dart';
 import 'config_loader.dart';
+import 'api_globals.dart';
 import 'package:autzone_models/autzone_models.dart';
 
 ///cache of site and config tables, plus other unchanging/cacheable values
 class SiteCache {
   var _sites = Map<String, SiteRecord>();
   var _nextLoadTime = WLib.utcNow();
+  final String _notFoundMessage = 'Site not found';
 
   Future init() {
     return _load();
@@ -21,19 +23,27 @@ class SiteCache {
   }
 
   ///get site by code; to improve performance, this call assumes that sites were already loaded from one of the async calls
-  SiteRecord byCode(String code) => _sites[code];
+  SiteRecord byCode(String code) {
+    final site = _sites[code];
+    if (site == null) throw Exception(_notFoundMessage);
+    return site;
+  }
 
   ///get site by domain name, case insensitive
   Future<SiteRecord> byDomain(String domain) async {
     await _loadIfNeeded();
     domain = domain.toLowerCase();
-    return _sites.values.firstWhere((s) => s.domain == domain);
+    final site = _sites.values.firstWhere((s) => s.domain == domain);
+    if (site == null) throw Exception(_notFoundMessage);
+    return site;
   }
 
   ///get site by database id
   Future<SiteRecord> byId(int id) async {
     await _loadIfNeeded();
-    return _sites.values.firstWhere((s) => s.id == id);
+    final site = _sites.values.firstWhere((s) => s.id == id);
+    if (site == null) throw Exception(_notFoundMessage);
+    return site;
   }
 
   Future _loadIfNeeded() async {
@@ -43,17 +53,20 @@ class SiteCache {
   Future _load() async {
     _nextLoadTime = WLib.utcNow().add(Duration(minutes: 10));
     Database.safely('load site+config', (db) async {
-      final siteRows = await MiscLib.query(db, 'select * from site', null);
+      final siteRows = await MiscLib.query(db, 'select * from site order by id', null);
       final configRows = await MiscLib.query(db, 'select * from config', null);
-      final codeToString = (int siteId, String code) => configRows.firstWhere((r) => r['site_id'] == siteId && r['code'] == code)['value'];
+      final codeToString = (int siteId, String code) {
+        try { return configRows.firstWhere((r) => r['site_id'] == siteId && r['code'] == code)['value'];}
+        catch (e) { throw Exception('Missing config row for site $siteId, code $code'); }
+      };
       final codeToInt = (int siteId, String code) => int.parse(codeToString(siteId, code));
       final sites = Map<String, SiteRecord>();
       for (final siteRow in siteRows) {
-        final siteId = siteRow['site_id'];
-        final int rootProjectId = await MiscLib.queryScalar(db, 'select id from project where kind=\'R\' abd site_id=$siteId', null);
+        final siteId = siteRow['id'];
+        final int rootProjectId = await MiscLib.queryScalar(db, 'select id from project where kind=\'R\' and site_id=$siteId', null);
 
         final deletion = SiteRecord_Deletion(
-          codeToInt(siteId, 'deletion.conv.days')
+          codeToInt(siteId, 'deletion.conv_days')
           );
         final admin = SiteRecord_SiteAdmin(
           codeToInt(siteId, 'site_admin.min'),
@@ -82,12 +95,14 @@ class SiteCache {
         final site = SiteRecord(siteRow['id'], siteRow['code'], siteRow['domain'], siteRow['home_url'], 
           siteRow['title1'], siteRow['title2'], deletion, admin, spam, operation, rootProjectId);
         sites[site.code] = site;
+        if (!sites.containsKey(r'$code$')) sites[r'$code$'] = site; //support dev mode by using site id 1
       }
       _sites = sites;
     });
   }
 }
 
+///Detail fields from site table and container for config table entries
 class SiteRecord {
   String _indexhtml;
 
@@ -111,7 +126,8 @@ class SiteRecord {
   ///get cached generated version of index.html for this site
   String get indexHtml {
     if (_indexhtml == null) {
-      final template = File('${ConfigLoader.rootPath()}/public_html/index.html');
+      final templatePath = ApiGlobals.configLoader.isDev ? '${ConfigLoader.rootPath()}/autzone_client/web/index.html' : '${ConfigLoader.rootPath()}/public_html/index.html';
+      final template = File(templatePath);
       _indexhtml = template.readAsStringSync()
         .replaceAll(r'$title1$', title1.replaceAll("'", "\'"))
         .replaceAll(r'$title2$', title2.replaceAll("'", "\'"))

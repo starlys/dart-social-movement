@@ -64,7 +64,8 @@ main() async {
 
   //add route for index.html with substitutions
   angelApp.get('/', (req, resp) async {
-    final config = await ApiGlobals.sites.byDomain(req.uri.host);
+    var config = await ApiGlobals.sites.byDomain(req.uri.host);
+    if (config == null) config = await ApiGlobals.sites.byCode('AUT'); //dev mode default
     resp.contentType = MediaType('text', 'html');
     resp.write(config.indexHtml);
     resp.close();

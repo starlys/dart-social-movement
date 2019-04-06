@@ -14,9 +14,12 @@ abstract class _APIRequestBase {
 
   ///password for uid
   String get password;
+
+  ///site code (from table site)
+  String get siteCode;
 }
 
-//nestable class for API responses. The RPC library doesn't allow responses to
+//nestable class for API responses. The originally used RPC library doesn't allow responses to
 //be derived from a superclass, so APIResponseBase has to be nested in each
 //response type
 @serializable

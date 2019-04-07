@@ -146,9 +146,7 @@ class Servant {
         await db.execute('update project set category_id=${args.catId} where site_id=${ai.site.id} and id in (${inClause})');
       }
       if (args.kind == 'R') {
-        //TODO add resource.site_if eliminate this: final int siteOfCat = await MiscLib.queryScalar(db, 'select site_id from category where id=${args.catId}', null);
-        if (siteOfCat == ai.site.id)
-          await db.execute('update resource set category_id=${args.catId} where id in (${inClause})');
+          await db.execute('update resource set category_id=${args.catId} where site_id=${ai.site.id} and id in (${inClause})');
       }
     });
     return dbBase(dbresult);
@@ -166,7 +164,7 @@ class Servant {
 
     List<ConvQueryConvItemResponse> convs;
     final dbresult = await Database.safely('ConvQuery', (db) async {
-      await ConvLib.find(db, ai.id, searchTerm);
+      await ConvLib.find(db, ai.site, ai.id, searchTerm);
     });
     return ConvQueryResponse(base: dbBase(dbresult), convs: convs);
   }
@@ -386,7 +384,6 @@ class Servant {
         final openingPostRow = await MiscLib.queryRow(db, 'select author_id,conv_id from conv_post where id=@p',
           {'p': args.openingPostId});
         if (openingPostRow == null) throw new Exception('Source post does not exist');
-        //authorId = openingPostRow.author_id;
         final convRow = await MiscLib.queryRow(db, 'select project_id,event_id from conv where id=${openingPostRow['conv_id']}', null);
         if (convRow == null) throw new Exception('Conversation does not exist');
         projectId = convRow['project_id']; //null ok
@@ -415,8 +412,8 @@ class Servant {
 
         //create
         DateTime now = WLib.utcNow();
-        convId = await MiscLib.queryScalar(db, 'insert into conv(project_id,event_id,title,open,from_conv_id,post_max_size,xuser_daily_max,created_at,last_activity,activity_flag)'
-          'values(${projectId},${eventId}, @t, \'Y\', ${args.fromConvId}, ${args.postMaxSize}, ${args.userDailyMax}, @d1, @d2, \'N\')'
+        convId = await MiscLib.queryScalar(db, 'insert into conv(site_id,project_id,event_id,title,open,from_conv_id,post_max_size,xuser_daily_max,created_at,last_activity,activity_flag)'
+          'values(${ai.site.id},${projectId},${eventId}, @t, \'Y\', ${args.fromConvId}, ${args.postMaxSize}, ${args.userDailyMax}, @d1, @d2, \'N\')'
           'returning id',
           {'t': args.title, 'd1': now, 'd2': now}
           );
@@ -686,7 +683,7 @@ class Servant {
           retAction = 'J';
         } else if (permissions.mayRequest) {
           await ConvLib.writeConvUser(db, args.convId, ai.id, 'A', 'N');
-          await ProposalLib.proposeJoinConv(db, ai.id, ai.nick, permissions.projectId, args.convId);
+          await ProposalLib.proposeJoinConv(db, ai.site, ai.id, ai.nick, permissions.projectId, args.convId);
           retAction = 'R';
         } else {
           retAction = 'X';
@@ -699,9 +696,10 @@ class Servant {
   ///get all root docs; no authentication
   Future<DocQueryResponse> docQuery(DocQueryRequest args) async {
     if (args.mode != 'R') throw new Exception('unknown mode');
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
     final docs = new List<DocQueryItem>();
     final dbresult = await Database.safely('DocQuery', (db) async {
-      String sql = 'select id, title from doc where project_id in (select id from project where kind=\'R\') order by title';
+      String sql = 'select id, title from doc where site_id=${site.id} and project_id=${site.rootProjectId} order by title';
       final docRows = await MiscLib.query(db, sql, null);
       for (final row in docRows) {
         var item = new DocQueryItem(iid: row['id'], title: row['title']);
@@ -725,8 +723,10 @@ class Servant {
     final dbresult = await Database.safely('DocGet', (db) async {
       //get info about doc (but don't load text yet)
       String whereClause = 'id=${args.docId}';
-      if (args.specialCode != null && args.specialCode.length < 50)
+      if (args.specialCode != null) {
+        if (args.specialCode.contains(RegExp('[^A-Z]'))) throw Exception('Invalid doc special_code'); //prevent sql injection
         whereClause = 'special_code=\'${args.specialCode}\'';
+      }
       final docRow = await MiscLib.queryRowChecked(db, 'select id,title,project_id,revision_no from doc where ${whereClause}', 'Document does not exist', null);
       retDocId = docRow['id'];
       retProjectId = docRow['project_id'];
@@ -873,7 +873,7 @@ class Servant {
       else {
         if (args.docId == 0) throw new Exception('Cannot create new root document'); //they have to exist in the database by manual means
         String changeHtml = DiffLib.buildReviewHtml(diffInfo.after, args.body);
-        await ProposalLib.proposeRootDocumentChange(ai.site, db, ai.id, args.docId, args.title, args.summary,
+        await ProposalLib.proposeRootDocumentChange(db, ai.site, ai.id, args.docId, args.title, args.summary,
           changeHtml, args.body);
       }
     });
@@ -913,6 +913,7 @@ class Servant {
 
   ///get all events matching criteria
   Future<EventQueryResponse> eventQuery(EventQueryRequest args) async {
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     String tzName = null;
     if (ai != null) tzName = ai.timeZoneName;
@@ -928,6 +929,7 @@ class Servant {
 
       //build query
       QueryClauseBuilder builder = new QueryClauseBuilder();
+      builder.add('event.site_id=${site.id}');
       builder.add('event.start_time>=@d1', name: 'd1', value: preciseFrom);
       builder.add('event.start_time<@d2', name: 'd2', value: preciseTo);
       if (args.title != null) builder.add('lower(event.title) like @ti', name: 'ti', value: '%${args.title.toLowerCase()}%');
@@ -1049,7 +1051,7 @@ class Servant {
 
       //new event
       if (args.eventId == 0) {
-        await ProposalLib.proposeNewEvent(db, ai.id, args.title, args.description,
+        await ProposalLib.proposeNewEvent(db, ai.site, ai.id, args.title, args.description,
           startTimeUtc, args.duration, lat, lon, args.location);
       }
 
@@ -1111,7 +1113,7 @@ class Servant {
     return dbBase(dbresult);
   }
 
-  ///for an event save whether the authenticated user is coming or not
+  ///for an event, save whether the authenticated user is coming or not
   Future<APIResponseBase> eventUserSave(EventUserSaveRequest args) async {
     assert(args.eventId != null);
 
@@ -1135,12 +1137,14 @@ class Servant {
 
   ///get all projects matching criteria
   Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest args) async {
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
 
     final projects = new List<ProjectQueryItem>();
     final dbresult = await Database.safely('ProjectQuery', (db) async {
       //build query: note 2 versions of sql for logged in and not logged in
       final builder = QueryClauseBuilder();
+      builder.add('project.site_id=${site.id}');
       builder.add('project.kind=\'P\'');
       if (args.catId != null) builder.add('category_id=${args.catId}');
       if (args.title != null) builder.add('lower(title) like @t', name:'t', value: '%${args.title.toLowerCase()}%');
@@ -1259,7 +1263,7 @@ class Servant {
     final dbresult = await Database.safely('ProjectSave', (db) async {
       //new project
       if (args.projectId == 0) {
-        await ProposalLib.proposeNewProject(db, ai.id, args.leadership, args.privacy,
+        await ProposalLib.proposeNewProject(db, ai.site, ai.id, args.leadership, args.privacy,
           args.title, args.description, args.categoryId);
       }
 
@@ -1466,7 +1470,8 @@ class Servant {
 
   ///get all proposals matching inputs; no authentication
   Future<ProposalQueryResponse> proposalQuery(ProposalQueryRequest args) async {
-      final items = new List<ProposalQueryItem>();
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final items = new List<ProposalQueryItem>();
 
     final dbresult = await Database.safely('ProposalQuery', (db) async {
       //build query
@@ -1478,10 +1483,12 @@ class Servant {
         where.add('project_id=${args.projectId}')        ;
       } else if (args.mode == 'S') {
         assert(args.year != null);
+        where.add('site_id=${site.id}');
         where.add('active=\'N\'');
         where.add('kind=\'SYS\'');
         where.add('extract(year from created_at)=${args.year}');
       } else  {//active root/sys
+        where.add('site_id=${site.id}');
         where.add('active=\'Y\'');
         where.add('(kind=\'ROOT\' or kind=\'SYS\')');
       }
@@ -1598,12 +1605,12 @@ class Servant {
       if (args.kind == 'PROJ') {
         bool isJoined = await Permissions.isJoinedToProject(db, ai.id, args.projectId);
         if (!isJoined) throw new Exception('Only project members can create a proposal');
-        int proposalId = await ProposalLib.proposeInProject(db, ai.id, args.projectId, args.eligible, args.title,
+        int proposalId = await ProposalLib.proposeInProject(db, ai.site, ai.id, args.projectId, args.eligible, args.title,
           args.summary, args.options, args.days);
         newId = proposalId;
       }
       else if (args.kind == 'SYS') {
-        await ProposalLib.proposeSystemChange(ai.site, db, ai.id, args.title, args.summary, args.options);
+        await ProposalLib.proposeSystemChange(db, ai.site, ai.id, args.title, args.summary, args.options);
       }
     });
     return dbBase(dbresult, newId: newId);
@@ -1786,6 +1793,7 @@ class Servant {
 
   ///get all resources matching criteria
   Future<ResourceQueryResponse> resourceQuery(ResourceQueryRequest args) async {
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     bool isSiteAdmin = ai != null && ai.isSiteAdmin;
 
@@ -1796,6 +1804,7 @@ class Servant {
       if (ai != null) sortClause = '(case when xuser_id=1 then 0 else 1 end),' + sortClause;
 
       QueryClauseBuilder builder = new QueryClauseBuilder();
+      builder.add('site_id=${site.id}');
       if (args.categoryId != null) builder.add('category_id=${args.categoryId}');
       if (args.title != null) builder.add('lower(title) like @t', name:'t', value: '%${args.title.toLowerCase()}%');
       if (args.kind != null && args.kind.length > 0) builder.add('kind=@k', name:'k', value: args.kind);
@@ -1881,7 +1890,7 @@ class Servant {
       //for new resources, store proposal and exit
       bool isNew = args.iid == 0;
       if (isNew) {
-        await ProposalLib.proposeNewResource(db, ai.id, args.kind, args.title, args.description, args.url, args.categoryId);
+        await ProposalLib.proposeNewResource(db, ai.site, ai.id, args.kind, args.title, args.description, args.url, args.categoryId);
         return;
       }
 
@@ -1899,7 +1908,7 @@ class Servant {
     return dbBase(dbresult);
   }
 
-  ///save a resource
+  ///triage a resource (that is, when site admins delete a resource or reset a resource's votes)
   Future<APIResponseBase> resourceTriage(ResourceTriageRequest args) async {
     //must be site admin
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
@@ -1950,17 +1959,18 @@ class Servant {
 
   ///get all users matching criteria
   Future<UserQueryResponse> userQuery(UserQueryRequest args) async {
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
     final users = new List<UserQueryItem>();
     final dbresult = await Database.safely('UserQuery', (db) async {
-      String whereClause = '';
-      Map<String, dynamic> params = new Map<String, dynamic>();
+      final whereClause = QueryClauseBuilder();
+      whereClause.add('site_id=${site.id}');
       if (args.name != null && args.name.length > 0) {
         String param1 = '%${args.name.toLowerCase()}%';
-        whereClause = 'where lower(nick) like @nick or lower(public_name) like @name';
-        params['nick'] = param1;
-        params['name'] = param1;
+        whereClause.add('lower(nick) like @nick or lower(public_name) like @name');
+        whereClause.paramsMap['nick'] = param1;
+        whereClause.paramsMap['name'] = param1;
       }
-      final rows = await MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser ${whereClause} order by last_activity desc limit 100', params);
+      final rows = await MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser ${whereClause.whereClause} order by last_activity desc limit 100', whereClause.paramsMap);
       for (final row in rows) {
         var item = new UserQueryItem(
           iid: row['id'],
@@ -2004,7 +2014,8 @@ class Servant {
 
       //load user
       if (doLoad) {
-        final userRow = await MiscLib.queryRowChecked(db, 'select status,nick,email,kind,site_admin,public_name,pref_email_notify,public_links,timezone,avatar_no from xuser where id=${args.userId}', 'User does not exist', null);
+        final userRow = await MiscLib.queryRowChecked(db, 'select status,nick,email,kind,site_admin,public_name,pref_email_notify,public_links,timezone,avatar_no'
+          ' from xuser where site_id=${ai.site.id} and id=${args.userId}', 'User does not exist', null);
         retNick = userRow['nick'];
         retStatus = userRow['status'];
         retEmail = userRow['email'];
@@ -2071,6 +2082,7 @@ class Servant {
   ///save/create a user
   Future<APIResponseBase> userSave(UserSaveRequest args) async {
     DateTime now = WLib.utcNow();
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
 
     //must be logged in if updating
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
@@ -2107,8 +2119,8 @@ class Servant {
         if (existingNick != null) throw new Exception('That nickname is already in use - try another');
 
         //store (with false password, and get id from db)
-        userId = await MiscLib.queryScalar(db, 'insert into xuser(status,nick,password,kind,public_name,public_links,timezone,pref_email_notify,created_at,last_activity,last_recommend,sitewide_rank,site_admin,avatar_no)'
-          ' values(\'A\',@nick,\'temp-pw\',@kind,@name,@links,@tz,@pref1,@d1,@d2,@d3,0,\'N\',0) returning id',
+        userId = await MiscLib.queryScalar(db, 'insert into xuser(site_id,status,nick,password,kind,public_name,public_links,timezone,pref_email_notify,created_at,last_activity,last_recommend,sitewide_rank,site_admin,avatar_no)'
+          ' values(${site.id},\'A\',@nick,\'temp-pw\',@kind,@name,@links,@tz,@pref1,@d1,@d2,@d3,0,\'N\',0) returning id',
           {'nick': args.saveNick, 'kind': args.kind, 'name': args.publicName, 'links': MiscLib.jsonParameter(args.publicLinks),
           'tz': args.timeZone, 'pref1': args.prefEmailNotify, 'd1':now, 'd2':now, 'd3':now});
       }
@@ -2144,7 +2156,7 @@ class Servant {
       }
 
       //if password provided, update it
-      if (args.savePW != null) {
+      if (args.savePW != null && !isNewUser) {
         await db.execute('update xuser set password=@p where id=${userId}',
           substitutionValues: {'p': MiscLib.passwordHash(args.savePW)});
       }
@@ -2179,7 +2191,7 @@ class Servant {
     return dbBase(dbresult);
   }
 
-  ///recover a password (see args doc for the 2 modes)
+  ///recover a password (see comments in UserRecoverPasswordRequest for the 2 modes)
   Future<APIResponseBase> userRecoverPassword(UserRecoverPasswordRequest args) async {
     final dbresult = await Database.safely('UserRecoverPassword', (db) async {
       //get info from xuser for either mode

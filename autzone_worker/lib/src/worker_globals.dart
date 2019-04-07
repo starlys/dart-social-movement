@@ -16,5 +16,5 @@ class WorkerGlobals {
   static String logFileSuffix = (random.nextInt(9000) + 999).toString() + '.txt'; //such as '1234.txt'
 
   //other
-  static bool isSiteSmall = false; //true when activity is low (causes spam checks to be relaxed)
+  static final isSiteAccelerated = Map<int, bool>(); //index by site_id, true when activity is low (causes spam checks to be relaxed); false or missing entry is not accelerated
 }

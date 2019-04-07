@@ -20,6 +20,7 @@ class Authenticator {
   static Map<String, AuthInfo> _recentAuth = new Map<String, AuthInfo>(); //indexed by siteCode|uppercase nick; example: AUT|BOB
   static int _putCount = 0; //num items added to _recent since last cleanup
 
+  ///build key for _recentAuth
   static String _key(String siteCode, String nick) => '${siteCode}|${nick.toUpperCase()}';
 
   ///remove the given user id from the cache (for example, when they update their profile)

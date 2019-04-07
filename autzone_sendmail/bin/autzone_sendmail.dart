@@ -14,7 +14,7 @@ Future main() async {
   await ApiGlobals.sites.allCodes(); //force load
 
   //run
-  await WDatabase.safely('sendmail', _sendAll, loggingFilePrefix: 'sendmail', loopSites: false);
+  await WDatabase.safely('sendmail', false, _sendAll, loggingFilePrefix: 'sendmail');
 
   //clean up
   await Database.dispose();

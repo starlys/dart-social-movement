@@ -26,8 +26,8 @@ class WDatabase {
 
   ///wrap a database operation in a db connection and catch errors.
   /// If r is given puts error messages there.
-  /// If loopSites is true(default) then the function f will be called for each site; otherwise it will be called once with a null site.
-  static Future<DatabaseResult> safely(String taskDesc, BackgroundWorkFunc f, {String loggingFilePrefix, bool loopSites = true}) async {
+  /// If loopSites is true then the function f will be called for each site; otherwise it will be called once with a null site.
+  static Future<DatabaseResult> safely(String taskDesc, bool loopSites, BackgroundWorkFunc f, {String loggingFilePrefix}) async {
     final poolItem = await Database.getFromPool();
     try {
       await _writeDebugTaskFile(true, taskDesc);
@@ -57,8 +57,8 @@ class WDatabase {
   ///load globals that could change as often as daily
   static Future loadDailyGlobals(PostgreSQLConnection db, SiteRecord site) async {
     //warning this query is not indexed
-    int usersOnToday = await MiscLib.queryScalar(db, 'select count(*) from xuser where last_activity>@p', {'p': WLib.utcNow().subtract(Duration(days: 1))});
-    WorkerGlobals.isSiteSmall = usersOnToday < 20;
+    int usersOnToday = await MiscLib.queryScalar(db, 'select count(*) from xuser where site_id=${site.id} and last_activity>@p', {'p': WLib.utcNow().subtract(Duration(days: 1))});
+    WorkerGlobals.isSiteAccelerated[site.id] = usersOnToday < 20;
   }
 
   ///calculate site leadership (aka. site admins)
@@ -70,26 +70,28 @@ class WDatabase {
     double fracAdmins = adminSettings.percent / 100.0;
 
     //set project.member_count for all projects
-    await db.execute('update project set member_count=(select count(*) from project_xuser where project_id=project.id)');
+    await db.execute('update project set member_count=(select count(*) from project_xuser where project_id=project.id) where site_id=${site.id}');
 
     //set project.active for all projects
-    await db.execute('update project set active=(case when (select count(*) from conv where project_id=project.id and open=\'Y\')>0 then \'Y\' else \'N\' end)');
+    await db.execute('update project set active=(case when (select count(*) from conv where project_id=project.id and open=\'Y\')>0 then \'Y\' else \'N\' end)'
+      ' where site_id=${site.id}');
 
     //reset member count to zero for inactive projects
-    await db.execute('update project set member_count=0 where active=\'N\'');
+    await db.execute('update project set member_count=0 where active=\'N\' and site_id=${site.id}');
 
     //set sitewide_rank for all users = sum of project members for all projects they are managers of
-    await db.execute('update xuser set sitewide_rank=(select coalesce(sum(member_count),0) from project where exists(select * from project_xuser where project_id=project.id and xuser_id=xuser.id and kind=\'M\'))');
+    await db.execute('update xuser set sitewide_rank=(select coalesce(sum(member_count),0) from project where site_id=${site.id}'
+      ' and exists(select * from project_xuser where project_id=project.id and xuser_id=xuser.id and kind=\'M\'))');
 
     //load in the top ~25% users, but not exceeding min/max range, in sitewide_rank order
     int userCount = await MiscLib.queryScalar(db, 'select count(*) from xuser', null);
     userCount = userCount ?? 0;
     int leaderCount = max(minAdmins, min(maxAdmins, (userCount * fracAdmins).round()));
-    final rows1 = await MiscLib.query(db, 'select id from xuser order by sitewide_rank desc limit ${leaderCount}', null);
+    final rows1 = await MiscLib.query(db, 'select id from xuser where site_id=${site.id} order by sitewide_rank desc limit ${leaderCount}', null);
     List<int> newLeaderIds = rows1.map((r) => r['id'] as int).toList();
 
     //load in existing site admins
-    final rows2 = await MiscLib.query(db, 'select id from xuser where site_admin=\'Y\'', null);
+    final rows2 = await MiscLib.query(db, 'select id from xuser where site_id=${site.id} and site_admin=\'Y\'', null);
     List<int> oldLeaderIds = rows2.map((r) => r['id'] as int).toList();
 
     //declare notification text
@@ -117,7 +119,7 @@ class WDatabase {
   }
 
   ///find all convs with new posts and set the readers' read positions
-  static Future findUnreads(PostgreSQLConnection db, SiteRecord site) async {
+  static Future findUnreads(PostgreSQLConnection db, SiteRecord dummy) async {
     final rows = await MiscLib.query(db, 'select id,last_activity from conv where activity_flag=\'Y\'', null);
     for (final row in rows) {
       int convId = row['id'];
@@ -128,7 +130,7 @@ class WDatabase {
   }
 
   ///set project.important_count to the count of likes of related convs
-  static Future countProjectImportance(PostgreSQLConnection db, SiteRecord site) async {
+  static Future countProjectImportance(PostgreSQLConnection db, SiteRecord dummy) async {
     await db.execute('update project set important_count=(select count(*) from conv inner join conv_xuser on conv.id=conv_xuser.conv_id where conv.project_id=project.id and conv_xuser.like=\'I\')');
   }
 
@@ -138,14 +140,16 @@ class WDatabase {
     int reactionWeightDays = site.spam.reaction_weight_days;
 
     //get the unique posts having new reactions
-    final rows1 = await MiscLib.query(db, 'select distinct conv_post_id from conv_post_xuser where processed=\'N\' and reaction=\'X\'', null);
+    final rows1 = await MiscLib.query(db, 'select distinct conv_post_id from conv_post_xuser where processed=\'N\' and reaction=\'X\''
+      ' and (select site_id from xuser where id=conv_post_xuser.created_by)=${site.id}', null);
     List<String> postIds = rows1.map((r) => r['conv_post_id'].toString()).toList();
 
     //get the unique project_xuser records for the authors of each of the posts having new reactions
     final authorRows = await MiscLib.query(db, 'select distinct conv.project_id,conv_post.author_id'
       ' from (conv_post_xuser inner join conv_post on conv_post_xuser.conv_post_id=conv_post.id)'
       ' inner join conv on conv_post.conv_id=conv.id'
-      ' where conv_post_xuser.processed=\'N\'', null);
+      ' where conv_post_xuser.processed=\'N\''
+      ' and conv.site_id=${site.id}', null);
 
     //update conv_post.inappropriate_count for all affected posts
     for (String postId in postIds) {
@@ -185,7 +189,8 @@ class WDatabase {
     } //end loop suspicious authors
 
     //the new reactions are all processed
-    await db.execute('update conv_post_xuser set processed=\'Y\' where processed=\'N\'');
+    await db.execute('update conv_post_xuser set processed=\'Y\' where processed=\'N\''
+      ' and (select site_id from xuser where id=conv_post_xuser.created_by)=${site.id}');
   }
 
   ///update project_xuser.spam_count with notifications
@@ -217,21 +222,25 @@ class WDatabase {
   }
 
   ///check for proposals that need to be closed, and close them
-  static Future timeoutProposals(PostgreSQLConnection db, SiteRecord site) async {
+  static Future timeoutProposals(PostgreSQLConnection db, SiteRecord dummy) async {
     final rows = await MiscLib.query(db, 'select id from proposal where active=\'Y\' and timeout<@d',
       {'d': WLib.utcNow()});
     for (final row in rows) await ProposalLib.closeProposal(db, row['id']);
   }
 
-  ///check for NEW proposals on small sites: shorten their duration such that they get approved quicker
+  ///do certain actions for sites that are accelerated because they are small/low-activity
   static Future smallSiteAccelerate(PostgreSQLConnection db, SiteRecord site) async {
-    if (!WorkerGlobals.isSiteSmall) return;
-    db.execute('update proposal set timeout=@t where active=\'Y\' and kind=\'NEW\' and timeout>@u', 
+    //aboart if this is not an accelerated site
+    bool isAcceleratedSite = WorkerGlobals.isSiteAccelerated[site.id] == true;
+    if (!isAcceleratedSite) return;
+
+    //check for NEW proposals on small sites: shorten their duration such that they get approved quicker
+    db.execute('update proposal set timeout=@t where site_id=${site.id} active=\'Y\' and kind=\'NEW\' and timeout>@u', 
       substitutionValues: { 't': WLib.utcNow(), 'u': WLib.utcNow() });
   }
 
   ///delete old data - to be called daily (also see weeklyDelete)
-  static Future dailyDelete(PostgreSQLConnection db, SiteRecord site) async {
+  static Future dailyDelete(PostgreSQLConnection db, SiteRecord dummy) async {
     //delete doc_revisions older than 1 year
     final rows = await MiscLib.query(db, 'select id from doc_revision where created_at<@d',
       {'d': WLib.utcNow().subtract(new Duration(days: 365))});
@@ -239,7 +248,7 @@ class WDatabase {
   }
 
   ///delete old data - to be called weekly (also see dailyDelete)
-  static Future weeklyDelete(PostgreSQLConnection db, SiteRecord site) async {
+  static Future weeklyDelete(PostgreSQLConnection db, SiteRecord dummy) async {
     //some dates
     DateTime now = WLib.utcNow();
     DateTime monthAgo = now.subtract(new Duration(days: 30));
@@ -278,7 +287,7 @@ class WDatabase {
   }
 
   ///assign leaders of democratic projects
-  static Future assignProjectLeadership(PostgreSQLConnection db, SiteRecord site) async {
+  static Future assignProjectLeadership(PostgreSQLConnection db, SiteRecord dummy) async {
     //loop democratic projects
     final rows = await MiscLib.query(db, 'select id,title from project where leadership=\'D\' and kind=\'P\'', null);
     for (final row in rows) await _assignProjectLeadership(db, row['id'], row['title']);
@@ -324,7 +333,7 @@ class WDatabase {
   }
 
   ///set resource.important_count for all resources whose votes recently changed
-  static Future countResourceVotes(PostgreSQLConnection db, SiteRecord site) async {
+  static Future countResourceVotes(PostgreSQLConnection db, SiteRecord dummy) async {
     //get list of unique resource ids having uncounted votes
     final rows1 = await MiscLib.query(db, 'select distinct resource_id from resource_xuser where processed<>\'Y\'', null);
     List<int> resourceIds = rows1.map((r) => r['resource_id'] as int).toList();
@@ -341,7 +350,7 @@ class WDatabase {
   }
 
   ///recommend conversations to users
-  static Future recommendConversations(PostgreSQLConnection db, SiteRecord site) async {
+  static Future recommendConversations(PostgreSQLConnection db, SiteRecord dummy) async {
     //find users with activity since last recommendation, and whose last
     // recommendation was at least an hour ago.
     //NOTE this query is not indexed
@@ -432,7 +441,7 @@ class WDatabase {
   /// this is fairly slow since it sums the size of all posts
   static Future closeConversations(PostgreSQLConnection db, SiteRecord site) async {
     //get info about all open convs
-    final rows = await MiscLib.query(db, 'select id,created_at,last_activity from conv where open=\'Y\'', null);
+    final rows = await MiscLib.query(db, 'select id,created_at,last_activity from conv where site_id=${site.id} open=\'Y\'', null);
 
     //get config values
     var opSettings = site.operation;
@@ -465,7 +474,7 @@ class WDatabase {
   }
 
   ///hide resources if the remove vote count is high
-  static Future hideResources(PostgreSQLConnection db, SiteRecord site) async {
+  static Future hideResources(PostgreSQLConnection db, SiteRecord dummy) async {
     //get the count of votes of all kinds for each visible resource; the result set may have
     // multiple rows for each resource id
     final voteSumRows = await MiscLib.query(db, 'select resource_xuser.resource_id, resource_xuser.kind, count(resource_xuser.kind) as votecount from resource_xuser inner join resource on resource_xuser.resource_id=resource.id where resource.visible=\'Y\' group by resource_xuser.resource_id, resource_xuser.kind', null);
@@ -498,7 +507,8 @@ class WDatabase {
     String siteName = site.title1;
 
     //get user ids having any un-emailed notifications
-    final distinctUserRows = await MiscLib.query(db, 'select id,pref_email_notify,email from xuser where exists(select * from xuser_notify where xuser_id=xuser.id and emailed=\'N\')', null);
+    final distinctUserRows = await MiscLib.query(db, 'select id,pref_email_notify,email from xuser where site_id=${site.id}'
+      ' and exists(select * from xuser_notify where xuser_id=xuser.id and emailed=\'N\')', null);
 
     //loop users
     for (final userRow in distinctUserRows) {
@@ -533,6 +543,5 @@ class WDatabase {
     //set all notifications for all users to emailed=Y
     await db.execute('update xuser_notify set emailed=\'Y\' where emailed=\'N\'');
   }
-
 
 }

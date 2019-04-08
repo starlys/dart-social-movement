@@ -7,38 +7,28 @@ import 'dart:io';
 //import 'server/config.dart';
 //import 'autzone_models/lib/autzone_models.dart';
 
-//scratchpad/tests
+///scratchpad/tests
 main() async {
-  //await Globals.configLoader.init();
+  final process = await Process.start('open', ['-a', 'calculator'], 
+  //final process = await Process.start('open', ['-a', 'calculator'], 
+  //final process = await Process.start('dart', ['/Users/star/autzone/autzone_sendmail/bin/autzone_sendmail.dart'], 
+    workingDirectory: '/Users/star/temp'); //, mode: ProcessStartMode.normal);
+  
+  print('exitCode=${process.exitCode}');
+  //if (process.exitCode != null) {
+    //process.exitCode.then((code) { 
+      //print('process ended');
+    //}); 
+  //}
+  //final mailProcess = await Process.start('dart', ['autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: '/Users/star/autzone', mode: ProcessStartMode.detached);
+  //mailProcess.exitCode.then((code) { }); //experiment: if we check the exit code when the process ends, then it won't keep defunct entries in the process table
 
+  //await Globals.configLoader.init();
   //send mail
   //String err = await MailLib.send(Globals.configSettings, 'starluciaford@gmail.com', 'test email from Abq ', 'this is a test');
   //print(err);
-
-  //test infinite loop for mem leak
-  //pulse();
-
-  //Globals.configLoader.stopWatching();
-
-  print('hey, using lots of memory');
+  //print('hey, using lots of memory');
   stdin.readLineSync();
-
-
- 
-  /* final req = APIRequestBase(nick: 'indira', password: '12345');
-  final requestMap = APIRequestBaseSerializer.toMap(req);
-  final requestJson = json.encode(requestMap);
-  HttpClient().post('localhost', 8081, 'servant/v2/Authenticate')
-    .then((HttpClientRequest r) async { 
-      r.headers.contentType = ContentType.json;
-      r.write(requestJson);
-      return r.close(); 
-    })
-    .then((HttpClientResponse resp) async {
-      resp.transform(Utf8Decoder()).listen(print);
-  }); */
-  //final authResponse = AuthenticateResponseSerializer.fromMap(responseMap);
-  //print(authResponse.publicName);
 }
 
 

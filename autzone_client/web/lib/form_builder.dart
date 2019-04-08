@@ -24,6 +24,7 @@ class FormBuilder {
 
   ///add a text input field
   InputElement addInput(String caption, int width, int maxLength, [String value = '']) {
+    if (value == null) value = '';
     TextInputElement inp = new TextInputElement() ..style.width = HtmlLib.asPx(width)
       ..maxLength = maxLength
       ..value = value;
@@ -42,6 +43,7 @@ class FormBuilder {
 
   ///add a textarea input field
   TextAreaElement addTextArea(String caption, int width, int height, int maxLength, [String value = '']) {
+    if (value == null) value = '';
     TextAreaElement inp = new TextAreaElement() ..style.width = HtmlLib.asPx(width)
       ..style.height = HtmlLib.asPx(height)
       ..maxLength = maxLength

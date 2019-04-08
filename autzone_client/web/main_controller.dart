@@ -36,7 +36,6 @@ class MainController {
     Globals.siteCode = pageConsts['siteCode'];
     Globals.appTitle1 = pageConsts['title1'];
     Globals.appTitle2 = pageConsts['title2'];
-    print('debug 1 ${Globals.siteCode}');
 
     //init libraries
     RpcLib.init();
@@ -157,7 +156,7 @@ class MainController {
   ///attempt login; return true on success
   static Future<bool> logIn(String nick, String password, bool notifyUser, bool savePW) async {
     //login
-    var req = new APIRequestBase(nick: nick, password: password);
+    var req = new APIRequestBase(nick: nick, password: password, siteCode: Globals.siteCode);
     AuthenticateResponse auth = await RpcLib.authenticate(req);
 
     //if ok, store creds

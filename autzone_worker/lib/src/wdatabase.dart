@@ -235,7 +235,7 @@ class WDatabase {
     if (!isAcceleratedSite) return;
 
     //check for NEW proposals on small sites: shorten their duration such that they get approved quicker
-    db.execute('update proposal set timeout=@t where site_id=${site.id} active=\'Y\' and kind=\'NEW\' and timeout>@u', 
+    db.execute('update proposal set timeout=@t where site_id=${site.id} and active=\'Y\' and kind=\'NEW\' and timeout>@u', 
       substitutionValues: { 't': WLib.utcNow(), 'u': WLib.utcNow() });
   }
 
@@ -276,7 +276,7 @@ class WDatabase {
 
     //project shells that were never used for anything, or all content has
     // already timed out, after 1 year
-    rows = await MiscLib.query(db, 'select id from project where created_at<@d'
+    rows = await MiscLib.query(db, 'select id from project where kind=\'P\' and created_at<@d'
       ' and not exists(select * from conv where project_id=project.id)'
       ' and not exists(select * from proposal where project_id=project.id)',
       {'d': yearAgo});
@@ -441,7 +441,7 @@ class WDatabase {
   /// this is fairly slow since it sums the size of all posts
   static Future closeConversations(PostgreSQLConnection db, SiteRecord site) async {
     //get info about all open convs
-    final rows = await MiscLib.query(db, 'select id,created_at,last_activity from conv where site_id=${site.id} open=\'Y\'', null);
+    final rows = await MiscLib.query(db, 'select id,created_at,last_activity from conv where site_id=${site.id} and open=\'Y\'', null);
 
     //get config values
     var opSettings = site.operation;

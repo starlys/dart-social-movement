@@ -25,7 +25,7 @@ class SiteCache {
   ///get site by code; to improve performance, this call assumes that sites were already loaded from one of the async calls
   SiteRecord byCode(String code) {
     final site = _sites[code];
-    if (site == null) throw Exception(_notFoundMessage);
+    if (site == null) throw Exception('${_notFoundMessage} (code ${code})');
     return site;
   }
 
@@ -34,7 +34,7 @@ class SiteCache {
     await _loadIfNeeded();
     domain = domain.toLowerCase();
     final site = _sites.values.firstWhere((s) => s.domain == domain);
-    if (site == null) throw Exception(_notFoundMessage);
+    if (site == null) throw Exception('${_notFoundMessage} (domain ${domain})');
     return site;
   }
 
@@ -42,7 +42,7 @@ class SiteCache {
   Future<SiteRecord> byId(int id) async {
     await _loadIfNeeded();
     final site = _sites.values.firstWhere((s) => s.id == id);
-    if (site == null) throw Exception(_notFoundMessage);
+    if (site == null) throw Exception('${_notFoundMessage} (id ${id})');
     return site;
   }
 
@@ -63,7 +63,7 @@ class SiteCache {
       final sites = Map<String, SiteRecord>();
       for (final siteRow in siteRows) {
         final siteId = siteRow['id'];
-        final int rootProjectId = await MiscLib.queryScalar(db, 'select id from project where kind=\'R\' and site_id=$siteId', null);
+        final int rootProjectId = await MiscLib.queryScalar(db, 'select id from project where kind=\'R\' and site_id=${siteId}', null);
 
         final deletion = SiteRecord_Deletion(
           codeToInt(siteId, 'deletion.conv_days')

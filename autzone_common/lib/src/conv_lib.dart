@@ -62,7 +62,7 @@ class ConvLib {
     //find up to 100 post matches, sort by quality (reduce number by titles
     // found)
     int maxPosts = 100 - titleRows.length;
-    String subquery = '(select conv_post.id, conv_post.conv_id, conv_post.ptext, conv_post.created_at, q2, to_tsvector(\'english\', ptext) as v'
+    String subquery = '(select conv_post.id, conv_post.conv_id, conv.title, conv_post.ptext, conv_post.created_at, q2, to_tsvector(\'english\', ptext) as v'
       ' from (conv_post inner join conv on conv_post.conv_id=conv.id), plainto_tsquery(\'${searchTerm}\') as q2'
       ' where site_id=${site.id} and to_tsvector(\'english\', ptext) @@ q2 limit ${maxPosts}) subq';
     sql = 'select conv_id, id, created_at, ptext, ts_rank_cd(v, q2) as rank, title'
@@ -109,6 +109,22 @@ class ConvLib {
     }
 
     return retConvs;
+
+    /* For debugging, here's the above queries without code punctuation:
+      select id, title, ts_rank_cd(v, q2) as rank
+      from (select id, title, q2, to_tsvector('english', title) as v
+      from conv, plainto_tsquery('drag') as q2
+      where site_id=1 and to_tsvector('english', title) @@ q2 limit 25) subq
+      order by rank desc
+
+
+      select conv_id, id, created_at, ptext, ts_rank_cd(v, q2) as rank, title
+      from 
+      (select conv_post.id, conv_post.conv_id, conv.title, conv_post.ptext, conv_post.created_at, q2, to_tsvector('english', ptext) as v
+          from (conv_post inner join conv on conv_post.conv_id=conv.id), plainto_tsquery('drag') as q2
+          where site_id=1 and to_tsvector('english', ptext) @@ q2 limit 25) subq
+      order by rank desc
+    */
   }
 
   ///load conv_post rows. Returns rows matching each of the given bool flags,

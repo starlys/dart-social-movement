@@ -60,12 +60,15 @@ main() async {
   angelApp.get('images/*', vDirRoot.handleRequest);
   angelApp.get('js/*', vDirRoot.handleRequest);
   angelApp.get('styles/*', vDirRoot.handleRequest);
+  angelApp.get('site_*/*', vDirRoot.handleRequest);
   angelApp.get('/main.dart.js', vDirRoot.handleRequest);
 
   //add route for index.html with substitutions
   angelApp.get('/', (req, resp) async {
-    var config = await ApiGlobals.sites.byDomain(req.uri.host);
-    if (config == null) config = await ApiGlobals.sites.byCode('AUT'); //dev mode default
+    SiteRecord config;
+    try { config = await ApiGlobals.sites.byDomain(req.hostname);}
+    catch (e) {}
+    if (config == null) config = ApiGlobals.sites.byCode('AUT'); //dev mode default
     resp.contentType = MediaType('text', 'html');
     resp.write(config.indexHtml);
     resp.close();
@@ -87,11 +90,11 @@ main() async {
     angelNonsecureRedirector.fallback((req, resp) async {
       if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
       try {
-        final config = await ApiGlobals.sites.byDomain(req.uri.host);
+        final config = await ApiGlobals.sites.byDomain(req.hostname);
         resp.redirect(config.homeUrl);
       }
       catch (e) {
-        resp.write('Cannot find domain requested: ${req.uri}');
+        resp.write('Cannot find domain requested: ${req.hostname}');
         resp.close();
       }
     });

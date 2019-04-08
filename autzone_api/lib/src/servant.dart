@@ -164,7 +164,7 @@ class Servant {
 
     List<ConvQueryConvItemResponse> convs;
     final dbresult = await Database.safely('ConvQuery', (db) async {
-      await ConvLib.find(db, ai.site, ai.id, searchTerm);
+      convs = await ConvLib.find(db, ai.site, ai.id, searchTerm);
     });
     return ConvQueryResponse(base: dbBase(dbresult), convs: convs);
   }
@@ -699,7 +699,7 @@ class Servant {
     final site = ApiGlobals.sites.byCode(args.base.siteCode);
     final docs = new List<DocQueryItem>();
     final dbresult = await Database.safely('DocQuery', (db) async {
-      String sql = 'select id, title from doc where site_id=${site.id} and project_id=${site.rootProjectId} order by title';
+      String sql = 'select id, title from doc where (select site_id from project where id=doc.project_id)=${site.id} and project_id=${site.rootProjectId} order by title';
       final docRows = await MiscLib.query(db, sql, null);
       for (final row in docRows) {
         var item = new DocQueryItem(iid: row['id'], title: row['title']);
@@ -713,11 +713,12 @@ class Servant {
   Future<DocGetResponse> docGet(DocGetRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     String timeZoneName = ai != null ? ai.timeZoneName : null;
+    final site = ApiGlobals.sites.byCode(args.base.siteCode);
 
     //declare return values
     int retDocId, retProjectId, retProposalId;
     String retTitle, retProjectTitle, retBody, retHtmlDiff, retCreatedAt, retReasonNotEditable;
-    bool retIsProjectManager = false, retAllowSave;
+    bool retIsProjectManager = false, retAllowSave = false;
     final retVerList = new List<DocGetVersionItem>();
 
     final dbresult = await Database.safely('DocGet', (db) async {
@@ -725,12 +726,12 @@ class Servant {
       String whereClause = 'id=${args.docId}';
       if (args.specialCode != null) {
         if (args.specialCode.contains(RegExp('[^A-Z]'))) throw Exception('Invalid doc special_code'); //prevent sql injection
-        whereClause = 'special_code=\'${args.specialCode}\'';
+        whereClause = 'project_id=${site.rootProjectId} and special_code=\'${args.specialCode}\'';
       }
       final docRow = await MiscLib.queryRowChecked(db, 'select id,title,project_id,revision_no from doc where ${whereClause}', 'Document does not exist', null);
       retDocId = docRow['id'];
       retProjectId = docRow['project_id'];
-      if (retProjectId == ai.site.rootProjectId) retProjectId = null;
+      if (retProjectId == site.rootProjectId) retProjectId = null;
       retTitle = docRow['title'];
       int latestRevisionNo = docRow['revision_no'];
 
@@ -1970,7 +1971,7 @@ class Servant {
         whereClause.paramsMap['nick'] = param1;
         whereClause.paramsMap['name'] = param1;
       }
-      final rows = await MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser ${whereClause.whereClause} order by last_activity desc limit 100', whereClause.paramsMap);
+      final rows = await MiscLib.query(db, 'select id,nick,kind,public_name,avatar_no from xuser where ${whereClause.whereClause} order by last_activity desc limit 100', whereClause.paramsMap);
       for (final row in rows) {
         var item = new UserQueryItem(
           iid: row['id'],
@@ -1988,10 +1989,12 @@ class Servant {
 
   ///get a user
   Future<UserGetResponse> userGet(UserGetRequest args) async {
-    //must be logged in
+    //must be logged in (except if creating new user)
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
-    final authFail = Authenticator.ensureLoggedIn(ai);
-    if (authFail != null) return UserGetResponse(base: authFail);
+    if (args.userId != 0) {
+      final authFail = Authenticator.ensureLoggedIn(ai);
+      if (authFail != null) return UserGetResponse(base: authFail);
+    }
 
     //declare return variables
     String retKind, retNick, retStatus, retEmail, retPublicName, retIsSiteAdmin, retPrefEmailNotify = 'N',
@@ -2115,7 +2118,7 @@ class Servant {
       //if creating..
       if (isNewUser) {
         //check nick isn't taken
-        String existingNick = await MiscLib.queryScalar(db, 'select nick from xuser where nick=@n', {'n': args.saveNick});
+        String existingNick = await MiscLib.queryScalar(db, 'select nick from xuser where site_id=${site.id} and nick=@n', {'n': args.saveNick});
         if (existingNick != null) throw new Exception('That nickname is already in use - try another');
 
         //store (with false password, and get id from db)
@@ -2132,7 +2135,7 @@ class Servant {
           ' where id=${userId}',
           substitutionValues: {'kind': args.kind, 'name': args.publicName, 'links': MiscLib.jsonParameter(args.publicLinks),
           'tz': args.timeZone, 'pref1': args.prefEmailNotify});
-        Authenticator.invalidate(ai.site.code, ai.nick);
+        Authenticator.invalidate(site.code, ai.nick);
       }
 
       //if email provided (either on new user or updated)...
@@ -2145,9 +2148,8 @@ class Servant {
           substitutionValues: {'p': MiscLib.jsonParameter(proposedEmail)});
 
         //email the code to args.email
-        var settings = ai.site;
-        String link = settings.homeUrl + '/linkback/ValidateEmail?id=${userId}&code=${code}';
-        String body = 'Automated message from ${settings.title1}'
+        String link = site.homeUrl + '/linkback/ValidateEmail?id=${userId}&code=${code}';
+        String body = 'Automated message from ${site.title1}'
           '\r\n\r\nIf you intended to associate this email address with the account "${args.saveNick}",'
           '\r\nplease click on the link below or copy it into a browser to verify that you own'
           '\r\nthe email address.'
@@ -2156,7 +2158,7 @@ class Servant {
       }
 
       //if password provided, update it
-      if (args.savePW != null && !isNewUser) {
+      if (args.savePW != null) {
         await db.execute('update xuser set password=@p where id=${userId}',
           substitutionValues: {'p': MiscLib.passwordHash(args.savePW)});
       }

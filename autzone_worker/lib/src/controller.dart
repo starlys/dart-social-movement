@@ -18,7 +18,6 @@ class Controller {
       //exit if stop file exists
       File stopFile = new File(ConfigLoader.rootPath() + '/status/stop.txt');
       if (await stopFile.exists()) {
-        ApiGlobals.configLoader.stopWatching();
         await writeAliveFile(false);
         return;
       }
@@ -33,27 +32,27 @@ class Controller {
     DateTime now = WLib.utcNow();
     if (now.isAfter(WorkerGlobals.next30s)) {
       await writeAliveFile(true);
-      await WDatabase.safely('findUnreads', WDatabase.findUnreads);
-      await WDatabase.safely('smallSiteAccelerate', WDatabase.smallSiteAccelerate);
+      await WDatabase.safely('findUnreads', false, WDatabase.findUnreads);
+      await WDatabase.safely('smallSiteAccelerate', true, WDatabase.smallSiteAccelerate);
       WorkerGlobals.next30s = WLib.utcNow().add(new Duration(seconds:30));
     } else if (now.isAfter(WorkerGlobals.next1h)) {
-      await WDatabase.safely('timeoutProposals', WDatabase.timeoutProposals);
-      await WDatabase.safely('calcReactions', WDatabase.recalcReactions);
-      await WDatabase.safely('countResourceVotes', WDatabase.countResourceVotes);
-      await WDatabase.safely('recommendConversations', WDatabase.recommendConversations);
+      await WDatabase.safely('timeoutProposals', false, WDatabase.timeoutProposals);
+      await WDatabase.safely('recalcReactions', true, WDatabase.recalcReactions);
+      await WDatabase.safely('countResourceVotes', false, WDatabase.countResourceVotes);
+      await WDatabase.safely('recommendConversations', false, WDatabase.recommendConversations);
       WorkerGlobals.next1h = WLib.utcNow().add(new Duration(hours:1));
     } else if (now.isAfter(WorkerGlobals.next24h)) {
-      await WDatabase.safely('loadDailyGlobals', WDatabase.loadDailyGlobals);
-      await WDatabase.safely('dailyDelete', WDatabase.dailyDelete);
-      await WDatabase.safely('assignProjectLeadership', WDatabase.assignProjectLeadership);
-      await WDatabase.safely('closeConversations', WDatabase.closeConversations);
-      await WDatabase.safely('hideResources', WDatabase.hideResources);
-      await WDatabase.safely('emailNotifications', WDatabase.emailNotifications);
-      await WDatabase.safely('countProjectImportance', WDatabase.countProjectImportance);
+      await WDatabase.safely('loadDailyGlobals', true, WDatabase.loadDailyGlobals);
+      await WDatabase.safely('dailyDelete', false, WDatabase.dailyDelete);
+      await WDatabase.safely('assignProjectLeadership', false, WDatabase.assignProjectLeadership);
+      await WDatabase.safely('closeConversations', true, WDatabase.closeConversations);
+      await WDatabase.safely('hideResources', false, WDatabase.hideResources);
+      await WDatabase.safely('emailNotifications', true, WDatabase.emailNotifications);
+      await WDatabase.safely('countProjectImportance', false, WDatabase.countProjectImportance);
       WorkerGlobals.next24h = WLib.utcNow().add(new Duration(days:1));
     } else if (now.isAfter(WorkerGlobals.next1week)) {
-      await WDatabase.safely('weeklyDelete', WDatabase.weeklyDelete);
-      await WDatabase.safely('assignSiteLeadership', WDatabase.assignSiteLeadership);
+      await WDatabase.safely('weeklyDelete', false, WDatabase.weeklyDelete);
+      await WDatabase.safely('assignSiteLeadership', true, WDatabase.assignSiteLeadership);
       WorkerGlobals.next1week = WLib.utcNow().add(new Duration(days:7));
     }
   }

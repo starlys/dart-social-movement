@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:postgres/postgres.dart';
 import 'config_loader.dart';
 import 'api_globals.dart';
-import 'misc_lib.dart';
 import 'package:autzone_models/autzone_models.dart';
 import 'logger.dart';
 
@@ -47,7 +46,7 @@ abstract class Database {
   ///create and open one database connection
   static Future<PostgreSQLConnection> _createOne() async {
     bool isDev = ApiGlobals.configLoader.isDev;
-    final dbsettings = isDev ? ApiGlobals.configSettings.database_dev : ApiGlobals.configSettings.database;
+    final dbsettings = isDev ? ApiGlobals.configFileSettings.database_dev : ApiGlobals.configFileSettings.database;
 
     //open connections and
     //initialize the uuid-ossp extension for each connection; this hack exists
@@ -138,12 +137,5 @@ abstract class Database {
     }
     catch (ex) {
     }
-  }
-
-  ///load globals that never change
-  static Future loadGlobals() async {
-    await Database.safely('loadGlobals', (db) async {
-      ApiGlobals.rootProjectId = await MiscLib.queryScalar(db, 'select id from project where kind=\'R\'', null);
-    });
   }
 }

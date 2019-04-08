@@ -43,3 +43,19 @@ if [ $1 = "linuxprep" ]; then
   /usr/lib/dart/bin/pub get --no-precompile
   cd ..
 fi
+if [ $1 = "macprep" ]; then
+  echo "preparing deployment; this command is only meant to be run on the mac development machine in the deploy folder"
+  cd autzone_api
+  pub get --no-precompile
+  cd ..
+  cd autzone_common
+  pub get --no-precompile
+  cd ..
+  cd autzone_worker
+  pub get --no-precompile
+  cd ..
+  cd autzone_sendmail
+  pub get --no-precompile
+  cd ..
+fi
+

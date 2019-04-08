@@ -18,13 +18,15 @@ class Linkback {
       String code = params['code'];
 
       bool ok = false;
+      int siteId;
       String finalMessage = null;
       String email = null, actualCode = null;
 
       //load proposed_email and unpack
-      final row = await MiscLib.queryRow(db, 'select proposed_email from xuser where id=@i',
+      final row = await MiscLib.queryRow(db, 'select proposed_email, site_id from xuser where id=@i',
         {'i':id});
       if (row != null) {
+        siteId = row['site_id'];
         final proposedEmail = MiscLib.jsonToMap(row['proposed_email']);
         if (proposedEmail != null) {
           email = proposedEmail['email'];
@@ -50,15 +52,16 @@ class Linkback {
 
       //compose html response
       String pageHtml = ok ? 'Email successfully updated.' : (finalMessage ?? 'Page called in error.');
-      await _commonResponse(resp, pageHtml);
+      await _commonResponse(siteId, resp, pageHtml);
     });//safely
   }
 
   //writes content and closes req, where body is plain text or html;
   //this gets wrapped in html+body tags
-  static Future _commonResponse(ResponseContext resp, String body) async {
-    String homeUrl = ApiGlobals.configSettings.homeUrl;
-    String siteName = ApiGlobals.configSettings.siteName;
+  static Future _commonResponse(int siteId, ResponseContext resp, String body) async {
+    final site = await ApiGlobals.sites.byId(siteId);
+    String homeUrl = site.homeUrl;
+    String siteName = site.title1;
     String page = '<html><body>' + body
       + '<hr />Close this tab, or continue to <a href="${homeUrl}">${siteName}</a></body></html>';
 

@@ -11,15 +11,16 @@ class RpcLib {
 
   ///init server URL - for development, use local server
   static init() {
-    if (window.location.host.contains('autistic.zone'))
-      serverBaseUrl = 'https://www.autistic.zone/servant/v2/';
-    else
+    final loc = window.location;
+    if (loc.host.contains('localhost'))
       serverBaseUrl = 'http://localhost:8081/servant/v2/';
+    else
+      serverBaseUrl = 'https://${loc.host}/servant/v2/';
   }
 
   ///add credentials to a Map version of the request wire object, and return it as a json string
   static String requestToJson(String method, Map<String,dynamic> requestMap) {
-    requestMap['base'] = { 'nick': Globals.nick, 'password': Globals.password };
+    requestMap['base'] = { 'nick': Globals.nick, 'password': Globals.password, 'site_code': Globals.siteCode };
     return json.encode(requestMap);
   }
 

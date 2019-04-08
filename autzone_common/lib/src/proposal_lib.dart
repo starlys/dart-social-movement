@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:postgres/postgres.dart';
+import 'package:autzone_models/autzone_models.dart';
 import 'misc_lib.dart';
 import 'conv_lib.dart';
 import 'diff_lib.dart';
 import 'permissions.dart';
-import 'config_settings.dart';
-import 'package:autzone_models/autzone_models.dart';
+import 'site_cache.dart';
 
 ///centralizes access to proposal table with logic for various specific
 /// proposal types
@@ -21,11 +21,11 @@ class ProposalLib {
   }
 
   ///write proposal record of any kind. Caller will have to update the record
-  //for some proposal types since this method doesn't write all columns.
-  //options gets converted to element 0 -> key 0, etc.
-  //days is converted to the current time + days.
-  //Returns proposal.id
-  static Future<int> _writeProposal(PostgreSQLConnection db, String kind, String eligible,
+  ///for some proposal types since this method doesn't write all columns.
+  ///options gets converted to element 0 -> key 0, etc.
+  ///days is converted to the current time + days.
+  ///Returns proposal.id
+  static Future<int> _writeProposal(PostgreSQLConnection db, SiteRecord site, String kind, String eligible,
     String title, String summary, String summaryHtml, int passTarget, int failTarget,
     List<String> options, int days, String timeoutAction, int createdBy) async {
 
@@ -36,9 +36,9 @@ class ProposalLib {
     DateTime timeout = WLib.utcNow().add(new Duration(days: days));
 
     //insert
-    int id = await MiscLib.queryScalar(db, 'insert into proposal(active,kind,eligible,title,summary,'
+    int id = await MiscLib.queryScalar(db, 'insert into proposal(site_id,active,kind,eligible,title,summary,'
       'summary_html,pass_target,fail_target,options,timeout,timeout_action,created_at,created_by)'
-      ' values(\'Y\',\'${kind}\',\'${eligible}\',@title,@sum,@sumhtml,${passTarget},${failTarget},'
+      ' values(${site.id},\'Y\',\'${kind}\',\'${eligible}\',@title,@sum,@sumhtml,${passTarget},${failTarget},'
       '@opt,@timeout,\'${timeoutAction}\',@now,${createdBy})'
       ' returning id',
       {'title': title, 'sum': summary, 'sumhtml': summaryHtml, 'opt': MiscLib.jsonParameter(optionsMap),
@@ -50,11 +50,11 @@ class ProposalLib {
   /// or numeric value, plus it can contain this special entry: '*field_name' (value is integer
   /// number of days ahead of the current time; causes the resolved datetime to be stored in
   /// field_name)
-  static Future<int> _writeNew(PostgreSQLConnection db, int createdBy, String recordDescription,
+  static Future<int> _writeNew(PostgreSQLConnection db, SiteRecord site, int createdBy, String recordDescription,
     String summary, String tableName, String keyPrefix, Map<String, dynamic> colValues) async {
     String proposalTitle = 'Determine if a new ${recordDescription} is legitimate';
     //require 1 to pass, 3 to fail
-    int proposalId = await _writeProposal(db, 'NEW', 'A', proposalTitle, summary,
+    int proposalId = await _writeProposal(db, site, 'NEW', 'A', proposalTitle, summary,
       null, 1, 3, _spamOptions(),
       3, 'F', createdBy);
 
@@ -74,41 +74,42 @@ class ProposalLib {
   }
 
   ///write proposal of kind JOIN (note caller must handle writing conv_xuser record)
-  static Future proposeJoinConv(PostgreSQLConnection db, int userId, String nick, int projectId, int convId) async {
+  static Future proposeJoinConv(PostgreSQLConnection db, SiteRecord site, int userId, String nick, int projectId, int convId) async {
     //if proposal for same user+project exists, exit (UI will still show that a new proposal was created)
     String existingKind = await MiscLib.queryScalar(db, 'select kind from proposal where kind=\'JOIN\' and created_by=$userId and project_id=$projectId', null);
     if (existingKind == 'JOIN') return;
 
     //write proposal requiring 1 pass vote or 3 fail votes to reject;
     //timeout in 14days; fail if no votes after timeout
-    int proposalId = await _writeProposal(db, 'JOIN', 'L', 'Request to join project',
+    int proposalId = await _writeProposal(db, site, 'JOIN', 'L', 'Request to join project',
       'User ${nick} would like to join the project.', '', 1,
       3, _yesNoOptions(), 14, 'F', userId);
     await db.execute('update proposal set project_id=${projectId} where id=${proposalId}');
   }
 
   ///write proposal of kind PROJ (for arbitrary user polls), returns id
-  static Future<int> proposeInProject(PostgreSQLConnection db, int userId, int projectId, String eligible,
+  static Future<int> proposeInProject(PostgreSQLConnection db, SiteRecord site, int userId, int projectId, String eligible,
     String title, String summary, List<String> options, int days) async {
-    int proposalId = await _writeProposal(db, 'PROJ', eligible, title, summary, '', null,
+    int proposalId = await _writeProposal(db, site, 'PROJ', eligible, title, summary, '', null,
       null, options, days, 'M', userId);
     await db.execute('update proposal set project_id=${projectId} where id=${proposalId}');
     return proposalId;
   }
 
   ///write proposal of kind NEW for a proposal of kind SYS
-  static Future proposeSystemChange(ConfigSettings config, PostgreSQLConnection db, int userId,
+  static Future proposeSystemChange(PostgreSQLConnection db, SiteRecord site, int userId,
     String changeTitle, String changeSummary, List<String> options) async {
     //put together all the values that will eventually go into the proposal
     // table for this system proposal
-    int votePeriodDays = config.operation.root_doc_vote_days;
+    int votePeriodDays = site.operation.root_doc_vote_days;
     var colValues = {
       'kind': 'SYS',
+      'site_id': site.id,
       'active': 'Y',
       'eligible': 'E',
       'title': 'System change: ${changeTitle}',
       'summary': changeSummary,
-      'pass_target': config.operation.root_doc_vote_min,
+      'pass_target': site.operation.root_doc_vote_min,
       'options': MiscLib.jsonParameter(_stringsToMap(options)),
       '*timeout': votePeriodDays,
       'timeout_action': 'M',
@@ -118,14 +119,15 @@ class ProposalLib {
 
     //run the above record through spam control
     String spamSummary = 'Check if the following proposed system change is legitimate (not spam). Proposal is: ${changeTitle} - ${changeSummary}';
-    await _writeNew(db, userId, 'proposal', spamSummary, 'proposal', 'proposal', colValues);
+    await _writeNew(db, site,userId, 'proposal', spamSummary, 'proposal', 'proposal', colValues);
   }
 
   ///write proposal of kind NEW for a new project
-  static Future proposeNewProject(PostgreSQLConnection db, int userId, String leadership,
+  static Future proposeNewProject(PostgreSQLConnection db, SiteRecord site, int userId, String leadership,
     String privacy, String title, String description, int categoryId) async {
     var colValues = {
       'kind': 'P',
+      'site_id': site.id,
       'active': 'Y',
       'member_count': 0,
       'important_count': 0,
@@ -137,13 +139,14 @@ class ProposalLib {
       '*created_at': 0
     };
     String summary = 'New project proposed: ${title}; Description: ${description}';
-    await _writeNew(db, userId, 'project', summary, 'project', 'project', colValues);
+    await _writeNew(db, site, userId, 'project', summary, 'project', 'project', colValues);
   }
 
   ///write proposal of kind NEW for a new resource
-  static Future proposeNewResource(PostgreSQLConnection db, int userId, String kind, String title,
+  static Future proposeNewResource(PostgreSQLConnection db, SiteRecord site, int userId, String kind, String title,
     String description, String url, int categoryId) async {
     Map<String, dynamic> colValues = {
+      'site_id': site.id,
       'category_id': categoryId,
       'title': title,
       'description': description,
@@ -155,16 +158,17 @@ class ProposalLib {
       'important_count': 0
     };
     String summary = 'New resource proposed: ${title}; Description: ${description}';
-    int proposalId = await _writeNew(db, userId, 'resource', summary, 'resource', 'resource', colValues);
+    int proposalId = await _writeNew(db, site, userId, 'resource', summary, 'resource', 'resource', colValues);
     String sumHtml = 'Preview resource here: <a target="_blank" href="${url}">${url}</a>';
     await db.execute('update proposal set summary_html=@sum where id=${proposalId}', substitutionValues: {'sum': sumHtml});
   }
 
   ///write proposal of kind NEW for a new event
-  static Future proposeNewEvent(PostgreSQLConnection db, int userId, String title,
+  static Future proposeNewEvent(PostgreSQLConnection db, SiteRecord site, int userId, String title,
     String description, DateTime startTime, String duration, double lat, double lon,
     String location) async {
     var colValues = {
+      'site_id': site.id,
       'title': title,
       'description': description,
       '@start_time': WLib.dateTimeToWire(startTime),
@@ -176,27 +180,28 @@ class ProposalLib {
       'created_by': userId
     };
     String summary = 'New event proposed: ${title}; Description: ${description}';
-    await _writeNew(db, userId, 'event', summary, 'event', 'event', colValues);
+    await _writeNew(db, site, userId, 'event', summary, 'event', 'event', colValues);
   }
 
   ///write proposal of kind NEW for a proposal of kind ROOT;
   ///changeSummary is in the proposer's own words while changeHtml is the change proposed
   /// in html; newBody is the complete document proposed
-  static Future proposeRootDocumentChange(ConfigSettings config, PostgreSQLConnection db, int userId, int docId,
+  static Future proposeRootDocumentChange(PostgreSQLConnection db, SiteRecord site, int userId, int docId,
     String docTitle, String changeSummary, String changeHtml, String newBody) async {
 
     //put together all the values that will eventually go into the proposal
     // table for this root doc amendment proposal
-    int votePeriodDays = config.operation.root_doc_vote_days;
+    int votePeriodDays = site.operation.root_doc_vote_days;
     var colValues = {
       'kind': 'ROOT',
+      'site_id': site.id,
       'active': 'Y',
       'eligible': 'E',
       'title': 'Amend document: ${docTitle}',
       'summary': changeSummary,
       'summary_html': changeHtml,
       'dtext': newBody,
-      'pass_target': config.operation.root_doc_vote_min,
+      'pass_target': site.operation.root_doc_vote_min,
       'options': MiscLib.jsonParameter(_stringsToMap(_yesNoOptions())),
       '*timeout': votePeriodDays,
       'timeout_action': 'M',
@@ -207,11 +212,11 @@ class ProposalLib {
 
     //run the above record through spam control
     String spamSummary = 'Check if the following proposed document edits are legitimate. Proposal is: ${changeSummary}';
-    int spamId = await _writeNew(db, userId, 'proposal', spamSummary, 'proposal', 'proposal', colValues);
+    int spamId = await _writeNew(db, site, userId, 'proposal', spamSummary, 'proposal', 'proposal', colValues);
     await db.execute('update proposal set summary_html=@h where id=${spamId}', substitutionValues: {'h': changeHtml});
   }
 
-  //determine if a user is eligible to vote on a project; may load a db record
+  ///determine if a user is eligible to vote on a project; may load a db record
   /// to determine this. proposalRow must contain created_by, eligible and project_id columns
   /// at least.
   static Future<bool> isEligibleToVote(PostgreSQLConnection db, int userId, bool isSiteAdmin, Map<String, dynamic> proposalRow) async {

@@ -2,31 +2,34 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
-  <title>Autzone</title>
+  <title>Loading...</title>
 
   <!--js libraries-->
-  <script src="js/jquery-2.2.3.min.js?ver=28"></script>
-  <link rel="stylesheet" type="text/css" href="styles/jquery.jgrowl.min.css?ver=28" />
-  <script src="js/jquery.jgrowl.min.js?ver=28"></script>
-  <script src="js/Markdown.Converter.js?ver=28"></script>
-  <script src="js/Markdown.Sanitizer.js?ver=28"></script>
-  <script src="js/Markdown.Editor.js?ver=28"></script>
+  <script src="js/jquery-2.2.3.min.js?ver=32"></script>
+  <link rel="stylesheet" type="text/css" href="styles/jquery.jgrowl.min.css?ver=32" />
+  <script src="js/jquery.jgrowl.min.js?ver=32"></script>
+  <script src="js/Markdown.Converter.js?ver=32"></script>
+  <script src="js/Markdown.Sanitizer.js?ver=32"></script>
+  <script src="js/Markdown.Editor.js?ver=32"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8I5hcHTaXS87SXTMDtCDMvR2NnkU7ar8"></script>
 
   <!--autzone assets-->
-  <link rel="stylesheet" href="styles/normalize.css?ver=28" type="text/css" media="all">
-  <link rel="stylesheet" id="style-main" href="styles/main.css?ver=28" type="text/css" media="all">
-  <link rel="icon" href="images/favicon.png?ver=28">
+  <link rel="stylesheet" href="styles/normalize.css?ver=32" type="text/css" media="all">
+  <link rel="stylesheet" id="style-main" href="styles/main.css?ver=32" type="text/css" media="all">
+  <link rel="icon" href="site_AUT/favicon.png?ver=32">
 
   <!--autzone app-->
-  <script type="text/javascript" src="main.dart.js?ver=28"></script>
+  <script type="text/javascript">
+    window.getSiteInfo=function() {return {siteCode: '$code$', title1: '$title1$', title2: '$title2$'};}; 
+  </script>
+  <script type="text/javascript" src="main.dart.js?ver=32"></script>
 </head>
 <body>
   <div id="page">
-    <div id="header">
+    <div id="header" style="background:black url(site_AUT/logo.png);background-repeat:no-repeat;">
       <span id="hello"></span>
-      <span id="title">Autistic.zone</span>
-      <span id="subtitle">Movement for autistic rights, culture and freedom</span>
+      <span id="title">$title1$</span>
+      <span id="subtitle">$title2$</span>
     </div>
     <div id="middle">
       <div id="left">

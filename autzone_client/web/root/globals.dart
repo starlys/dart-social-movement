@@ -6,8 +6,10 @@ typedef Future UserActionFunc();
 
 ///application-wide globals (no methods)
 class Globals {
-
-  static final String appTitle = 'autistic.zone'; //future feature: derive this from server config
+  //variables coming from constants declared in index.html
+  static String appTitle1;
+  static String appTitle2;
+  static String siteCode;
 
   ///max length of titles, unless database specifies a shorter limit
   static final int maxTitleLength = 500;

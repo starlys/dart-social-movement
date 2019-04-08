@@ -66,11 +66,12 @@ class BasePane {
     borderElement.querySelector('.pane-menubar').remove();
 
     //add a reopen link
-    AnchorElement reopener = new AnchorElement() ..href = '#' + paneKey.full ..text = 'reopen';
-    Element header = borderElement.querySelector('.pane-header');
-    header.appendText(' (');
-    header.append(reopener);
-    header.appendText(')');
+    Element titleEl = borderElement.querySelector('.pane-title');
+    final title = titleEl.text;
+    titleEl.text = '';
+    AnchorElement reopener = new AnchorElement() ..href = '#' + paneKey.full ..text = title;
+    //Element header = borderElement.querySelector('.pane-header');
+    titleEl.append(reopener);
 
     if (onCollapse != null) onCollapse(this);
   }

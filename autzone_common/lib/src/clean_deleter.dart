@@ -79,7 +79,7 @@ class CleanDeleter {
   }
 
   ///delete a project and its documents only (does NOT delete convs or proposals, so if
-  /// those records exist, this will fail)
+  /// those records exist, this will fail silently)
   static Future deleteProjectPartial(PostgreSQLConnection db, int projectId) async {
     //note this could fail if there is a stray proposal pointing to the doc to be deleted,
     //so ignore errors on those tables

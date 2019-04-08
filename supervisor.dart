@@ -114,10 +114,10 @@ Future timerTick() async {
     //if it's time to send mail, run that process
     if (utcNow().isAfter(_nextMailUtc)) {
       await writeDebugTaskFile(true, 'sendmail');
-      //log("supervisor: starting sendmail");
-      Process.start('dart', [rootPath() + 'autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: rootPath(), mode: ProcessStartMode.detached);
+      final mailProcess = await Process.start('dart', [rootPath() + 'autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: rootPath(), mode: ProcessStartMode.detached);
       _nextMailUtc = utcNow().add(_mailInterval);
       await writeDebugTaskFile(false, 'sendmail');
+      mailProcess.exitCode.then((code) { }); //experiment: if we check the exit code when the process ends, then it won't keep defunct entries in the process table
     }
 
   } catch (ex) {}

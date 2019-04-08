@@ -2,7 +2,7 @@ import "dart:async";
 import "dart:math";
 import 'package:postgres/postgres.dart';
 import 'misc_lib.dart';
-import "config_settings.dart";
+import 'site_cache.dart';
 import 'package:autzone_models/autzone_models.dart';
 
 ///container for use with Permissions methods
@@ -36,7 +36,7 @@ class Permissions{
 
   ///convert spam_count (defined in project_xuser table) to specific info about
   /// posting restrictions; does NOT set explanation or allowedNow
-  static RestrictionInfo spamCountToRestrictions(ConfigSettings cfg, int spamCount) {
+  static RestrictionInfo spamCountToRestrictions(SiteRecord cfg, int spamCount) {
     //get settings
     var spamSettings = cfg.spam;
     int restrict1Score = spamSettings.restrict1_score;
@@ -65,7 +65,7 @@ class Permissions{
   /// and the rules of the conv.
   /// Does NOT check if user is joined to the conv.
   /// convRow must contain the posting rules fields, and open.
-  static Future<RestrictionInfo> getConvPostPermissions(ConfigSettings cfg, PostgreSQLConnection db, int userId,
+  static Future<RestrictionInfo> getConvPostPermissions(SiteRecord cfg, PostgreSQLConnection db, int userId,
     int convId, Map<String,dynamic> convRow) async {
 
     //if conv is closed, exit now
@@ -269,7 +269,7 @@ class Permissions{
   ///throw exceptions if the user may not post to the conv; convRow must be loaded from ConvLib.getConvRow
   /// or equivalent; projectId is from that row and may be null; postLength is the proposed length
   /// of the post
-  static Future checkConvPostPermissions(ConfigSettings cfg, PostgreSQLConnection db, int userId, int convId,
+  static Future checkConvPostPermissions(SiteRecord cfg, PostgreSQLConnection db, int userId, int convId,
     Map<String, dynamic> convRow, int projectId, int postLength) async {
     //check user is joined to conv
     final convUserRow = await MiscLib.queryRow(db, 'select status from conv_xuser where conv_id=${convId} and xuser_id=${userId}', null);

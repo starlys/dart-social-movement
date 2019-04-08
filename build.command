@@ -18,11 +18,13 @@ mkdir deploy/public_html
 mkdir deploy/public_html/images
 mkdir deploy/public_html/styles
 mkdir deploy/public_html/js
+mkdir deploy/public_html/site_AUT
 cp autzone_client/web/index.html deploy/public_html
 cp autzone_client/web/images/* deploy/public_html/images
 cp autzone_client/web/styles/* deploy/public_html/styles
 cp autzone_client/web/js/* deploy/public_html/js
 cp autzone_client/build/main.dart.js deploy/public_html
+cp autzone_client/web/site_AUT/* deploy/public_html/site_AUT
 
 #server:
 

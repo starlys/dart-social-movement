@@ -8,7 +8,7 @@ part of 'wtypes.dart';
 
 @generatedSerializable
 class APIRequestBase implements _APIRequestBase {
-  const APIRequestBase({this.nick, this.password});
+  const APIRequestBase({this.nick, this.password, this.siteCode});
 
   @override
   final String nick;
@@ -16,20 +16,26 @@ class APIRequestBase implements _APIRequestBase {
   @override
   final String password;
 
-  APIRequestBase copyWith({String nick, String password}) {
+  @override
+  final String siteCode;
+
+  APIRequestBase copyWith({String nick, String password, String siteCode}) {
     return new APIRequestBase(
-        nick: nick ?? this.nick, password: password ?? this.password);
+        nick: nick ?? this.nick,
+        password: password ?? this.password,
+        siteCode: siteCode ?? this.siteCode);
   }
 
   bool operator ==(other) {
     return other is _APIRequestBase &&
         other.nick == nick &&
-        other.password == password;
+        other.password == password &&
+        other.siteCode == siteCode;
   }
 
   @override
   int get hashCode {
-    return hashObjects([nick, password]);
+    return hashObjects([nick, password, siteCode]);
   }
 
   Map<String, dynamic> toJson() {
@@ -4871,23 +4877,31 @@ class UserUserSaveRequest implements _UserUserSaveRequest {
 abstract class APIRequestBaseSerializer {
   static APIRequestBase fromMap(Map map) {
     return new APIRequestBase(
-        nick: map['nick'] as String, password: map['password'] as String);
+        nick: map['nick'] as String,
+        password: map['password'] as String,
+        siteCode: map['site_code'] as String);
   }
 
   static Map<String, dynamic> toMap(_APIRequestBase model) {
     if (model == null) {
       return null;
     }
-    return {'nick': model.nick, 'password': model.password};
+    return {
+      'nick': model.nick,
+      'password': model.password,
+      'site_code': model.siteCode
+    };
   }
 }
 
 abstract class APIRequestBaseFields {
-  static const List<String> allFields = <String>[nick, password];
+  static const List<String> allFields = <String>[nick, password, siteCode];
 
   static const String nick = 'nick';
 
   static const String password = 'password';
+
+  static const String siteCode = 'site_code';
 }
 
 abstract class APIResponseBaseSerializer {

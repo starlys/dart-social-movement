@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
-//import 'package:path/path.dart' as path;
 import 'package:quiver/async.dart';
 
 Logger logger = new Logger('S3Bucket');

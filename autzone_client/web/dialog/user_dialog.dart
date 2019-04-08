@@ -51,7 +51,7 @@ class UserDialog extends DialogBox {
     if (isNewUser) form.addExplanation(pw1Input, 'Passwords must be 5 or more characters');
     InputElement pw2Input = form.addPasswordInput('Repeat password', 200, 40);
     InputElement emailInput = form.addInput('Private email address', 200, 200, user.email);
-    form.addExplanation(emailInput, 'Include your email address to allow the system to email you and to recover a password. (optional)');
+    form.addExplanation(emailInput, 'Optional email, but if you omit this, then there is no other way to recover a lost password.');
     var kindInput = new SelectElement();
     Globals.allUserKinds.forEach((value, text) {
       kindInput.append(new OptionElement() ..value = value ..text = text);

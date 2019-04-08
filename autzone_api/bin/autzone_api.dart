@@ -1,4 +1,5 @@
 import 'dart:io' as io;
+import 'package:http_parser/http_parser.dart';
 import 'package:angel_framework/angel_framework.dart';
 import 'package:angel_framework/http.dart';
 import 'package:angel_static/angel_static.dart';
@@ -14,20 +15,20 @@ import '../lib/src/linkback.dart';
 main() async {
   print("starting autzone API listener");
 
-  //set up globals and other initializers
-  ApiGlobals.configLoader.init(true);
+  //set up non-database globals and other initializers
+  ApiGlobals.configLoader.init();
   bool isDev = ApiGlobals.configLoader.isDev;
   await DateLib.init();
-  ImageLib.init(ApiGlobals.configSettings);
+  ImageLib.init(ApiGlobals.configFileSettings);
 
   //write alive file (do early so supervisor doesn't try to run api twice)
   Pulse pulse = new Pulse();
   pulse.writeAliveFile(true);
 
-  //init database (potentially slower)
+  //init database and load settings from database (potentially slower)
   await Database.init();
-  await Database.loadGlobals();
-
+  await ApiGlobals.sites.allCodes(); //forces load
+  
   //set up Angel
   var angelApp = new Angel(reflector: MirrorsReflector());
   AngelHttp angelHttp;
@@ -40,8 +41,7 @@ main() async {
     final context = new io.SecurityContext();
     context.useCertificateChain('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
     context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
-    String host = ApiGlobals.configSettings.domain;
-    print('production mode - port 443 on host ${host}');
+    print('production mode - port 443');
     angelHttp = AngelHttp.fromSecurityContext(angelApp, context);
     port = 443;
   }
@@ -60,8 +60,19 @@ main() async {
   angelApp.get('images/*', vDirRoot.handleRequest);
   angelApp.get('js/*', vDirRoot.handleRequest);
   angelApp.get('styles/*', vDirRoot.handleRequest);
-  angelApp.get('/', vDirRoot.handleRequest);
+  angelApp.get('site_*/*', vDirRoot.handleRequest);
   angelApp.get('/main.dart.js', vDirRoot.handleRequest);
+
+  //add route for index.html with substitutions
+  angelApp.get('/', (req, resp) async {
+    SiteRecord config;
+    try { config = await ApiGlobals.sites.byDomain(req.hostname);}
+    catch (e) {}
+    if (config == null) config = ApiGlobals.sites.byCode('AUT'); //dev mode default
+    resp.contentType = MediaType('text', 'html');
+    resp.write(config.indexHtml);
+    resp.close();
+  });
 
   //attach the link-back style requests to the router (these include any
   // methods not served in the RPC style, such as links sent by email)
@@ -76,10 +87,16 @@ main() async {
   if (!isDev) {
     final angelNonsecureRedirector = Angel();
     angelNonsecureRedirector.get('/.well-known/acme-challenge/*', vDirRoot.handleRequest); //this is for certbot
-    //http://localhost:8087/.well-known/acme-challenge/index.html
-    angelNonsecureRedirector.fallback((req, resp) {
+    angelNonsecureRedirector.fallback((req, resp) async {
       if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
-      resp.redirect(ApiGlobals.configSettings.homeUrl);
+      try {
+        final config = await ApiGlobals.sites.byDomain(req.hostname);
+        resp.redirect(config.homeUrl);
+      }
+      catch (e) {
+        resp.write('Cannot find domain requested: ${req.hostname}');
+        resp.close();
+      }
     });
     final nonsecureHttp = AngelHttp(angelNonsecureRedirector);
     nonSucureRedirectServer = await nonsecureHttp.startServer('0.0.0.0', 80);
@@ -89,7 +106,6 @@ main() async {
   pulse.init(() async {
     await server.close(force: true);
     await nonSucureRedirectServer.close(force: true);
-    ApiGlobals.configLoader.stopWatching();
     await Database.dispose();
 
     //in testing, this method does end, but the dart process takes a couple more

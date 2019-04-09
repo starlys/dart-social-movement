@@ -10,6 +10,13 @@ class Controller {
 
   ///start all tasks
   Future start() async {
+
+    //debug section
+    //await WDatabase.safely('recommendConversations', false, WDatabase.recommendConversations);
+    //sleep(Duration(seconds: 5));
+    //return;
+    //end debug
+
     final aSecond = new Duration(seconds:1);
     await writeAliveFile(true);
 

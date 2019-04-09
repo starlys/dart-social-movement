@@ -378,16 +378,19 @@ class WDatabase {
     List<int> convIds = rows1.map((r) => r['id'] as int).toList();
     if (convIds.length == 0) return;
 
-    //for those potential convs, get the exiting status
+    //for those potential convs, get the existing status
     String inClause = convIds.join(',');
+    //print('debug 1: ${inClause}');
     final joinRows = await MiscLib.query(db, 'select conv_id,status from conv_xuser where conv_id in (${inClause}) and xuser_id=${userId}', null);
     Map<int, String> statusByConv = new Map<int, String>();
     for (final joinRow in joinRows) statusByConv[joinRow['conv_id']] = joinRow['status'];
+    //print('debug 2: ${statusByConv}');
 
     //for each potential conv, if there is no existing status or the existing
     // status is N, recommend it
     for (int convId in convIds) {
       String status = statusByConv[convId];
+      //print('debug 3: conv ${convId} has status ${status}');
       if (status == null || status == 'N')
         await ConvLib.writeConvUser(db, convId, userId, 'R', 'N');
     }
@@ -402,12 +405,14 @@ class WDatabase {
 
     //load ids of all convs spawned from those
     String sourceConvInClause = sourceConvIds.join(',');
+    //print('debug 4: ${sourceConvInClause}');
     final spawnedConvRows = await MiscLib.query(db, 'select id, (select status from conv_xuser where conv_id=conv.id and xuser_id=${userId}) as status from conv where from_conv_id in (${sourceConvInClause})', null);
 
     //loop spawned convs and if the user isn't joined, recommend it
     for (final convRow in spawnedConvRows) {
       int convId = convRow['id'];
       String status = convRow['status'];
+      //print('debug 5: conv ${convId} has status ${status}');
       if (status == null || status == 'N') {
         await ConvLib.writeConvUser(db, convId, userId, 'R', 'N');
       }
@@ -424,14 +429,16 @@ class WDatabase {
 
     //for those potential convs, get the exiting status
     String inClause = convIds.join(',');
+    //print('debug 6: ${inClause}');
     final joinRows = await MiscLib.query(db, 'select conv_id,status from conv_xuser where conv_id in (${inClause}) and xuser_id=${userId}', null);
     Map<int, String> statusByConv = new Map<int, String>();
-    for (final joinRow in joinRows) statusByConv[joinRow['id']] = joinRow['status'];
+    for (final joinRow in joinRows) statusByConv[joinRow['conv_id']] = joinRow['status'];
 
     //for each potential conv, if there is no existing status or the existing
     // status is N, recommend it
     for (int convId in convIds) {
       String status = statusByConv[convId];
+      //print('debug 7: conv ${convId} has status ${status}');
       if (status == null || status == 'N')
         await ConvLib.writeConvUser(db, convId, userId, 'R', 'N');
     }

@@ -29,12 +29,18 @@ class SiteCache {
     return site;
   }
 
-  ///get site by domain name, case insensitive
-  Future<SiteRecord> byDomain(String domain) async {
+  ///get site by domain name, case insensitive; if searchParent is true, also matches if the given
+  ///domain is one level more general, for example: domain s.com matches www.s.com from site table.
+  ///Note that if you have a multitenant site that uses a.x.com and b.x.com and the user goes to x.com, 
+  ///then the result will be undefined.
+  Future<SiteRecord> byDomain(String domain, bool searchParent) async {
     await _loadIfNeeded();
     domain = domain.toLowerCase();
-    final site = _sites.values.firstWhere((s) => s.domain == domain);
-    if (site == null) throw Exception('${_notFoundMessage} (domain ${domain})');
+    var site = _sites.values.firstWhere((s) => s.domain == domain);
+    if (site == null) {
+      if (searchParent) site = _sites.values.firstWhere((s) => s.parentDomain == domain);
+      if (site == null) throw Exception('${_notFoundMessage} (domain ${domain})');
+    }
     return site;
   }
 
@@ -114,6 +120,9 @@ class SiteRecord {
   ///see database doc, site table for these meanings
   final String code, domain, homeUrl, title1, title2;
 
+  ///domain with first segment removed (example www.s.com causes parentDomain=s.com)
+  final String parentDomain;
+
   final SiteRecord_Deletion deletion;
   final SiteRecord_SiteAdmin site_admin;
   final SiteRecord_Spam spam;
@@ -121,7 +130,7 @@ class SiteRecord {
 
   SiteRecord(int this.id, String this.code, String this.domain, String this.homeUrl, String this.title1, String this.title2,
     SiteRecord_Deletion this.deletion, SiteRecord_SiteAdmin this.site_admin, SiteRecord_Spam this.spam,
-    SiteRecord_Operation this.operation, int this.rootProjectId) {}
+    SiteRecord_Operation this.operation, int this.rootProjectId) : parentDomain = _removeDomainPrefix(domain) {}
 
   ///get cached generated version of index.html for this site
   String get indexHtml {
@@ -135,6 +144,15 @@ class SiteRecord {
         .replaceAll(r'site_AUT', 'site_$code');
     }
     return _indexhtml;
+  }
+
+  static String _removeDomainPrefix(String s) {
+    final int dot = s.indexOf('.');
+    if (dot == -1) return s;
+    final parent = s.substring(dot + 1);
+    final int dot2 = parent.indexOf('.');
+    if (dot2 == -1) return s; //need at least one dot in the result
+    return parent;
   }
 }
 

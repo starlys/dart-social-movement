@@ -244,6 +244,10 @@ class ConvLib {
   ///write one conv_xuser record (attempts update, then insert)
   ///NOTE like argument is only honored for inserts
   static Future writeConvUser(PostgreSQLConnection db, int convId, int userId, String status, String like) async {
+    //debug section
+    //print('debug writeConvUser conv ${convId}, user ${userId}');
+    //return;
+
     int count = await db.execute('update conv_xuser set status=@s where conv_id=${convId} and xuser_id=${userId}',
       substitutionValues: {'s': status});
     if (count == 0) {

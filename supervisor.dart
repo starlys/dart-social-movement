@@ -114,12 +114,11 @@ Future timerTick() async {
     //if it's time to send mail, run that process
     if (utcNow().isAfter(_nextMailUtc)) {
       await writeDebugTaskFile(true, 'sendmail');
-      Process.run('dart', [rootPath() + 'autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: rootPath());
+      Process.run('dart', [rootPath() + '/autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: rootPath());
       _nextMailUtc = utcNow().add(_mailInterval);
       await writeDebugTaskFile(false, 'sendmail');
     }
 
-    throw Exception('ha!'); //debug
   } catch (ex) {
     print('supervisor tick exception: ${ex}');
   }

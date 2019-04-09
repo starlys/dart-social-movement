@@ -1967,7 +1967,7 @@ class Servant {
       whereClause.add('site_id=${site.id}');
       if (args.name != null && args.name.length > 0) {
         String param1 = '%${args.name.toLowerCase()}%';
-        whereClause.add('lower(nick) like @nick or lower(public_name) like @name');
+        whereClause.add('(lower(nick) like @nick or lower(public_name) like @name)');
         whereClause.paramsMap['nick'] = param1;
         whereClause.paramsMap['name'] = param1;
       }

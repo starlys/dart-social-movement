@@ -66,7 +66,7 @@ main() async {
   //add route for index.html with substitutions
   angelApp.get('/', (req, resp) async {
     SiteRecord config;
-    try { config = await ApiGlobals.sites.byDomain(req.hostname);}
+    try { config = await ApiGlobals.sites.byDomain(req.hostname, false);}
     catch (e) {}
     if (config == null) config = ApiGlobals.sites.byCode('AUT'); //dev mode default
     resp.contentType = MediaType('text', 'html');
@@ -90,7 +90,7 @@ main() async {
     angelNonsecureRedirector.fallback((req, resp) async {
       if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
       try {
-        final config = await ApiGlobals.sites.byDomain(req.hostname);
+        final config = await ApiGlobals.sites.byDomain(req.hostname, true);
         resp.redirect(config.homeUrl);
       }
       catch (e) {

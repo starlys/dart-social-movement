@@ -230,7 +230,7 @@ class Permissions{
       return r;
   }
 
-  //get info about permissions for joining a conversation
+  ///get info about permissions for joining a conversation
   static Future<JoinInfo> getConvJoinPermissions(PostgreSQLConnection db, int userId, int convId) async {
       //get info from the conv
       final convRow = await MiscLib.queryRowChecked(db, 'select project_id,event_id from conv where id=${convId}', 'Conversation does not exist', null);

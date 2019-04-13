@@ -54,7 +54,7 @@ class Authenticator {
     }
 
     //was not in memory - check database or exit
-    final site = ApiGlobals.sites.byCode(siteCode);
+    final site = ApiGlobals.instance.sites.byCode(siteCode);
     ai = new AuthInfo();
     ai..nick = nick ..password = password;
     ai.passwordHash = MiscLib.passwordHash(password);

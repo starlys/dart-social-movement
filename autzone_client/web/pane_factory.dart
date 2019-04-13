@@ -23,6 +23,7 @@ import 'pane/resource_search_pane.dart';
 import 'pane/resource_pane.dart';
 import 'pane/user_search_pane.dart';
 import 'pane/user_pane.dart';
+import 'pane/cross_pane.dart';
 import 'root/globals.dart';
 import 'package:autzone_models/autzone_models.dart';
 import 'main_controller.dart';
@@ -96,6 +97,7 @@ class PaneFactory {
     else if (paneType == 'proposal') p = new ProposalPane();
     else if (paneType == 'events') p = new EventSearchPane();
     else if (paneType == 'event') p = new EventPane();
+    else if (paneType == 'cross') p = new CrossPane();
     if (p == null) return null;
 
     //initialize pane

@@ -231,6 +231,13 @@ class ConvLib {
     return p;
   }
 
+  ///true if a post with identical ptext was posted in the last one minute (use to control for double posting)
+  static Future<bool> checkRecentConvPostExists(PostgreSQLConnection db, int convId, int authorId, String ptext) async {
+    final rows = await MiscLib.query(db, 'select id from conv_post where conv_id=${convId} and author_id=${authorId} and ptext=@p and created_at>@c', 
+      { 'p': ptext, 'c': WLib.utcNow().subtract(Duration(minutes: 1))});
+    return rows.length > 0;
+  }
+
   ///write one conv_post record, returning its id
   static Future<String> writeConvPost(PostgreSQLConnection db, int convId, int authorId, String ptext, int twPosition,
     bool hasImage, DateTime createdAt) async {

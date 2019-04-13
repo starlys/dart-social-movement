@@ -16,7 +16,7 @@ class Controller {
     //infinite loop
     while (true) {
       //exit if stop file exists
-      File stopFile = new File(ConfigLoader.rootPath() + '/status/stop.txt');
+      File stopFile = new File(ApiGlobals.rootPath + '/status/stop.txt');
       if (await stopFile.exists()) {
         await writeAliveFile(false);
         return;
@@ -52,7 +52,7 @@ class Controller {
       WorkerGlobals.next24h = WLib.utcNow().add(new Duration(days:1));
     } else if (now.isAfter(WorkerGlobals.next1week)) {
       await WDatabase.safely('weeklyDelete', false, WDatabase.weeklyDelete);
-      await WDatabase.safely('assignSiteLeadership', true, WDatabase.assignSiteLeadership);
+      await WDatabase.safely('assignSiteLeadership', true, WDatabase.assignSiteLeadership); //be sure loadDailyGlobals is called before this, on startup
       WorkerGlobals.next1week = WLib.utcNow().add(new Duration(days:7));
     }
   }
@@ -60,7 +60,7 @@ class Controller {
   ///write to worker_alive.txt so the supervisor can detect if this process is running
   Future writeAliveFile(bool makeExist) async {
     try {
-      File f = new File(ConfigLoader.rootPath() + '/status/worker_alive.txt');
+      File f = new File(ApiGlobals.rootPath + '/status/worker_alive.txt');
       if (makeExist){
         await f.writeAsString("!");
       } else {
@@ -73,7 +73,7 @@ class Controller {
 
     //for debugging also write *alive file with unique name for this process
     try {
-      File f = new File(ConfigLoader.rootPath() + '/status/worker_alive' + WorkerGlobals.logFileSuffix);
+      File f = new File(ApiGlobals.rootPath + '/status/worker_alive' + WorkerGlobals.logFileSuffix);
       if (makeExist){
         await f.writeAsString("!");
       } else {

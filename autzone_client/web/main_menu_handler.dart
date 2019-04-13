@@ -23,6 +23,8 @@ class MainMenuHandler {
     _panel = $('#menu2');
     int year = (new DateTime.now()).year;
 
+    addItem('Recent additions to site', 'panecross', () => PaneFactory.createFromString('cross'));
+
     addHeading('Resources - books, web, etc.', 'HELPRES');
     addItem('Browse/Create resources by category', 'paneresource', () => PaneFactory.createFromString('resourcetree'));
     addItem('Search resources by keyword', 'paneresource', () => PaneFactory.createFromString('resources'));

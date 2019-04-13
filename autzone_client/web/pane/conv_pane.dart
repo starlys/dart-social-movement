@@ -57,7 +57,7 @@ class ConvPane extends BasePane {
 
     //build pane top part
     buildSkeletonHtml2(paneClass: 'conv', iconHoverText: 'Conversation', iconName: 'paneconv', title: _conv.title,
-      subtitle: 'in project: ${_conv.parentTitle}', subtitlePaneKey: _conv.parentPaneKey);
+      subtitle: 'in: ${_conv.parentTitle}', subtitlePaneKey: _conv.parentPaneKey);
     clearLoadingMessage();
     CardBuilder card = new CardBuilder(bodyElement);
     card.addText('Title', _conv.title);

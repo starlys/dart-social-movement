@@ -16,10 +16,10 @@ main() async {
   print("starting autzone API listener");
 
   //set up non-database globals and other initializers
-  ApiGlobals.configLoader.init();
-  bool isDev = ApiGlobals.configLoader.isDev;
+  ApiGlobals.instance = ApiGlobals();
+  bool isDev = ApiGlobals.instance.configLoader.isDev;
   await DateLib.init();
-  ImageLib.init(ApiGlobals.configFileSettings);
+  ImageLib.init(ApiGlobals.instance.configFileSettings);
 
   //write alive file (do early so supervisor doesn't try to run api twice)
   Pulse pulse = new Pulse();
@@ -27,7 +27,7 @@ main() async {
 
   //init database and load settings from database (potentially slower)
   await Database.init();
-  await ApiGlobals.sites.allCodes(); //forces load
+  await ApiGlobals.instance.sites.allCodes(); //forces load
   
   //set up Angel
   var angelApp = new Angel(reflector: MirrorsReflector());
@@ -55,7 +55,7 @@ main() async {
 
   //add routes for static files
   final fs = const file.LocalFileSystem();
-  final publicDir = fs.directory(ConfigLoader.rootPath() + '/public_html');
+  final publicDir = fs.directory(ApiGlobals.rootPath + '/public_html');
   final vDirRoot = CachingVirtualDirectory(angelApp, fs, source: publicDir);
   angelApp.get('images/*', vDirRoot.handleRequest);
   angelApp.get('js/*', vDirRoot.handleRequest);
@@ -66,9 +66,9 @@ main() async {
   //add route for index.html with substitutions
   angelApp.get('/', (req, resp) async {
     SiteRecord config;
-    try { config = await ApiGlobals.sites.byDomain(req.hostname);}
+    try { config = await ApiGlobals.instance.sites.byDomain(req.hostname, false);}
     catch (e) {}
-    if (config == null) config = ApiGlobals.sites.byCode('AUT'); //dev mode default
+    if (config == null) config = ApiGlobals.instance.sites.byCode('AUT'); //dev mode default
     resp.contentType = MediaType('text', 'html');
     resp.write(config.indexHtml);
     resp.close();
@@ -90,7 +90,7 @@ main() async {
     angelNonsecureRedirector.fallback((req, resp) async {
       if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
       try {
-        final config = await ApiGlobals.sites.byDomain(req.hostname);
+        final config = await ApiGlobals.instance.sites.byDomain(req.hostname, true);
         resp.redirect(config.homeUrl);
       }
       catch (e) {

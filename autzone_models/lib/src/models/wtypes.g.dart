@@ -172,6 +172,66 @@ class AuthenticateResponse implements _AuthenticateResponse {
 }
 
 @generatedSerializable
+class CrossQueryRequest implements _CrossQueryRequest {
+  const CrossQueryRequest({this.base});
+
+  @override
+  final _APIRequestBase base;
+
+  CrossQueryRequest copyWith({_APIRequestBase base}) {
+    return new CrossQueryRequest(base: base ?? this.base);
+  }
+
+  bool operator ==(other) {
+    return other is _CrossQueryRequest && other.base == base;
+  }
+
+  @override
+  int get hashCode {
+    return hashObjects([base]);
+  }
+
+  Map<String, dynamic> toJson() {
+    return CrossQueryRequestSerializer.toMap(this);
+  }
+}
+
+@generatedSerializable
+class CrossQueryResponse implements _CrossQueryResponse {
+  const CrossQueryResponse(
+      {this.base, List<_APIResponseAssociation> this.items});
+
+  @override
+  final _APIResponseBase base;
+
+  @override
+  final List<_APIResponseAssociation> items;
+
+  CrossQueryResponse copyWith(
+      {_APIResponseBase base, List<_APIResponseAssociation> items}) {
+    return new CrossQueryResponse(
+        base: base ?? this.base, items: items ?? this.items);
+  }
+
+  bool operator ==(other) {
+    return other is _CrossQueryResponse &&
+        other.base == base &&
+        const ListEquality<_APIResponseAssociation>(
+                const DefaultEquality<_APIResponseAssociation>())
+            .equals(other.items, items);
+  }
+
+  @override
+  int get hashCode {
+    return hashObjects([base, items]);
+  }
+
+  Map<String, dynamic> toJson() {
+    return CrossQueryResponseSerializer.toMap(this);
+  }
+}
+
+@generatedSerializable
 class CategoryQueryRequest implements _CategoryQueryRequest {
   const CategoryQueryRequest({this.base, this.kind});
 
@@ -5010,6 +5070,63 @@ abstract class AuthenticateResponseFields {
   static const String userId = 'user_id';
 
   static const String isSiteAdmin = 'is_site_admin';
+}
+
+abstract class CrossQueryRequestSerializer {
+  static CrossQueryRequest fromMap(Map map) {
+    return new CrossQueryRequest(
+        base: map['base'] != null
+            ? APIRequestBaseSerializer.fromMap(map['base'] as Map)
+            : null);
+  }
+
+  static Map<String, dynamic> toMap(_CrossQueryRequest model) {
+    if (model == null) {
+      return null;
+    }
+    return {'base': APIRequestBaseSerializer.toMap(model.base)};
+  }
+}
+
+abstract class CrossQueryRequestFields {
+  static const List<String> allFields = <String>[base];
+
+  static const String base = 'base';
+}
+
+abstract class CrossQueryResponseSerializer {
+  static CrossQueryResponse fromMap(Map map) {
+    return new CrossQueryResponse(
+        base: map['base'] != null
+            ? APIResponseBaseSerializer.fromMap(map['base'] as Map)
+            : null,
+        items: map['items'] is Iterable
+            ? new List.unmodifiable(
+                ((map['items'] as Iterable).where((x) => x is Map))
+                    .cast<Map>()
+                    .map(APIResponseAssociationSerializer.fromMap))
+            : null);
+  }
+
+  static Map<String, dynamic> toMap(_CrossQueryResponse model) {
+    if (model == null) {
+      return null;
+    }
+    return {
+      'base': APIResponseBaseSerializer.toMap(model.base),
+      'items': model.items
+          ?.map((m) => APIResponseAssociationSerializer.toMap(m))
+          ?.toList()
+    };
+  }
+}
+
+abstract class CrossQueryResponseFields {
+  static const List<String> allFields = <String>[base, items];
+
+  static const String base = 'base';
+
+  static const String items = 'items';
 }
 
 abstract class CategoryQueryRequestSerializer {

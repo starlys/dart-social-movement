@@ -402,8 +402,13 @@ class ProposalLib {
     String creationImpossibleMessage;
     if (winOption == 0 && sqlColNames.length > 0) {
       creationImpossibleMessage = await _allowNewRecord(db, tableName, colValues);
-      if (creationImpossibleMessage == null) //ok
-        createdRecordId = await MiscLib.queryScalar(db, 'insert into ${tableName}(${sqlColNames})values(${sqlColPlaceholders}) returning id', colValues);
+      if (creationImpossibleMessage == null) { //ok
+        try {
+          createdRecordId = await MiscLib.queryScalar(db, 'insert into ${tableName}(${sqlColNames})values(${sqlColPlaceholders}) returning id', colValues);
+        } catch (e) {
+          creationImpossibleMessage = 'Could not create ${tableName}; ${e}';
+        }
+      }
     }
 
     //delete proposal

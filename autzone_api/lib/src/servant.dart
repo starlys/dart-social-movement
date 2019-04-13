@@ -30,9 +30,44 @@ class Servant {
       nick: ai.nick);
   }
 
+
+  ///get all recent activity across all types (resources, events, projects); no authentication
+  Future<CrossQueryResponse> crossQuery(CrossQueryRequest args) async {
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
+    final items = List<APIResponseAssociation>();
+    final dbresult = await Database.safely('CrossQuery', (db) async {
+      final since = WLib.utcNow().subtract(Duration(days: 30)); 
+      final eventRows = await MiscLib.query(db, 'select id,title from event where site_id=${site.id} and created_at>@d order by created_at desc limit 30',
+        {'d': since});
+      for (final row in eventRows) {
+        var item = new APIResponseAssociation(
+          linkPaneKey: 'event/${row['id']}',
+          linkText: 'Event: ${row['title']}');
+        items.add(item);
+      }
+      final projectRows = await MiscLib.query(db, 'select id,title from project where site_id=${site.id} and created_at>@d order by created_at desc limit 30',
+        {'d': since});
+      for (final row in projectRows) {
+        var item = new APIResponseAssociation(
+          linkPaneKey: 'project/${row['id']}',
+          linkText: 'Project: ${row['title']}');
+        items.add(item);
+      }
+      final resourceRows = await MiscLib.query(db, 'select id,title from resource where site_id=${site.id} and created_at>@d order by created_at desc limit 30',
+        {'d': since});
+      for (final row in resourceRows) {
+        var item = new APIResponseAssociation(
+          linkPaneKey: 'resource/${row['id']}',
+          linkText: 'Resource: ${row['title']}');
+        items.add(item);
+      }
+    });
+    return CrossQueryResponse(base: dbBase(dbresult), items: items);
+  }
+
   ///get all categories matching kind; no authentication
   Future<CategoryQueryResponse> categoryQuery(CategoryQueryRequest args) async {
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     final cats = List<CategoryItemResponse>();
     final dbresult = await Database.safely('CategoryQuery', (db) async {
       final rows = await MiscLib.query(db, 'select * from category where kind=@k and site_id=${site.id} order by title',
@@ -56,28 +91,46 @@ class Servant {
     final authFail = Authenticator.ensureSiteAdmin(ai);
     if (authFail != null) return authFail;
 
+    bool isExisting = args.catId != null && args.catId > 0;
     final dbresult = await Database.safely('CategorySave', (db) async {
-      //get referenced parent in sister mode
-      int parentOfRef = null;
+      //if reparenting, figure out the proposed new parent ID
+      bool isReparenting = false;
+      int newParent = null;
       if (args.referenceMode == 'S'){
-        parentOfRef = await MiscLib.queryScalar(db, 'select parent_id from category where id=${args.referenceId}', null);
+        isReparenting = true;
+        newParent = await MiscLib.queryScalar(db, 'select parent_id from category where id=${args.referenceId}', null);
+      }
+      if (args.referenceMode == 'C'){
+        isReparenting = true;
+        newParent = args.referenceId;
+      }
+
+      //ensure new parent is not a descendant of the category being moved, or itself
+      if (isReparenting && isExisting) {
+        int runningParentId = newParent;
+        int recurCount = 0;
+        while (true) {
+          if (runningParentId == args.catId) throw Exception('Cannot move a category under itself.');
+          if (++recurCount > 99) throw Exception('Circular references found in category table.');
+          runningParentId = await MiscLib.queryScalar(db, 'select parent_id from category where id=${runningParentId}', null);
+          if (runningParentId == null) break;
+        }
       }
 
       //create or update
-      if (args.catId != null && args.catId > 0) {
+      if (isExisting) {
         //update
         String sql = 'update category set kind=@k,title=@t,description=@d';
-        if (args.referenceMode == 'C') sql += ',parent_id=${args.referenceId}';
-        if (args.referenceMode == 'S') sql += ',parent_id=${parentOfRef}'; //null ok
+        if (isReparenting) {
+          if (newParent == null) sql += ',parent_id=null';
+          else sql += ',parent_id=${newParent}';
+        }
         sql += ' where id=${args.catId}';
         await db.execute(sql, substitutionValues: {'k':args.kind, 't':args.title, 'd':args.description});
       } else {
         //create
         String sql = 'insert into category(site_id,parent_id,kind,title,description)values(@si,@p,@k,@t,@d)';
-        int parentId = null;
-        if (args.referenceMode == 'C') parentId = args.referenceId;
-        if (args.referenceMode == 'S') parentId = parentOfRef;
-        await db.execute(sql, substitutionValues: {'si': ai.site.id, 'p':parentId, 'k':args.kind, 't':args.title, 'd':args.description});
+        await db.execute(sql, substitutionValues: {'si': ai.site.id, 'p':newParent, 'k':args.kind, 't':args.title, 'd':args.description});
       }
     });
     return dbBase(dbresult);
@@ -85,7 +138,6 @@ class Servant {
 
   ///delete a category and relink all references
   Future<APIResponseBase> categoryDelete(CategoryDeleteRequest args) async {
-
     //must be site admin
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);
     final authFail = Authenticator.ensureSiteAdmin(ai);
@@ -94,7 +146,7 @@ class Servant {
     final dbresult = await Database.safely('CategoryDelete', (db) async {
       //get parent cat (which is null if top level)
       int catToDelete = args.catId;
-      int parentOfDeleted = await MiscLib.queryScalar(db, 'select parent_id from category where site_id=${ai.site.id} id=${catToDelete} and kind=@k',
+      int parentOfDeleted = await MiscLib.queryScalar(db, 'select parent_id from category where site_id=${ai.site.id} and id=${catToDelete} and kind=@k',
         {'k': args.kind});
 
       //get whether deleting cat has projects or resources
@@ -107,7 +159,7 @@ class Servant {
         throw new Exception('Cannot delete top level category that has projects or resources');
 
       //fail if this is the only cat left
-      int countOtherCats = (await MiscLib.queryScalar(db, 'select count(*) from category where site_id=${ai.site.id} kind=@k and id<>${catToDelete}',
+      int countOtherCats = (await MiscLib.queryScalar(db, 'select count(*) from category where site_id=${ai.site.id} and kind=@k and id<>${catToDelete}',
         {'k': args.kind}) ?? 0);
       if (countOtherCats == 0) throw new Exception('Cannot delete last category');
 
@@ -555,11 +607,17 @@ class Servant {
         //check permissions
         await Permissions.checkConvPostPermissions(ai.site, db, ai.id, convId, convRow, projectId, args.ptext.length);
 
-        //write it
+        //set up text with trigger warnings
         final twarning = args.triggerWarning ?? '';
         String ptextWithWarning = twarning + (args.ptext ?? '');
         int twPosition = twarning.length;
         if (twPosition == 0) twPosition = null;
+
+        //check for double posting
+        final isDuplicate = await ConvLib.checkRecentConvPostExists(db, convId, authorId, ptextWithWarning);
+        if (isDuplicate) throw Exception('Prevented double-posting the same message.');
+
+        //write it
         DateTime createdAt = WLib.utcNow();
         await ConvLib.writeConvPost(db, convId, authorId, ptextWithWarning, twPosition, false, createdAt);
 
@@ -696,7 +754,7 @@ class Servant {
   ///get all root docs; no authentication
   Future<DocQueryResponse> docQuery(DocQueryRequest args) async {
     if (args.mode != 'R') throw new Exception('unknown mode');
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     final docs = new List<DocQueryItem>();
     final dbresult = await Database.safely('DocQuery', (db) async {
       String sql = 'select id, title from doc where (select site_id from project where id=doc.project_id)=${site.id} and project_id=${site.rootProjectId} order by title';
@@ -713,7 +771,7 @@ class Servant {
   Future<DocGetResponse> docGet(DocGetRequest args) async {
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     String timeZoneName = ai != null ? ai.timeZoneName : null;
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
 
     //declare return values
     int retDocId, retProjectId, retProposalId;
@@ -914,7 +972,7 @@ class Servant {
 
   ///get all events matching criteria
   Future<EventQueryResponse> eventQuery(EventQueryRequest args) async {
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     String tzName = null;
     if (ai != null) tzName = ai.timeZoneName;
@@ -972,10 +1030,11 @@ class Servant {
 
     final dbresult = await Database.safely('EventGet', (db) async {
       //load from event and xuser
-      String sql = 'select event.*, xuser.nick, xuser.avatar_no'
+      String sql = 'select event.*, xuser.nick, xuser.avatar_no, xuser.timezone'
         ' from event inner join xuser on event.created_by=xuser.id'
         ' where event.id=${args.eventId}';
       final eventRow = await MiscLib.queryRowChecked(db, sql, 'Event does not exist', null);
+      tzName ??= eventRow['timezone'];
       retTitle = eventRow['title'];
       retDescription = eventRow['description'];
       retDuration = eventRow['duration'];
@@ -987,7 +1046,7 @@ class Servant {
       retLon = eventRow['lon'].toString();
       DateTime startTime = eventRow['start_time'];
       retStartTimeU = DateLib.packUtcDateEntry(startTime, tzName);
-      retStartTimeR = DateLib.formatDateTime(startTime, tzName);
+      retStartTimeR = DateLib.formatDateTime(startTime, tzName) + ' (${tzName})';
       DateTime createTime = eventRow['created_at'];
       retCreatedAtR = DateLib.formatDateTime(createTime, tzName);
       retIsCreator = ai != null && ai.id == retCreatorId;
@@ -1138,7 +1197,7 @@ class Servant {
 
   ///get all projects matching criteria
   Future<ProjectQueryResponse> projectQuery(ProjectQueryRequest args) async {
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
 
     final projects = new List<ProjectQueryItem>();
@@ -1471,7 +1530,7 @@ class Servant {
 
   ///get all proposals matching inputs; no authentication
   Future<ProposalQueryResponse> proposalQuery(ProposalQueryRequest args) async {
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     final items = new List<ProposalQueryItem>();
 
     final dbresult = await Database.safely('ProposalQuery', (db) async {
@@ -1794,7 +1853,7 @@ class Servant {
 
   ///get all resources matching criteria
   Future<ResourceQueryResponse> resourceQuery(ResourceQueryRequest args) async {
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base); //null ok
     bool isSiteAdmin = ai != null && ai.isSiteAdmin;
 
@@ -1960,14 +2019,14 @@ class Servant {
 
   ///get all users matching criteria
   Future<UserQueryResponse> userQuery(UserQueryRequest args) async {
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
     final users = new List<UserQueryItem>();
     final dbresult = await Database.safely('UserQuery', (db) async {
       final whereClause = QueryClauseBuilder();
       whereClause.add('site_id=${site.id}');
       if (args.name != null && args.name.length > 0) {
         String param1 = '%${args.name.toLowerCase()}%';
-        whereClause.add('lower(nick) like @nick or lower(public_name) like @name');
+        whereClause.add('(lower(nick) like @nick or lower(public_name) like @name)');
         whereClause.paramsMap['nick'] = param1;
         whereClause.paramsMap['name'] = param1;
       }
@@ -2085,7 +2144,7 @@ class Servant {
   ///save/create a user
   Future<APIResponseBase> userSave(UserSaveRequest args) async {
     DateTime now = WLib.utcNow();
-    final site = ApiGlobals.sites.byCode(args.base.siteCode);
+    final site = ApiGlobals.instance.sites.byCode(args.base.siteCode);
 
     //must be logged in if updating
     AuthInfo ai = await Authenticator.authenticateForAPI(args.base);

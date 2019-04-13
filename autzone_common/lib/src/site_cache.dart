@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'database.dart';
 import 'misc_lib.dart';
-import 'config_loader.dart';
 import 'api_globals.dart';
 import 'package:autzone_models/autzone_models.dart';
 
 ///cache of site and config tables, plus other unchanging/cacheable values
 class SiteCache {
   var _sites = Map<String, SiteRecord>();
-  var _nextLoadTime = WLib.utcNow();
+  var _nextLoadTime = WLib.utc1970();
   final String _notFoundMessage = 'Site not found';
 
   Future init() {
@@ -58,7 +57,7 @@ class SiteCache {
 
   Future _load() async {
     _nextLoadTime = WLib.utcNow().add(Duration(minutes: 10));
-    Database.safely('load site+config', (db) async {
+    await Database.safely('load site+config', (db) async {
       final siteRows = await MiscLib.query(db, 'select * from site order by id', null);
       final configRows = await MiscLib.query(db, 'select * from config', null);
       final codeToString = (int siteId, String code) {
@@ -135,7 +134,8 @@ class SiteRecord {
   ///get cached generated version of index.html for this site
   String get indexHtml {
     if (_indexhtml == null) {
-      final templatePath = ApiGlobals.configLoader.isDev ? '${ConfigLoader.rootPath()}/autzone_client/web/index.html' : '${ConfigLoader.rootPath()}/public_html/index.html';
+      final rootPath = ApiGlobals.rootPath;
+      final templatePath = ApiGlobals.instance.configLoader.isDev ? '${rootPath}/autzone_client/web/index.html' : '${rootPath}/public_html/index.html';
       final template = File(templatePath);
       _indexhtml = template.readAsStringSync()
         .replaceAll(r'$title1$', title1.replaceAll("'", "\'"))

@@ -6,9 +6,9 @@ main() async {
   print("starting autzone worker");
 
   //set up 
-  ApiGlobals.configLoader.init();
+  ApiGlobals.instance = ApiGlobals();
   await Database.init();
-  await ApiGlobals.sites.allCodes(); //force load
+  await ApiGlobals.instance.sites.allCodes(); //force load
   
   //run
   Controller c = new Controller();

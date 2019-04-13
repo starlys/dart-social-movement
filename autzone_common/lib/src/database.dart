@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:postgres/postgres.dart';
-import 'config_loader.dart';
 import 'api_globals.dart';
 import 'package:autzone_models/autzone_models.dart';
 import 'logger.dart';
@@ -45,8 +44,8 @@ abstract class Database {
 
   ///create and open one database connection
   static Future<PostgreSQLConnection> _createOne() async {
-    bool isDev = ApiGlobals.configLoader.isDev;
-    final dbsettings = isDev ? ApiGlobals.configFileSettings.database_dev : ApiGlobals.configFileSettings.database;
+    bool isDev = ApiGlobals.instance.configLoader.isDev;
+    final dbsettings = isDev ? ApiGlobals.instance.configFileSettings.database_dev : ApiGlobals.instance.configFileSettings.database;
 
     //open connections and
     //initialize the uuid-ossp extension for each connection; this hack exists
@@ -104,7 +103,7 @@ abstract class Database {
   /// If r is given puts error messages there.
   static Future<DatabaseResult> safely(String taskDesc, WorkFunc f) async {
     final poolItem = await getFromPool();
-    String randomFileName = ApiGlobals.random.nextInt(100000).toString();
+    String randomFileName = ApiGlobals.instance.random.nextInt(100000).toString();
     try {
       await _writeDebugTaskFile(true, taskDesc, randomFileName);
       await f(poolItem.connection);
@@ -127,7 +126,7 @@ abstract class Database {
   /// containing the task name
   static Future _writeDebugTaskFile(bool starting, String taskDesc, String randomNamePart) async {
     try {
-      File f = new File(ConfigLoader.rootPath() + '/status/api_active' + randomNamePart + '.txt');
+      File f = new File(ApiGlobals.rootPath + '/status/api_active' + randomNamePart + '.txt');
       if (starting) {
         await f.writeAsString(WLib.utcNow().toIso8601String() + ' ' + taskDesc);
         //sleep(new Duration(seconds:4)); //DEBUG to test this function only

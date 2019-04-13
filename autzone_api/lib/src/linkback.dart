@@ -59,7 +59,7 @@ class Linkback {
   //writes content and closes req, where body is plain text or html;
   //this gets wrapped in html+body tags
   static Future _commonResponse(int siteId, ResponseContext resp, String body) async {
-    final site = await ApiGlobals.sites.byId(siteId);
+    final site = await ApiGlobals.instance.sites.byId(siteId);
     String homeUrl = site.homeUrl;
     String siteName = site.title1;
     String page = '<html><body>' + body

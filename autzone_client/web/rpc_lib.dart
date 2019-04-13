@@ -84,6 +84,13 @@ class RpcLib {
     final response = AuthenticateResponseSerializer.fromMap(responseMap);
     return response;
   }
+  static Future<CrossQueryResponse> crossQuery(CrossQueryRequest req) async {
+    final requestMap = CrossQueryRequestSerializer.toMap(req); 
+    Map responseMap = await rpcAsMap('CrossQuery', requestMap);
+    final response = CrossQueryResponseSerializer.fromMap(responseMap);
+    _handleAPIError(response.base);
+    return response;
+  }
   static Future<CategoryQueryResponse> categoryQuery(CategoryQueryRequest req) async {
     final requestMap = CategoryQueryRequestSerializer.toMap(req); 
     Map responseMap = await rpcAsMap('CategoryQuery', requestMap);

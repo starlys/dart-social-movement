@@ -20,7 +20,8 @@
             "name": "Test ad hoc",
             "type": "dart",
             "request": "launch",
-            "program": "${workspaceRoot}/_test.dart"
+            "program": "${workspaceRoot}/e2e_tests/servant_test.dart",
+            "cwd": "${workspaceRoot}/e2e_tests"
         },
         {
             "name": "Sendmail",

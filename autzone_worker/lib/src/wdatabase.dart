@@ -17,7 +17,7 @@ class WDatabase {
     try {
       if (taskDesc == 'sendmail') return; //this gets called from sendmail script which is not interesting to debug now
       String fname2 = starting ? 'starting' : 'finished';
-      File f = new File(ConfigLoader.rootPath() + '/status/worker_' + fname2 + WorkerGlobals.logFileSuffix);
+      File f = new File(ApiGlobals.rootPath + '/status/worker_' + fname2 + WorkerGlobals.logFileSuffix);
       await f.writeAsString(WLib.utcNow().toIso8601String() + ' ' + taskDesc);
     }
     catch (ex) {
@@ -33,9 +33,9 @@ class WDatabase {
       await _writeDebugTaskFile(true, taskDesc);
       if (loggingFilePrefix == null) loggingFilePrefix = 'worker';
       if (loopSites) {
-        final siteCodes = await ApiGlobals.sites.allCodes();
+        final siteCodes = await ApiGlobals.instance.sites.allCodes();
         for (final siteCode in siteCodes)
-          await f(poolItem.connection, ApiGlobals.sites.byCode(siteCode));
+          await f(poolItem.connection, ApiGlobals.instance.sites.byCode(siteCode));
       } else {
         await f(poolItem.connection, null);
       }
@@ -68,6 +68,9 @@ class WDatabase {
     int minAdmins = adminSettings.min;
     int maxAdmins = adminSettings.max;
     double fracAdmins = adminSettings.percent / 100.0;
+
+    //small sites: everyone is an admin
+    if (WorkerGlobals.isSiteAccelerated[site.id] == true) minAdmins = maxAdmins;
 
     //set project.member_count for all projects
     await db.execute('update project set member_count=(select count(*) from project_xuser where project_id=project.id) where site_id=${site.id}');
@@ -380,17 +383,14 @@ class WDatabase {
 
     //for those potential convs, get the existing status
     String inClause = convIds.join(',');
-    //print('debug 1: ${inClause}');
     final joinRows = await MiscLib.query(db, 'select conv_id,status from conv_xuser where conv_id in (${inClause}) and xuser_id=${userId}', null);
     Map<int, String> statusByConv = new Map<int, String>();
     for (final joinRow in joinRows) statusByConv[joinRow['conv_id']] = joinRow['status'];
-    //print('debug 2: ${statusByConv}');
 
     //for each potential conv, if there is no existing status or the existing
     // status is N, recommend it
     for (int convId in convIds) {
       String status = statusByConv[convId];
-      //print('debug 3: conv ${convId} has status ${status}');
       if (status == null || status == 'N')
         await ConvLib.writeConvUser(db, convId, userId, 'R', 'N');
     }
@@ -405,14 +405,12 @@ class WDatabase {
 
     //load ids of all convs spawned from those
     String sourceConvInClause = sourceConvIds.join(',');
-    //print('debug 4: ${sourceConvInClause}');
     final spawnedConvRows = await MiscLib.query(db, 'select id, (select status from conv_xuser where conv_id=conv.id and xuser_id=${userId}) as status from conv where from_conv_id in (${sourceConvInClause})', null);
 
     //loop spawned convs and if the user isn't joined, recommend it
     for (final convRow in spawnedConvRows) {
       int convId = convRow['id'];
       String status = convRow['status'];
-      //print('debug 5: conv ${convId} has status ${status}');
       if (status == null || status == 'N') {
         await ConvLib.writeConvUser(db, convId, userId, 'R', 'N');
       }
@@ -429,7 +427,6 @@ class WDatabase {
 
     //for those potential convs, get the exiting status
     String inClause = convIds.join(',');
-    //print('debug 6: ${inClause}');
     final joinRows = await MiscLib.query(db, 'select conv_id,status from conv_xuser where conv_id in (${inClause}) and xuser_id=${userId}', null);
     Map<int, String> statusByConv = new Map<int, String>();
     for (final joinRow in joinRows) statusByConv[joinRow['conv_id']] = joinRow['status'];
@@ -438,7 +435,6 @@ class WDatabase {
     // status is N, recommend it
     for (int convId in convIds) {
       String status = statusByConv[convId];
-      //print('debug 7: conv ${convId} has status ${status}');
       if (status == null || status == 'N')
         await ConvLib.writeConvUser(db, convId, userId, 'R', 'N');
     }
@@ -519,15 +515,17 @@ class WDatabase {
 
     //loop users
     for (final userRow in distinctUserRows) {
-      //if the user wants and can get email
-      bool wantsEmail = userRow['ref_email_notify'] == 'Y';
+      //find whether the user wants and can get email
+      bool wantsEmail = userRow['pref_email_notify'] == 'Y';
       String emailAddress = userRow['email'] ?? '';
       bool canSendEmail = emailAddress.contains('@');
       if (canSendEmail && wantsEmail) {
 
-        //load notifications for user
-        final notifRows = await MiscLib.query(db, 'select body,link_text,link_key from xuser_notify where xuser_id=${userRow['id']} and emailed=\'N\'', null);
-        int notifCount = await MiscLib.queryScalar(db, 'select count(*) from xuser_notify where xuser_id=${userRow['id']}', null) ?? 0;
+        //load notifications for user and mark them as emailed
+        int userId = userRow['id'];
+        final notifRows = await MiscLib.query(db, 'select body,link_text,link_key from xuser_notify where xuser_id=${userId} and emailed=\'N\'', null);
+        await db.execute('update xuser_notify set emailed=\'Y\' where xuser_id=${userId} and emailed=\'N\'');
+        int notifCount = await MiscLib.queryScalar(db, 'select count(*) from xuser_notify where xuser_id=${userId}', null) ?? 0;
         if (notifCount > 0) {
 
           //compose notifications into an email body
@@ -546,9 +544,6 @@ class WDatabase {
         }
       }
     }
-
-    //set all notifications for all users to emailed=Y
-    await db.execute('update xuser_notify set emailed=\'Y\' where emailed=\'N\'');
   }
 
 }

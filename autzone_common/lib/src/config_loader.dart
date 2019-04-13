@@ -3,8 +3,9 @@ import 'config_settings.dart';
 
 ///wraps config file 
 class ConfigLoader {
-    String _configPath = 'config/config.yaml';
-    static String _rootPath;
+    String _configPath;
+    final bool ise2eTesting;
+    String _rootPath;
 
     ///the settings; only available after init is finished
     ConfigSettings settings;
@@ -13,23 +14,20 @@ class ConfigLoader {
     bool get isDev => _isDev;
     bool _isDev = false;
 
-    ConfigLoader() {
+    ConfigLoader({bool this.ise2eTesting = false}) {
       _configPath = rootPath() + '/config/config.yaml';
+      settings = ConfigSettings(_configPath);
+      _isDev = settings.dev == 'Y';
     }
 
     ///get the root path for the apps (that is, the dir containing all the packages)
     /// return value does NOT have final slash
-    static String rootPath() {
+    String rootPath() {
       if (_rootPath == null) {
         final segs = Platform.script.pathSegments;
-        _rootPath = '/' + segs.take(segs.length - 3).join('/'); //up 4 levels
+        _rootPath = '/' + segs.take(segs.length - 3).join('/'); //up 3 levels
+        if (ise2eTesting) _rootPath = '/' + segs.take(segs.length - 2).join('/'); //up 2 levels
       }
       return _rootPath;
-    }
-
-    ///load settings
-    init() {
-      settings = ConfigSettings(_configPath);
-      _isDev = settings.dev == 'Y';
     }
 }

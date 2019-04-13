@@ -35,6 +35,14 @@ class ServantController extends Controller {
     return AuthenticateResponseSerializer.toMap(result);
   }
 
+  @Expose('CrossQuery', method: 'POST')
+  Future crossQuery(RequestContext req) async {
+    await req.parseBody();
+    final args = CrossQueryRequestSerializer.fromMap(req.bodyAsMap);
+    final result = await Servant().crossQuery(args);
+    return CrossQueryResponseSerializer.toMap(result);
+  }
+
   @Expose('CategoryQuery', method: 'POST')
   Future categoryQuery(RequestContext req) async {
     await req.parseBody();

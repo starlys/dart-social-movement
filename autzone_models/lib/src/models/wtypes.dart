@@ -57,6 +57,17 @@ abstract class _AuthenticateResponse {
 }
 
 @serializable
+abstract class _CrossQueryRequest {
+  _APIRequestBase get base;
+}
+
+@serializable
+abstract class _CrossQueryResponse {
+  _APIResponseBase get base;
+  List<_APIResponseAssociation> get items;
+}
+
+@serializable
 abstract class _CategoryQueryRequest {
   _APIRequestBase get base;
   String get kind;

@@ -46,7 +46,7 @@ class ResourcePane extends BasePane {
       myVoteCell.append(div);
       return chk;
     }
-    CheckboxInputElement importantCheck = add1Checkbox(resource.userKind == 'I', 'Important');
+    CheckboxInputElement importantCheck = add1Checkbox(resource.userKind == 'I', 'Important - checked by ${resource.importantCount} user(s)');
     CheckboxInputElement removeCheck = add1Checkbox(resource.userKind == 'R', 'Remove');
 
     //hook up checkbox handlers

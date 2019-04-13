@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'config_loader.dart';
+import 'api_globals.dart';
 import 'package:autzone_models/autzone_models.dart';
 
 ///error logger
@@ -24,7 +24,7 @@ class Logger{
       String dateS = nameFormatter.format(d);
       var fullFormatter = new DateFormat('y-MM-dd hh-mm-ss');
       String dateTimeS = fullFormatter.format(d);
-      String fullName = ConfigLoader.rootPath() + '/status/' + namePrefix + dateS + '.txt';
+      String fullName = ApiGlobals.rootPath + '/status/' + namePrefix + dateS + '.txt';
 
       //write message
       File f = new File(fullName);

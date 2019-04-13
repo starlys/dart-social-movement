@@ -231,6 +231,13 @@ class ConvLib {
     return p;
   }
 
+  ///true if a post with identical ptext was posted in the last one minute (use to control for double posting)
+  static Future<bool> checkRecentConvPostExists(PostgreSQLConnection db, int convId, int authorId, String ptext) async {
+    final rows = await MiscLib.query(db, 'select id from conv_post where conv_id=${convId} and author_id=${authorId} and ptext=@p and created_at>@c', 
+      { 'p': ptext, 'c': WLib.utcNow().subtract(Duration(minutes: 1))});
+    return rows.length > 0;
+  }
+
   ///write one conv_post record, returning its id
   static Future<String> writeConvPost(PostgreSQLConnection db, int convId, int authorId, String ptext, int twPosition,
     bool hasImage, DateTime createdAt) async {
@@ -244,10 +251,6 @@ class ConvLib {
   ///write one conv_xuser record (attempts update, then insert)
   ///NOTE like argument is only honored for inserts
   static Future writeConvUser(PostgreSQLConnection db, int convId, int userId, String status, String like) async {
-    //debug section
-    //print('debug writeConvUser conv ${convId}, user ${userId}');
-    //return;
-
     int count = await db.execute('update conv_xuser set status=@s where conv_id=${convId} and xuser_id=${userId}',
       substitutionValues: {'s': status});
     if (count == 0) {

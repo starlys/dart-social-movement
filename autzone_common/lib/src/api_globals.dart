@@ -5,14 +5,23 @@ import 'site_cache.dart';
 
 ///stores API globals
 class ApiGlobals {
+  ///each entry point (api, worker, tests, etc) has to instantiate this
+  static ApiGlobals instance;
 
   ///config file settings
-  static ConfigLoader configLoader = new ConfigLoader();
-  static ConfigSettings get configFileSettings => configLoader.settings;
+  ConfigLoader configLoader;
+  ConfigSettings get configFileSettings => configLoader.settings;
+  
+  ///shortcut to configLoader.rootPath
+  static String get rootPath => instance.configLoader.rootPath();
 
   //database settings
-  static SiteCache sites = SiteCache();
+  SiteCache sites = SiteCache();
   
   //debugging
-  static Random random = new Random(new DateTime.now().millisecondsSinceEpoch);
+  Random random = new Random(new DateTime.now().millisecondsSinceEpoch);
+
+  ApiGlobals({bool ise2eTesting = false}) {
+    configLoader = ConfigLoader(ise2eTesting: ise2eTesting);
+  }
 }

@@ -352,11 +352,14 @@ class ConvLib {
     //not sure how 1970 is getting set in conv_xuser, so this might find the source of the problem
     if (newReadPosition.isBefore(new DateTime(1980))) throw new Exception('Invalid read position');
 
-    //potentially abort if intervening posts found (see method comments)
+    //potentially abort if intervening posts found from other users (see method comments)
+    //Note that this query can sometimes return the post at exactly newReadPosition, because Dart's datetime is
+    //more accurate than Postgres, thus created_at<@d2 will yield rows where created_at is essentially equal to d2
     if (lastViewedPosition != null) {
-      final intervenings = await MiscLib.query(db, 'select id from conv_post where conv_id=${convId} and created_at>@d1 and created_at<@d2',
+      final intervenings = await MiscLib.query(db, 'select author_id from conv_post where conv_id=${convId} and created_at>@d1 and created_at<@d2',
         {'d1': lastViewedPosition, 'd2': newReadPosition});
-      if (intervenings.length > 0) return;
+      for (final row in intervenings)
+        if (row['author_id'] != userId) return;
     }
 
     //update read position (only if joined)

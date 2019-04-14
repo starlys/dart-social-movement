@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
-import 'package:quiver/async.dart';
+//import 'package:quiver/async.dart';
 
 Logger logger = new Logger('S3Bucket');
 
@@ -30,58 +30,63 @@ class S3Bucket {
       new S3Bucket.config(_userName, _accessKeyId, _secretAccessKey, _host,
           '$bucket/$name', _hmacFactory);
 
-  /**
-   * Uploads data to path $host/$bucket/$path
-   */
-  Future upload(List<int> data, String path, {ContentType contentType,
-    int maxAge, int trials: 100}) {
+  ///Uploads data to path $host/$bucket/$path
+  Future upload(List<int> data, String path, {ContentType contentType, int maxAge, int numTries: 100}) async {
     var ct = contentType == null ? '' : contentType.toString();
-    return _repeatMoreTimes(() => _put(path, data, ct), trials);
+    for (int tryNo = 0; tryNo < numTries; ++tryNo) {
+      try { 
+        await _put(path, data, ct); 
+        return;
+      }
+      catch (e, stack) {
+        if (e is SocketException || e is HttpException) {
+          logger.fine('Repeating upload due to exception:\n$e');
+          await Future.delayed(new Duration(milliseconds: 100));
+        }
+        else {
+          logger.shout('Error: \n', e, stack);
+          throw e;
+        }
+      }
+    }
   }
 
-  Future delete(String path) {
-    return client.openUrl('DELETE', getUrl(path))
-      .then((HttpClientRequest request) {
-        DateTime now = new DateTime.now();
-        request.headers.date = now;
-        Map<String, String> amzHeaders = {};
-        var contentType = '';
-        request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
-        String authorization = _getAuthorization(path, 'DELETE', '', contentType,
-            now, bucket, amzHeaders: amzHeaders);
-        request.headers.add(HttpHeaders.authorizationHeader, authorization);
-
-        return request.close();
-    }).then((HttpClientResponse response) {
-      return _examineResponse(response, 'uploading');
-    });
+  Future delete(String path) async {
+    final request = await client.openUrl('DELETE', getUrl(path));
+    DateTime now = new DateTime.now();
+    request.headers.date = now;
+    Map<String, String> amzHeaders = {};
+    var contentType = '';
+    request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
+    String authorization = _getAuthorization(path, 'DELETE', '', contentType,
+        now, bucket, amzHeaders: amzHeaders);
+    request.headers.add(HttpHeaders.authorizationHeader, authorization);
+    final response = await request.close();
+    await _examineResponse(response, 'uploading');
   }
 
-  _put(String path, List<int> data, String contentType) {
-    return client.openUrl('PUT', getUrl(path))
-        .then((HttpClientRequest request) {
-      DateTime now = new DateTime.now();
-      request.headers.date = now;
-      request.headers.add(HttpHeaders.contentTypeHeader, contentType);
-      request.headers.add(HttpHeaders.contentLengthHeader, data.length);
-      request.headers.add(HttpHeaders.connectionHeader, 'keep-alive');
-      request.headers.add(HttpHeaders.connectionHeader, 'keep-alive');
-      request.headers.add('x-amz-acl', 'public-read');
-      request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
+  Future _put(String path, List<int> data, String contentType) async {
+    final request = await client.openUrl('PUT', getUrl(path));
+    DateTime now = new DateTime.now();
+    request.headers.date = now;
+    request.headers.add(HttpHeaders.contentTypeHeader, contentType);
+    request.headers.add(HttpHeaders.contentLengthHeader, data.length);
+    request.headers.add(HttpHeaders.connectionHeader, 'keep-alive');
+    request.headers.add(HttpHeaders.connectionHeader, 'keep-alive');
+    request.headers.add('x-amz-acl', 'public-read');
+    request.headers.add(HttpHeaders.acceptEncodingHeader, 'deflate');
 
-      var amzHeaders = {'x-amz-acl': 'public-read'};
-      String authorization = _getAuthorization(path, 'PUT', '', contentType,
-          now, bucket, amzHeaders: amzHeaders);
-      request.headers.add(HttpHeaders.authorizationHeader, authorization);
+    var amzHeaders = {'x-amz-acl': 'public-read'};
+    String authorization = _getAuthorization(path, 'PUT', '', contentType,
+        now, bucket, amzHeaders: amzHeaders);
+    request.headers.add(HttpHeaders.authorizationHeader, authorization);
 
-      request.add(data);
-      return request.close();
-    }).then((HttpClientResponse response) {
-      return _examineResponse(response, 'uploading');
-    });
+    request.add(data);
+    final response = await request.close();
+    await _examineResponse(response, 'uploading');
   }
 
-  _examineResponse(HttpClientResponse response, String operation) {
+  void _examineResponse(HttpClientResponse response, String operation) {
     if (response.statusCode == 200 || response.statusCode == 204)
       logger.fine('File $operation successful. Status code: ${response.statusCode}');
     else {
@@ -96,21 +101,7 @@ class S3Bucket {
     }
   }
 
-  _repeatMoreTimes(Function toCall, num trials) {
-    Function _toCall = (_) => toCall().then((_) => false).catchError((e, s) {
-      if (e is SocketException || e is HttpException) {
-        logger.fine('Repeating upload due to exception:\n$e');
-        return new Future.delayed(new Duration(milliseconds: 100), () => true);
-      }
-      else {
-        logger.shout('Error: \n', e, s);
-        throw e;
-      }
-    });
-    return doWhileAsync(new List.filled(trials, null), _toCall);
-  }
-
-  /*
+  /**
    * subresources: {nameOfSubresource: value} if subresource doesn't have value,
    * then value = ""
    * */

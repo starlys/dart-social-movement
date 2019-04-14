@@ -9,9 +9,11 @@ import 'misc_lib.dart';
 class ImageLib {
   static String _avatarUrlBase, _postUrlBase;
   static S3Bucket _avatarBucket, _postBucket;
+  static String _s3Prefix = ''; //prefix for blob paths on S3 to separate out dev and prod environments in the same S3 account
 
   ///initialize library
   static void init(ConfigSettings cfg) {
+    if (cfg.dev == 'Y') _s3Prefix = 'DEV_';
     String endpoint = cfg.amazonS3.endpoint;
     String id = cfg.amazonS3.id;
     String key = cfg.amazonS3.key;
@@ -39,19 +41,22 @@ class ImageLib {
     if (avatarNo == null) throw new Exception('Cannot save avatar for missing user');
 
     //save to S3
-    String path = '${userId}_${avatarNo}.jpg';
+    String path = getAvatarPath(userId, avatarNo);
     await _avatarBucket.upload(imageBytes, path);
 
     //delete the old one
-    path = '${userId}_${avatarNo - 1}.jpg';
+    path = getAvatarPath(userId, avatarNo - 1);
     try { await _avatarBucket.delete(path); }
     catch (ex) {}
   }
 
+  ///build the unqualified path for an avatar
+  static String getAvatarPath(int userId, int avatarNo) => '${_s3Prefix}${userId}_${avatarNo}.jpg';
+
   ///get the full url for a user avatar, or null if none
   static String getAvatarUrl(int userId, int avatarNo) {
     if (avatarNo == 0) return 'images/paneuser.png';
-    return '${_avatarUrlBase}${userId}_${avatarNo}.jpg';
+    return _avatarUrlBase + getAvatarPath(userId, avatarNo);
   }
 
   ///resize given image file to 500 in max dimension (if too large) and save as jpg in the post bucket;
@@ -63,7 +68,7 @@ class ImageLib {
     imageBytes = encodeJpg(img2, quality: 92);
 
     //save to S3
-    String path = '${postId}.jpg';
+    String path = getPostImagePath(postId);
     await _postBucket.upload(imageBytes, path);
   }
 
@@ -72,19 +77,22 @@ class ImageLib {
   static Future duplicatePostImage(String fromPostId, String toPostId) async {
     String sourceUrl = getPostImageUrl(fromPostId);
     List<int> imageBytes = await MiscLib.httpGetBinary(sourceUrl);
-    String targetPath = '${toPostId}.jpg';
+    String targetPath = getPostImagePath(toPostId);
     await _postBucket.upload(imageBytes, targetPath);
   }
 
   ///delete a post image
   static Future deletePostImage(String postId) async {
-    String path = '${postId}.jpg';
+    String path = getPostImagePath(postId);
     await _postBucket.delete(path);
   }
 
+  ///build the unqualified path for an avatar
+  static String getPostImagePath(String postId) => '${_s3Prefix}${postId}.jpg';
+
   ///get the full url for a post image
   static String getPostImageUrl(String postId) {
-    return '${_postUrlBase}${postId}.jpg';
+    return _postUrlBase + getPostImagePath(postId);
   }
 
   ///return the largest square portion of the image, centered

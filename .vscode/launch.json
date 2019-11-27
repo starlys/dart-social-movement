@@ -24,6 +24,13 @@
             "cwd": "${workspaceRoot}/e2e_tests"
         },
         {
+            "name": "Test scratchpad",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceRoot}/e2e_tests/_scratchpad.dart",
+            "cwd": "${workspaceRoot}/e2e_tests"
+        },
+        {
             "name": "Sendmail",
             "type": "dart",
             "request": "launch",

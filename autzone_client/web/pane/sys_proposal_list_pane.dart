@@ -22,17 +22,18 @@ class SysProposalListPane extends ProposalListPane {
   Future makeButtonBar() async {
     paneMenuBar.addButton('Previous Year', (e) {
       PaneFactory.createFromString('proposals-sys/${_year - 1}');
+      return null;
     });
     paneMenuBar.addButton('Propose a Change', (e) async {
-      var conf = new ConfirmDialog('Use this feature with care! You are about to propose a change in the way the system operates, which '
-      'can be voted on by all users. Please be specific and provide the resources necessary if you are proposing substantial changes. '
-      'Continue?',
-      ConfirmDialog.YesNoOptions);
+      var conf = new ConfirmDialog(
+          'Use this feature with care! You are about to propose a change in the way the system operates, which '
+          'can be voted on by all users. Please be specific and provide the resources necessary if you are proposing substantial changes. '
+          'Continue?',
+          ConfirmDialog.YesNoOptions);
       int btnIdx = await conf.show();
       if (btnIdx != 0) return;
       var propDialog = new ProposalDialog('SYS', null, null);
       await propDialog.show();
     });
   }
-
 }

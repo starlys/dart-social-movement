@@ -28,10 +28,15 @@ class ProjectMembersPane extends BasePane {
     await _loadProject(null);
 
     //build pane w/o result rows
-    buildSkeletonHtml2(paneClass: 'project-members', iconHoverText: 'Project Members', iconName: 'paneproject', title: _project.projectTitle);
+    buildSkeletonHtml2(
+        paneClass: 'project-members',
+        iconHoverText: 'Project Members',
+        iconName: 'paneproject',
+        title: _project.projectTitle);
     clearLoadingMessage();
     DivElement scroll = HtmlLib.appendScrollingDiv(bodyElement);
-    _resultTable = new TableElement() ..className = 'datatable'
+    _resultTable = new TableElement()
+      ..className = 'datatable'
       ..style.marginBottom = HtmlLib.asPx(6);
     scroll.append(_resultTable);
     FormBuilder form = new FormBuilder(bodyElement, 'Criteria');
@@ -44,6 +49,7 @@ class ProjectMembersPane extends BasePane {
         ++_pageNo;
         _loadProject(trimInput(nameInp));
         _buildOutputTable();
+        return null;
       });
     }
 
@@ -59,12 +65,17 @@ class ProjectMembersPane extends BasePane {
     _resultTable.innerHtml = '<tr><td>Loading...</td></tr>';
 
     //search either on server or by filtering previously loaded complete results
-    if (_project != null && _project.completeLoad == 'Y') { //filter locally
-      final source = _project.users?.cast<ProjectUserItem>() ?? List<ProjectUserItem>();
-      _filteredUsers = source.where((u) =>
-        u.nick.toLowerCase().contains(name) || u.publicName.toLowerCase().contains(name))
-        .toList();
-    } else { //reload
+    if (_project != null && _project.completeLoad == 'Y') {
+      //filter locally
+      final source =
+          _project.users?.cast<ProjectUserItem>() ?? List<ProjectUserItem>();
+      _filteredUsers = source
+          .where((u) =>
+              u.nick.toLowerCase().contains(name) ||
+              u.publicName.toLowerCase().contains(name))
+          .toList();
+    } else {
+      //reload
       _pageNo = 0;
       await _loadProject(name);
     }
@@ -74,7 +85,8 @@ class ProjectMembersPane extends BasePane {
 
   ///build output table from _filteredUsers
   void _buildOutputTable() {
-    _resultTable.innerHtml = '<tr><th>Type</th><th></th><th>Vote</th><th>Nickname (name)</th></tr>';
+    _resultTable.innerHtml =
+        '<tr><th>Type</th><th></th><th>Vote</th><th>Nickname (name)</th></tr>';
     if (_filteredUsers == null) return;
     for (ProjectUserItem user in _filteredUsers) {
       TableRowElement tr = _resultTable.addRow();
@@ -83,14 +95,15 @@ class ProjectMembersPane extends BasePane {
       td.append(_userKindImage(user));
       td.appendHtml('<br/>');
       td.append(_userKindDropdown(user));
-      td = tr.addCell() ..className = 'avatar';
+      td = tr.addCell()..className = 'avatar';
       if (user.avatarUrl != null)
         td.append(new ImageElement(src: user.avatarUrl));
       td = tr.addCell();
       Element chk = _voteCheckbox(user);
       if (chk != null) td.append(chk);
       td = tr.addCell();
-      HtmlLib.appendLinkToPane(td, user.nick, 'user/${user.userId}', asDiv: false);
+      HtmlLib.appendLinkToPane(td, user.nick, 'user/${user.userId}',
+          asDiv: false);
       if (user.publicName != null && user.publicName.length > 0)
         td.appendText(' - ${user.publicName}');
     }
@@ -99,9 +112,15 @@ class ProjectMembersPane extends BasePane {
   ///return element for the kind icon
   Element _userKindImage(ProjectUserItem user) {
     String imgName = 'user_reg', hoverText = '';
-    if (user.throttle != null) { imgName = 'user_throttled'; hoverText = user.throttle; }
-    else if (user.kind == 'M') { imgName = 'user_manager'; hoverText = 'Project manager'; }
-    return new Element.html('<img src="images/${imgName}.png" title="${hoverText}" />');
+    if (user.throttle != null) {
+      imgName = 'user_throttled';
+      hoverText = user.throttle;
+    } else if (user.kind == 'M') {
+      imgName = 'user_manager';
+      hoverText = 'Project manager';
+    }
+    return new Element.html(
+        '<img src="images/${imgName}.png" title="${hoverText}" />');
   }
 
   ///build element for the vote checkbox, hooked up to an editing handler;
@@ -125,13 +144,11 @@ class ProjectMembersPane extends BasePane {
 
       //save to server
       final req = new ProjectUserUserSaveRequest(
-        projectId: _projectId,
-        aboutId: userId,
-        kind: voteKind);
+          projectId: _projectId, aboutId: userId, kind: voteKind);
       await RpcLib.projectUserUserSave(req);
 
       //change in local data
-      _voteKindByUserId[userId] =voteKind;
+      _voteKindByUserId[userId] = voteKind;
     });
 
     return chk;
@@ -142,15 +159,17 @@ class ProjectMembersPane extends BasePane {
   Element _userKindDropdown(ProjectUserItem user) {
     //if not editable
     if (_project.editable != 'Y') {
-      return new SpanElement() ..text = Globals.allProjectUserKinds[user.kind];
+      return new SpanElement()..text = Globals.allProjectUserKinds[user.kind];
     }
 
     //create dropdown with options
     SelectElement sel = new SelectElement();
     Globals.allProjectUserKinds.forEach((code, text) {
-      sel.append(new OptionElement(value: code) ..text = text);
+      sel.append(new OptionElement(value: code)..text = text);
     });
-    sel ..value = _userKindByUserId[user.userId] ..dataset['uid'] = user.userId.toString();
+    sel
+      ..value = _userKindByUserId[user.userId]
+      ..dataset['uid'] = user.userId.toString();
 
     //hook up event
     sel.onChange.listen((e) async {
@@ -161,9 +180,7 @@ class ProjectMembersPane extends BasePane {
 
       //save to server
       ProjectUserSaveRequest req = new ProjectUserSaveRequest(
-        projectId: _projectId,
-        userId: userId,
-        kind: kind);
+          projectId: _projectId, userId: userId, kind: kind);
       await RpcLib.projectUserSave(req);
 
       //change in local data
@@ -179,8 +196,8 @@ class ProjectMembersPane extends BasePane {
 
   ///set _project and _filteredusers based on arguments; caller should set _pageNo first
   Future _loadProject(String nameFilter) async {
-    ProjectUserQueryRequest req = new ProjectUserQueryRequest(projectId: _projectId,
-      resultPage: _pageNo, name: nameFilter);
+    ProjectUserQueryRequest req = new ProjectUserQueryRequest(
+        projectId: _projectId, resultPage: _pageNo, name: nameFilter);
     _project = await RpcLib.projectUserQuery(req);
     _filteredUsers = _project.users?.cast<ProjectUserItem>();
     if (_project.users != null) {
@@ -190,5 +207,4 @@ class ProjectMembersPane extends BasePane {
       }
     }
   }
-
 }

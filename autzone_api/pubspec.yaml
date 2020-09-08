@@ -3,10 +3,10 @@ description: Civil rights social platform - server API
 environment:
   sdk: '>=2.0.0 <3.0.0'
 dependencies:
-  angel_framework: ^2.0.0-alpha #https://angel-dart.gitbook.io/angel/v/2.x/guides/without-the-boilerplate
-  angel_static: ^2.0.0-alpha
-  angel_model: ^1.0.0
-  angel_serialize: ^2.0.0
+  angel_framework: ^2.1.1 #https://angel-dart.gitbook.io/angel/v/2.x/guides/without-the-boilerplate
+  angel_static: ^2.1.3
+  angel_model: ^1.0.3
+  angel_serialize: ^2.2.3
   angel_cors: ^2.0.0
   http: any #http://pub.dartlang.org/packages/http
   mime: any #https://pub.dartlang.org/packages/mime
@@ -15,7 +15,8 @@ dependencies:
   autzone_common:
     path: ../autzone_common 
 dev_dependencies:
-  build_runner: ^1.1.2
-  build_web_compilers: ^1.0.0
+  build_runner: '>=1.6.2 <2.0.0'
+  build_web_compilers: '>=2.12.0-dev.1 <3.0.0'
 transformers:
 homepage: http://www.divergentlabs.org
+

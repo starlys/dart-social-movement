@@ -16,10 +16,12 @@ typedef Future<String> LoginHandler(String nick, String pw, bool savePW);
 class LoginDialog extends DialogBox {
   LoginHandler _loginHandler;
 
-  LoginDialog(this._loginHandler) : super() {
-  }
+  LoginDialog(this._loginHandler) : super() {}
 
-  @override int dialogHeight() { return 150; }
+  @override
+  int dialogHeight() {
+    return 150;
+  }
 
   @override
   Future build() async {
@@ -33,15 +35,19 @@ class LoginDialog extends DialogBox {
     //buttons
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('Log In', (e) async {
-      String message = await _loginHandler(trimInput(nickInput), trimInput(pwInput), saveChk.checked);
-      if (message == null) hide(true);
-      else form.showError(message);
+      String message = await _loginHandler(
+          trimInput(nickInput), trimInput(pwInput), saveChk.checked);
+      if (message == null)
+        hide(true);
+      else
+        form.showError(message);
     });
 
     bar.addButton('Create Account', (e) {
       hide(false);
       var ud = new UserDialog(0);
       ud.show();
+      return null;
     });
 
     bar.addButton('Recover Password', (e) async {
@@ -54,10 +60,12 @@ class LoginDialog extends DialogBox {
 
       //tell server to email the recovery code
       UserRecoverPasswordRequest args = new UserRecoverPasswordRequest(
-        recoveryNick: trimInput(nickInput),
-        mode: 'E');
+          recoveryNick: trimInput(nickInput), mode: 'E');
       APIResponseBase response = await RpcLib.userRecoverPassword(args);
-      if (!response.isOK) {form.showError(response.errorMessage); return;}
+      if (!response.isOK) {
+        form.showError(response.errorMessage);
+        return;
+      }
 
       //hide this; show recovery dialog
       hide(false);
@@ -67,6 +75,7 @@ class LoginDialog extends DialogBox {
 
     bar.addButton('Cancel', (e) {
       hide(false);
+      return null;
     });
   }
 }

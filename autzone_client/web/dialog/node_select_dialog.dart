@@ -26,22 +26,26 @@ class NodeSelectDialog extends DialogBox {
     }
 
     //main content - outline
-    new FormBuilder(frame, _instructionText); //the form is just used to format the title
+    new FormBuilder(
+        frame, _instructionText); //the form is just used to format the title
     outline = new OutlineBuilder(frame, (el) => _nodeSelectHandler(el));
-    void addToOutlineRecur(Element parentElement, CategoryNode node, int level) {
-      Element el = outline.add(parentElement, node.title, node.id.toString(), childrenCollapsed: level > 1);
+    void addToOutlineRecur(
+        Element parentElement, CategoryNode node, int level) {
+      Element el = outline.add(parentElement, node.title, node.id.toString(),
+          childrenCollapsed: level > 1);
       if (node.children != null) {
-        for (CategoryNode cnode in node.children) addToOutlineRecur(el, cnode, level + 1);
+        for (CategoryNode cnode in node.children)
+          addToOutlineRecur(el, cnode, level + 1);
       }
     }
+
     for (CategoryNode node in _topOptions) addToOutlineRecur(null, node, 0);
 
     //buttons
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('Cancel', (e) {
       hide(null);
+      return null;
     });
-
   }
-
 }

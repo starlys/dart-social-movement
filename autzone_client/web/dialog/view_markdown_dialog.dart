@@ -6,14 +6,14 @@ import '../lib/js_interop.dart';
 
 ///show any markdown doc
 class ViewMarkdownDialog extends DialogBox {
-
   String _dtext; //markdown text to show
 
-  ViewMarkdownDialog(this._dtext) : super() {
-  }
+  ViewMarkdownDialog(this._dtext) : super() {}
 
   @override
-  int dialogHeight() {return window.innerHeight - 10;}
+  int dialogHeight() {
+    return window.innerHeight - 10;
+  }
 
   @override
   Future build() async {
@@ -28,6 +28,7 @@ class ViewMarkdownDialog extends DialogBox {
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('Close', (e) {
       hide(false);
+      return null;
     });
   }
 }

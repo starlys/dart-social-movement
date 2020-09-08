@@ -28,7 +28,7 @@ main() async {
   //init database and load settings from database (potentially slower)
   await Database.init();
   await ApiGlobals.instance.sites.allCodes(); //forces load
-  
+
   //set up Angel
   var angelApp = new Angel(reflector: MirrorsReflector());
   AngelHttp angelHttp;
@@ -44,6 +44,15 @@ main() async {
     print('production mode - port 443');
     angelHttp = AngelHttp.fromSecurityContext(angelApp, context);
     port = 443;
+  }
+
+  //set up error handling
+  if (isDev) {
+    var oldErrorHandler = angelApp.errorHandler;
+    angelApp.errorHandler = (e, req, res) {
+      print(e.errors[0]);
+      return oldErrorHandler(e, req, res);
+    };
   }
 
   //add routes for diagnostics/dev-mode
@@ -66,8 +75,9 @@ main() async {
   //add route for index.html with substitutions
   angelApp.get('/', (req, resp) async {
     SiteRecord config;
-    try { config = await ApiGlobals.instance.sites.byDomain(req.hostname, false);}
-    catch (e) {}
+    try {
+      config = await ApiGlobals.instance.sites.byDomain(req.hostname, false);
+    } catch (e) {}
     if (config == null) config = ApiGlobals.instance.sites.byCode('AUT'); //dev mode default
     resp.contentType = MediaType('text', 'html');
     resp.write(config.indexHtml);
@@ -92,8 +102,7 @@ main() async {
       try {
         final config = await ApiGlobals.instance.sites.byDomain(req.hostname, true);
         resp.redirect(config.homeUrl);
-      }
-      catch (e) {
+      } catch (e) {
         resp.write('Cannot find domain requested: ${req.hostname}');
         resp.close();
       }

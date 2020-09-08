@@ -3,7 +3,7 @@ description: Civil rights social platform - mailer script
 environment:
   sdk: '>=2.0.0 <3.0.0'
 dependencies:
-  postgres: "^1.0.2" #http://pub.dartlang.org/packages/postgres
+  postgres: "2.1.1" #http://pub.dartlang.org/packages/postgres
   http: any
   autzone_models:
     path: ../autzone_models

@@ -3,9 +3,9 @@ environment:
   sdk: '>=2.0.0 <3.0.0'
 dependencies:
   safe_config: "^2.0.2" #http://pub.dartlang.org/packages/safe_config
-  postgres: "^1.0.2" #http://pub.dartlang.org/packages/postgres
+  postgres: "2.1.1" #http://pub.dartlang.org/packages/postgres
   intl: any #http://pub.dartlang.org/packages/intl
-  timezone: ^0.5.2 #http://pub.dartlang.org/packages/timezone
+  timezone: ^0.5.7 #http://pub.dartlang.org/packages/timezone
   mailer: any #http://pub.dartlang.org/packages/mailer
   diff_match_patch: any #http://pub.dartlang.org/packages/diff_match_patch
   image: any #http://pub.dartlang.org/packages/image

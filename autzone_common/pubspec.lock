@@ -329,7 +329,7 @@ packages:
       name: image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.7"
+    version: "2.1.14"
   intl:
     dependency: "direct main"
     description:
@@ -469,7 +469,7 @@ packages:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "3.0.4"
   plugin:
     dependency: transitive
     description:
@@ -721,7 +721,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.0"
+    version: "4.2.0"
   yaml:
     dependency: transitive
     description:

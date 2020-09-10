@@ -9,7 +9,7 @@ dependencies:
   timezone: ^0.5.7 #http://pub.dartlang.org/packages/timezone
   mailer: ^2.6.1 #http://pub.dartlang.org/packages/mailer
   diff_match_patch: any #http://pub.dartlang.org/packages/diff_match_patch
-  image: any #http://pub.dartlang.org/packages/image
+  image: 2.1.14 #http://pub.dartlang.org/packages/image
   autzone_models:
     path: ../autzone_models
   http: any 

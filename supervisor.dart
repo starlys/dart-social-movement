@@ -3,7 +3,7 @@ import 'dart:async';
 
 //when mail should be sent
 DateTime _nextMailUtc = utcNow();
-Duration _mailInterval = new Duration(minutes:2);
+Duration _mailInterval = new Duration(minutes: 2);
 
 ///This is the supervisor script that should be started when the system boots.
 /// It cooperates with the 'autzone' shell script to start/stop the services
@@ -16,7 +16,8 @@ Future main(List<String> args) async {
 /// return value does NOT have final slash
 String rootPath() {
   List<String> segs = Platform.script.pathSegments;
-  return '/' + segs.take(segs.length - 1).join('/'); //up 1 level
+  final leadingChar = Platform.isWindows ? '' : '/';
+  return leadingChar + segs.take(segs.length - 1).join('/'); //up 1 level
 }
 
 ///end api and worker procs
@@ -30,7 +31,7 @@ Future endBoth() async {
   //wait a while for them to stop
   DateTime waitUntil = utcNow().add(new Duration(seconds: 30));
   while (waitUntil.isAfter(utcNow())) {
-    sleep(new Duration(seconds:3));
+    sleep(new Duration(seconds: 3));
     File f_api = new File('status/api_alive.txt');
     File f_bg = new File('status/worker_alive.txt');
     bool stillRunning = (await f_api.exists()) || (await f_bg.exists());
@@ -39,22 +40,24 @@ Future endBoth() async {
 
   //in case they didn't respond to the stop request,
   // kill them
+  //commented out for windows
+  /*
   log("supervisor: killing processes");
   Process.runSync(rootPath() + '/autzone.sh', ['kill'], workingDirectory: rootPath(), runInShell: true);
-  try {await f_stop.delete(); }
-  catch (ex) {}
+  try {
+    await f_stop.delete();
+  } catch (ex) {}
   //on Exception { }
+  */
 
   try {
     File f_api = new File('status/api_alive.txt');
     await f_api.delete();
-  }
-  catch (ex) {}
+  } catch (ex) {}
   try {
     File f_bg = new File('status/worker_alive.txt');
     await f_bg.delete();
-  }
-  catch (ex) {}
+  } catch (ex) {}
   await writeDebugTaskFile(false, 'endBoth');
 }
 
@@ -66,7 +69,7 @@ Future startBoth() async {
 Future startApi() async {
   log("supervisor: starting api");
   await writeDebugTaskFile(true, 'startApi');
-  await Process.start('dart', ['autzone_api/bin/autzone_api.dart.snapshot'], mode: ProcessStartMode.detached);
+  await Process.start('dart', ['autzone_api/bin/autzone_api.dart'], mode: ProcessStartMode.detached);
   await writeDebugTaskFile(false, 'startApi');
   sleep(new Duration(seconds: 2));
 }
@@ -74,7 +77,7 @@ Future startApi() async {
 Future startWorker() async {
   log("supervisor: starting worker");
   await writeDebugTaskFile(true, 'startWorker');
-  await Process.start('dart', ['autzone_worker/bin/autzone_worker.dart.snapshot'], mode: ProcessStartMode.detached);
+  await Process.start('dart', ['autzone_worker/bin/autzone_worker.dart'], mode: ProcessStartMode.detached);
   await writeDebugTaskFile(false, 'startWorker');
   sleep(new Duration(seconds: 2));
 }
@@ -114,11 +117,10 @@ Future timerTick() async {
     //if it's time to send mail, run that process
     if (utcNow().isAfter(_nextMailUtc)) {
       await writeDebugTaskFile(true, 'sendmail');
-      Process.run('dart', [rootPath() + '/autzone_sendmail/bin/autzone_sendmail.dart.snapshot'], workingDirectory: rootPath());
+      Process.run('dart', [rootPath() + '/autzone_sendmail/bin/autzone_sendmail.dart'], workingDirectory: rootPath());
       _nextMailUtc = utcNow().add(_mailInterval);
       await writeDebugTaskFile(false, 'sendmail');
     }
-
   } catch (ex) {
     print('supervisor tick exception: ${ex}');
   }
@@ -127,9 +129,7 @@ Future timerTick() async {
   try {
     File f = new File(rootPath() + '/status/supervisor_alive.txt');
     await f.writeAsString("!");
-  }
-  catch (ex) {
-  }
+  } catch (ex) {}
 
   timerTickLater();
 }
@@ -143,8 +143,7 @@ Future<bool> isRunning(String aliveFileName, int minutesOld) async {
     DateTime lastMod = f.lastModifiedSync().toUtc(); //NOT SURE IF THIS IS OK FOR DAYLIGHT SAVINGS!! documentation mising
     DateTime aBitAgo = utcNow().subtract(new Duration(minutes: minutesOld));
     return lastMod.isAfter(aBitAgo);
-  }
-  catch (ex) {
+  } catch (ex) {
     return false;
   }
 }
@@ -166,7 +165,5 @@ Future writeDebugTaskFile(bool starting, String taskDesc) async {
     String fname2 = starting ? 'starting' : 'finished';
     File f = new File(rootPath() + '/status/supervisor_' + fname2 + '.txt');
     await f.writeAsString(utcNow().toIso8601String() + ' ' + taskDesc);
-  }
-  catch (ex) {
-  }
+  } catch (ex) {}
 }

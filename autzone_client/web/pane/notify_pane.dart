@@ -17,17 +17,25 @@ class NotifyPane extends BasePane {
     //find already-loaded notification or die
     await super.init(pk);
     String notifyId = pk.part1;
-    _item = Globals.pushQueue.firstWhere((i) => i.sid == notifyId && i.kind == 'N', orElse: () => null);
+    _item = Globals.pushQueue.firstWhere(
+        (i) => i.sid == notifyId && i.kind == 'N',
+        orElse: () => null);
     if (_item == null) return PaneInitResult.unknownFailure;
     _hasLink = (_item.linkPaneKey ?? '').length > 0;
 
     //build pane
-    buildSkeletonHtml2(paneClass: 'notify', iconHoverText: 'Notification', iconName: 'panenotify', title: _item.text);
+    buildSkeletonHtml2(
+        paneClass: 'notify',
+        iconHoverText: 'Notification',
+        iconName: 'panenotify',
+        title: _item.text);
     clearLoadingMessage();
-    bodyElement.append(new DivElement() ..text = _item.text);
+    bodyElement.append(new DivElement()..text = _item.text);
     bodyElement.append(new BRElement());
     if (_hasLink) {
-      var link = new AnchorElement() ..href = '#' + _item.linkPaneKey ..text = _item.linkText;
+      var link = new AnchorElement()
+        ..href = '#' + _item.linkPaneKey
+        ..text = _item.linkText;
       bodyElement.append(link);
     }
 
@@ -36,9 +44,10 @@ class NotifyPane extends BasePane {
     dismissBtn = paneMenuBar.addButton('Dismiss', (e) {
       dismissBtn.remove();
       dismissOnServer();
-      paneMenuBar.addElement(new SpanElement() ..text = 'Dismissed');
+      paneMenuBar.addElement(new SpanElement()..text = 'Dismissed');
       PaneFactory.delete(this);
       if (_hasLink) PaneFactory.create(PaneKey(_item.linkPaneKey));
+      return null;
     });
 
     return PaneInitResult.ok;

@@ -13,14 +13,19 @@ class CategoryMoveModeDialog extends DialogBox {
   /// thing)
   CategoryMoveModeDialog(this._title, this._referenceTitle) : super() {}
 
-  @override int dialogHeight() {return 100;}
+  @override
+  int dialogHeight() {
+    return 100;
+  }
 
   @override
   Future build() async {
     //main content
     new FormBuilder(frame, 'Category Move');
-    RadioButtonInputElement sameLevelRadio = new RadioButtonInputElement() ..name = 'catmode';
-    RadioButtonInputElement subLevelRadio = new RadioButtonInputElement() ..name = 'catmode'
+    RadioButtonInputElement sameLevelRadio = new RadioButtonInputElement()
+      ..name = 'catmode';
+    RadioButtonInputElement subLevelRadio = new RadioButtonInputElement()
+      ..name = 'catmode'
       ..checked = true;
     frame
       ..append(sameLevelRadio)
@@ -34,11 +39,12 @@ class CategoryMoveModeDialog extends DialogBox {
     bar.addButton('OK', (e) {
       if (sameLevelRadio != null && sameLevelRadio.checked) hide('S');
       if (subLevelRadio != null && subLevelRadio.checked) hide('C');
+      return null;
     });
 
     bar.addButton('Cancel', (e) {
       hide(null);
+      return null;
     });
   }
-
 }

@@ -17,7 +17,8 @@ class SelectMultipleDialog extends DialogBox {
   Future build() async {
     //main content
     new FormBuilder(frame, _title); //the form is just used to format the title
-    frame.appendText('Select one or more options - use Ctrl/Command to select multiple');
+    frame.appendText(
+        'Select one or more options - use Ctrl/Command to select multiple');
     SelectElement sel = new SelectElement()
       ..multiple = true
       ..style.width = '80%'
@@ -30,13 +31,17 @@ class SelectMultipleDialog extends DialogBox {
     ButtonBarBuilder bar = new ButtonBarBuilder(frame);
     bar.addButton('OK', (e) async {
       List<String> selected = new List<String>();
-      sel.querySelectorAll('option').cast<OptionElement>().forEach((OptionElement option) {
+      sel
+          .querySelectorAll('option')
+          .cast<OptionElement>()
+          .forEach((OptionElement option) {
         if (option.selected) selected.add(option.value);
       });
       hide(selected);
     });
     bar.addButton('Cancel', (e) {
       hide(null);
+      return null;
     });
   }
 }

@@ -25,33 +25,49 @@ class ProposalDialog extends DialogBox {
 
     //main content
     FormBuilder form = new FormBuilder(frame, 'Create Proposal/Survey');
-    InputElement titleInput = form.addInput('Title', typicalControlWidth(), Globals.maxTitleLength);
-    TextAreaElement descInput = form.addTextArea('Proposal details', typicalControlWidth(), 90, Globals.maxDescriptionLength);
-    TextAreaElement optionsInput = form.addTextArea('Available options (one per line)', typicalControlWidth(), 90, Globals.maxDescriptionLength);
+    InputElement titleInput =
+        form.addInput('Title', typicalControlWidth(), Globals.maxTitleLength);
+    TextAreaElement descInput = form.addTextArea('Proposal details',
+        typicalControlWidth(), 90, Globals.maxDescriptionLength);
+    TextAreaElement optionsInput = form.addTextArea(
+        'Available options (one per line)',
+        typicalControlWidth(),
+        90,
+        Globals.maxDescriptionLength);
     optionsInput.value = 'Yes\r\nNo';
 
     //fields for project proposals only
     SelectElement eligibleInput;
     if (isKindProj) {
       eligibleInput = new SelectElement();
-      eligibleInput.append(new OptionElement() ..value = 'P' ..text = 'All project members');
-      eligibleInput.append(new OptionElement() ..value = 'L' ..text = 'Project leaders only');
+      eligibleInput.append(new OptionElement()
+        ..value = 'P'
+        ..text = 'All project members');
+      eligibleInput.append(new OptionElement()
+        ..value = 'L'
+        ..text = 'Project leaders only');
       form.addAny('Who may vote', eligibleInput);
       eligibleInput.value = 'P';
     }
 
     var daysInput = new SelectElement();
     List<int> dayChoices = [14];
-    if (isKindProj) dayChoices = [3,5,7,10,14,21,30,45];
+    if (isKindProj) dayChoices = [3, 5, 7, 10, 14, 21, 30, 45];
     for (int i in dayChoices)
-      daysInput.append(new OptionElement() ..value = i.toString() ..text = '${i} days');
+      daysInput.append(new OptionElement()
+        ..value = i.toString()
+        ..text = '${i} days');
     daysInput.value = '14';
     form.addAny('Voting period (days)', daysInput);
 
     //information about how it works
     String kindNotice = '';
-    if (isKindProj) kindNotice = 'The proposal or survey will be part of the project "${_projectTitle}".';
-    if (isKindSys) kindNotice = 'The proposal must be about the way this platform operates, and it will be voted on by the entire site membership.';
+    if (isKindProj)
+      kindNotice =
+          'The proposal or survey will be part of the project "${_projectTitle}".';
+    if (isKindSys)
+      kindNotice =
+          'The proposal must be about the way this platform operates, and it will be voted on by the entire site membership.';
     frame.appendText(kindNotice);
 
     //buttons
@@ -59,9 +75,15 @@ class ProposalDialog extends DialogBox {
     bar.addButton('Create Proposal', (e) async {
       //parse and validate
       String title = trimInput(titleInput);
-      if (title.length == 0) {form.showError('Title is required'); return; }
+      if (title.length == 0) {
+        form.showError('Title is required');
+        return;
+      }
       List<String> options = _parseOptions(optionsInput);
-      if (options.length < 2) {form.showError('There must be at least 2 options'); return; }
+      if (options.length < 2) {
+        form.showError('There must be at least 2 options');
+        return;
+      }
 
       //who's eligible?
       String eligible = 'E';
@@ -69,28 +91,32 @@ class ProposalDialog extends DialogBox {
 
       //save it
       ProposalSaveRequest saveArgs = new ProposalSaveRequest(
-        kind: _kind,
-        projectId: _projectId,
-        eligible: eligible,
-        title: title,
-        summary: trimTextArea(descInput),
-        days: int.parse(daysInput.value),
-        options: options);
+          kind: _kind,
+          projectId: _projectId,
+          eligible: eligible,
+          title: title,
+          summary: trimTextArea(descInput),
+          days: int.parse(daysInput.value),
+          options: options);
       APIResponseBase response = await RpcLib.proposalSave(saveArgs);
       if (response.isOK) {
         bool hasId = response.newId != null;
-        hide(hasId ? response.newId : true); //true means "saved but we dont know the id"
+        hide(hasId
+            ? response.newId
+            : true); //true means "saved but we dont know the id"
         Messages.timed('Proposal created.');
       }
     });
 
     bar.addButton('Cancel', (e) {
       hide(false);
+      return null;
     });
   }
 
   List<String> _parseOptions(TextAreaElement optionsInput) {
-    List<String> opts = HtmlLib.textAreaValueToLines(optionsInput, removeBlanks: true);
+    List<String> opts =
+        HtmlLib.textAreaValueToLines(optionsInput, removeBlanks: true);
     return opts;
   }
 }

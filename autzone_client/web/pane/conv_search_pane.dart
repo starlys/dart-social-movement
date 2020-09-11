@@ -18,9 +18,11 @@ class ConvSearchPane extends BasePane {
     await super.init(pk);
 
     //build pane
-    buildSkeletonHtml2(paneClass: 'convs', title: 'Conversation Search', iconName: 'paneconv');
+    buildSkeletonHtml2(
+        paneClass: 'convs', title: 'Conversation Search', iconName: 'paneconv');
     clearLoadingMessage();
-    _resultDiv = HtmlLib.appendScrollingDiv(bodyElement) ..style.display = 'none';
+    _resultDiv = HtmlLib.appendScrollingDiv(bodyElement)
+      ..style.display = 'none';
     FormBuilder form = new FormBuilder(bodyElement, 'Criteria');
     InputElement termInp = form.addInput('Search term', 100, 50);
 
@@ -28,6 +30,7 @@ class ConvSearchPane extends BasePane {
     paneMenuBar.addButton('Search', (e) {
       _searchTerm = trimInput(termInp);
       _doSearch();
+      return null;
     });
 
     //if search term provided in URL, search on it
@@ -45,17 +48,19 @@ class ConvSearchPane extends BasePane {
   Future _doSearch() async {
     _resultDiv.style.display = 'block';
     _resultDiv.innerHtml = 'Loading...';
-    ConvQueryResponse response = await RpcLib.convQuery(
-      new ConvQueryRequest(term: _searchTerm));
+    ConvQueryResponse response =
+        await RpcLib.convQuery(new ConvQueryRequest(term: _searchTerm));
     changePaneKey(new PaneKey('convs/s=' + _searchTerm));
     _resultDiv.innerHtml = '<h2>Conversations</h2>';
     final hasAny = response.convs != null && response.convs.length > 0;
     if (hasAny) {
       for (final conv in response.convs) {
-        DivElement itemDiv = new DivElement() ..className = 'space1';
+        DivElement itemDiv = new DivElement()..className = 'space1';
         _resultDiv.append(itemDiv);
-        HtmlLib.appendLinkToPane(itemDiv, conv.hitText, 'conv/${conv.convId}/h=${_searchTerm}');
-        DivElement indented = new DivElement() ..style.marginLeft = HtmlLib.asPx(18);
+        HtmlLib.appendLinkToPane(
+            itemDiv, conv.hitText, 'conv/${conv.convId}/h=${_searchTerm}');
+        DivElement indented = new DivElement()
+          ..style.marginLeft = HtmlLib.asPx(18);
         itemDiv.append(indented);
         for (final post in conv.posts) {
           indented.appendText(post.hitText);

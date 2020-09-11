@@ -33,7 +33,7 @@ class ImageLib {
     //convert to 100x100
     Image img1 = decodeImage(imageBytes);
     Image img2 = copySquare(img1);
-    Image img3 = copyResize(img2, 100);
+    Image img3 = copyResize(img2, width: 100);
     imageBytes = encodeJpg(img3, quality: 92);
 
     //get and increment avatar_no
@@ -46,8 +46,9 @@ class ImageLib {
 
     //delete the old one
     path = getAvatarPath(userId, avatarNo - 1);
-    try { await _avatarBucket.delete(path); }
-    catch (ex) {}
+    try {
+      await _avatarBucket.delete(path);
+    } catch (ex) {}
   }
 
   ///build the unqualified path for an avatar
@@ -112,16 +113,16 @@ class ImageLib {
   ///if the image is no more than maxd in both dimensions, return it as is;
   /// else resize the larger dimension to maxd
   static Image copyReduceIfTooLarge(Image img, int maxd) {
-    if (img.width > img.height) { //landscape
-      if (img.width > maxd)
-        img = copyResize(img, maxd);
-    } else { //portrait
+    if (img.width > img.height) {
+      //landscape
+      if (img.width > maxd) img = copyResize(img, width: maxd);
+    } else {
+      //portrait
       if (img.height > maxd) {
         double w = (maxd / img.height) * img.width;
-        img = copyResize(img, w.round());
+        img = copyResize(img, width: w.round());
       }
     }
     return img;
   }
-
 }

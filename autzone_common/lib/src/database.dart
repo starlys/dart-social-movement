@@ -30,7 +30,7 @@ abstract class Database {
   ///open all connections in the pool
   static Future init() async {
     for (int i = 0; i < poolSize; ++i) {
-      _pool.add(DatabasePoolItem() ..connection = await _createOne());
+      _pool.add(DatabasePoolItem()..connection = await _createOne());
     }
   }
 
@@ -38,21 +38,19 @@ abstract class Database {
   static Future dispose() async {
     final toClose = List<DatabasePoolItem>.from(_pool);
     _pool.clear();
-    for (final p in toClose)
-      await p.connection.close();
+    for (final p in toClose) await p.connection.close();
   }
 
   ///create and open one database connection
   static Future<PostgreSQLConnection> _createOne() async {
-    bool isDev = ApiGlobals.instance.configLoader.isDev;
+    final bool isDev = ApiGlobals.instance.configLoader.isDev;
     final dbsettings = isDev ? ApiGlobals.instance.configFileSettings.database_dev : ApiGlobals.instance.configFileSettings.database;
 
     //open connections and
     //initialize the uuid-ossp extension for each connection; this hack exists
     // because the generate_uuid functions don't work through this driver
     // otherwise, even though they work when connecting through any other tool
-    final db = PostgreSQLConnection(dbsettings.host, dbsettings.port, dbsettings.dbname,
-        username: dbsettings.user, password: dbsettings.password);
+    final db = PostgreSQLConnection(dbsettings.host, dbsettings.port, dbsettings.dbname, username: dbsettings.user, password: dbsettings.password);
     await db.open();
     await db.execute('create extension if not exists "uuid-ossp";');
     await db.execute('create extension if not exists "cube";');
@@ -92,12 +90,13 @@ abstract class Database {
     //if no one needs this now
     if (waiters.length == 0) {
       poolItem.inUse = false;
-    } else { //someone needs it now
+    } else {
+      //someone needs it now
       final waiter = waiters[0];
       waiters.removeAt(0);
       waiter.complete(poolItem);
     }
-  } 
+  }
 
   ///wrap a database operation in a db connection and catch errors.
   /// If r is given puts error messages there.
@@ -107,16 +106,17 @@ abstract class Database {
     try {
       await _writeDebugTaskFile(true, taskDesc, randomFileName);
       await f(poolItem.connection);
-      return DatabaseResult() ..ok = true;
-    }
-    catch (ex) {
-      var ret = DatabaseResult() ..errorCode = 'DB' ..errorMessage = ex.toString() ..ok = false;
+      return DatabaseResult()..ok = true;
+    } catch (ex) {
+      var ret = DatabaseResult()
+        ..errorCode = 'DB'
+        ..errorMessage = ex.toString()
+        ..ok = false;
       if (ret.errorMessage.startsWith('Exception:')) ret.errorMessage = ret.errorMessage.substring(11);
       print(ex);
       await Logger.logLimited('api', taskDesc + ', ' + ex.toString());
       return ret;
-    }
-    finally {
+    } finally {
       await _writeDebugTaskFile(false, taskDesc, randomFileName);
       releaseToPool(poolItem);
     }
@@ -133,8 +133,6 @@ abstract class Database {
       } else {
         f.deleteSync();
       }
-    }
-    catch (ex) {
-    }
+    } catch (ex) {}
   }
 }

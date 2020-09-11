@@ -15,10 +15,12 @@ class ImageUploadDialog extends DialogBox {
 
   ///create dialog with mode "U" for user avatar or "P" for conv post;
   /// for conv post, _convId and _priorPostText (partially entered post) are required
-  ImageUploadDialog(this._mode, this._helpText, [this._convId, this._priorPostText]) : super() {
-  }
+  ImageUploadDialog(this._mode, this._helpText,
+      [this._convId, this._priorPostText])
+      : super() {}
 
-  @override int dialogHeight() {
+  @override
+  int dialogHeight() {
     return _mode == 'P' ? 300 : 150;
   }
 
@@ -26,10 +28,13 @@ class ImageUploadDialog extends DialogBox {
   Future build() async {
     //main content
     FormBuilder form = new FormBuilder(frame, 'Upload Image');
-    FileUploadInputElement fileInput = new FileUploadInputElement() ..accept = 'image/*';
+    FileUploadInputElement fileInput = new FileUploadInputElement()
+      ..accept = 'image/*';
     form.addAny('Image', fileInput);
     TextAreaElement ptext;
-    if (_mode == 'P') ptext = form.addTextArea('Image description', typicalControlWidth(), 70, 10000, _priorPostText ?? '');
+    if (_mode == 'P')
+      ptext = form.addTextArea('Image description', typicalControlWidth(), 70,
+          10000, _priorPostText ?? '');
     frame.appendText(_helpText);
 
     //buttons
@@ -51,9 +56,15 @@ class ImageUploadDialog extends DialogBox {
       });
 
       //validate
-      if (fileInput.files.length == 0) { form.showError('Select a file first.'); return; }
+      if (fileInput.files.length == 0) {
+        form.showError('Select a file first.');
+        return;
+      }
       File file = fileInput.files[0];
-      if (file.size > 5000000) { form.showError('The file exceeds the maximum size of 5BM.'); return; }
+      if (file.size > 5000000) {
+        form.showError('The file exceeds the maximum size of 5BM.');
+        return;
+      }
 
       //start reading file (see continuation above)
       rdr.readAsArrayBuffer(file.slice());
@@ -61,14 +72,13 @@ class ImageUploadDialog extends DialogBox {
 
     bar.addButton('Cancel', (e) {
       hide(false);
+      return null;
     });
   }
 
   Future<bool> _uploadPost(List<int> imageBytes, String ptext) async {
     ConvPostImageSaveRequest req = ConvPostImageSaveRequest(
-      imageBytes: imageBytes,
-      ptext: ptext,
-      convId: _convId);
+        imageBytes: imageBytes, ptext: ptext, convId: _convId);
     APIResponseBase response = await RpcLib.convPostImageSave(req);
     return response.isOK;
   }

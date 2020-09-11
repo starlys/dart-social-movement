@@ -28,20 +28,24 @@ class ResourceTreePane extends BaseTreePane {
   @override
   Future insertDetails(Element detailBox, int catId) async {
     //get resources in this cat
-    _resources = await RpcLib.resourceQuery(
-      new ResourceQueryRequest(categoryId: catId));
+    _resources =
+        await RpcLib.resourceQuery(new ResourceQueryRequest(categoryId: catId));
 
     //convert to html links; also link directly to resource
-    detailBox.append(new HeadingElement.h3() ..text = 'Resources in this category');
+    detailBox
+        .append(new HeadingElement.h3()..text = 'Resources in this category');
     for (ResourceItem re in _resources.items) {
       DivElement pdiv = new DivElement();
       if (re.url != null && re.url.length > 0) {
-        var link = new AnchorElement() ..target = '_blank' ..href = re.url;
+        var link = new AnchorElement()
+          ..target = '_blank'
+          ..href = re.url;
         link.append(new ImageElement(src: 'images/ext_link.png'));
         pdiv.append(link);
         //fails: pdiv.appendHtml('<a target="_blank" href="${re.url}"><img src="images/ext_link.png"/></a> ');
       }
-      HtmlLib.appendLinkToPane(pdiv, re.title, 'resource/${re.iid}', asDiv: false);
+      HtmlLib.appendLinkToPane(pdiv, re.title, 'resource/${re.iid}',
+          asDiv: false);
       detailBox.append(pdiv);
       //idea to put description here, but not sure if a good idea: HtmlLib.insertCollapsed1(pdiv, re.description);
     }
@@ -53,11 +57,13 @@ class ResourceTreePane extends BaseTreePane {
   void insertDetailButtons(ButtonBarBuilder bar, int catId) {
     bar.addButton('Create Resource', (e) {
       if (_resourceCount >= 100) {
-        Messages.timed('There are too many resources in this category. Please choose a more detailed sub-category.');
+        Messages.timed(
+            'There are too many resources in this category. Please choose a more detailed sub-category.');
         return;
       }
       ResourceDialog dlg = new ResourceDialog(0, catId);
       dlg.show();
+      return null;
     });
   }
 
@@ -68,12 +74,13 @@ class ResourceTreePane extends BaseTreePane {
 
   @override
   List<int> getContentIds(List<String> contentTitles) {
-    return contentTitles.map((s) {
-      final matches = _resources.items.where((i) => i.title == s).toList();
-      if (matches.length > 0) return matches[0].iid;
-      return null;
-    })
-    .where((i) => i != null)
-    .toList();
+    return contentTitles
+        .map((s) {
+          final matches = _resources.items.where((i) => i.title == s).toList();
+          if (matches.length > 0) return matches[0].iid;
+          return null;
+        })
+        .where((i) => i != null)
+        .toList();
   }
 }

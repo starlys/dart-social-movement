@@ -28,7 +28,7 @@ main() async {
   //init database and load settings from database (potentially slower)
   await Database.init();
   await ApiGlobals.instance.sites.allCodes(); //forces load
-  
+
   //set up Angel
   var angelApp = new Angel(reflector: MirrorsReflector());
   AngelHttp angelHttp;
@@ -38,12 +38,27 @@ main() async {
     print('developer mode, nonsecure');
     port = 8081;
   } else {
-    final context = new io.SecurityContext();
-    context.useCertificateChain('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
-    context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
-    print('production mode - port 443');
-    angelHttp = AngelHttp.fromSecurityContext(angelApp, context);
-    port = 443;
+    //commented out for linux install with SSL
+    // final context = new io.SecurityContext();
+    // context.useCertificateChain('/etc/letsencrypt/live/www.autistic.zone/fullchain.pem');
+    // context.usePrivateKey('/etc/letsencrypt/live/www.autistic.zone/privkey.pem');
+    // print('production mode - port 443');
+    // angelHttp = AngelHttp.fromSecurityContext(angelApp, context);
+    // port = 443;
+    angelHttp = AngelHttp(angelApp);
+    print('live mode, nonsecure - for use behind proxy');
+    port = 8081;
+  }
+
+  //set up error handling
+  if (isDev) {
+    var oldErrorHandler = angelApp.errorHandler;
+    angelApp.errorHandler = (e, req, res) {
+      print(e.error);
+      //final fs = const file.LocalFileSystem();
+      //fs.file('c:\\temp\\autzone2.log').writeAsString(req.uri.toString() + '\r\n' + e.error);
+      return oldErrorHandler(e, req, res);
+    };
   }
 
   //add routes for diagnostics/dev-mode
@@ -66,8 +81,9 @@ main() async {
   //add route for index.html with substitutions
   angelApp.get('/', (req, resp) async {
     SiteRecord config;
-    try { config = await ApiGlobals.instance.sites.byDomain(req.hostname, false);}
-    catch (e) {}
+    try {
+      config = await ApiGlobals.instance.sites.byDomain(req.hostname, false);
+    } catch (e) {}
     if (config == null) config = ApiGlobals.instance.sites.byCode('AUT'); //dev mode default
     resp.contentType = MediaType('text', 'html');
     resp.write(config.indexHtml);
@@ -83,29 +99,30 @@ main() async {
   print("Angel server listening at ${angelHttp.uri}");
 
   //start redirector on port 80 to force main page to be secure
-  io.HttpServer nonSucureRedirectServer;
-  if (!isDev) {
-    final angelNonsecureRedirector = Angel();
-    angelNonsecureRedirector.get('/.well-known/acme-challenge/*', vDirRoot.handleRequest); //this is for certbot
-    angelNonsecureRedirector.fallback((req, resp) async {
-      if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
-      try {
-        final config = await ApiGlobals.instance.sites.byDomain(req.hostname, true);
-        resp.redirect(config.homeUrl);
-      }
-      catch (e) {
-        resp.write('Cannot find domain requested: ${req.hostname}');
-        resp.close();
-      }
-    });
-    final nonsecureHttp = AngelHttp(angelNonsecureRedirector);
-    nonSucureRedirectServer = await nonsecureHttp.startServer('0.0.0.0', 80);
-  }
+  //Commented out for windows since we're now behind a proxy server;
+  //if re-activating this, also see line:  nonSucureRedirectServer.close(force: true);
+  // io.HttpServer nonSucureRedirectServer;
+  // if (!isDev) {
+  //   final angelNonsecureRedirector = Angel();
+  //   angelNonsecureRedirector.get('/.well-known/acme-challenge/*', vDirRoot.handleRequest); //this is for certbot
+  //   angelNonsecureRedirector.fallback((req, resp) async {
+  //     if (req.path.contains('.well-known')) return; //this prevents the certbot call from being redirected
+  //     try {
+  //       final config = await ApiGlobals.instance.sites.byDomain(req.hostname, true);
+  //       resp.redirect(config.homeUrl);
+  //     } catch (e) {
+  //       resp.write('Cannot find domain requested: ${req.hostname}');
+  //       resp.close();
+  //     }
+  //   });
+  //   final nonsecureHttp = AngelHttp(angelNonsecureRedirector);
+  //   nonSucureRedirectServer = await nonsecureHttp.startServer('0.0.0.0', 80);
+  // }
 
   //start 30s pulse tasks and register app-ending code
   pulse.init(() async {
     await server.close(force: true);
-    await nonSucureRedirectServer.close(force: true);
+    //await nonSucureRedirectServer.close(force: true);
     await Database.dispose();
 
     //in testing, this method does end, but the dart process takes a couple more

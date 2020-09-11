@@ -23,24 +23,38 @@ class ResourceDialog extends DialogBox {
     bool isNew = resourceId == 0;
     var resourceGetArgs = new ResourceGetRequest(iid: resourceId);
     ResourceGetResponse resource;
-    if (!isNew) resource = await RpcLib.resourceGet(resourceGetArgs);
-    else resource = new ResourceGetResponse();
+    if (!isNew)
+      resource = await RpcLib.resourceGet(resourceGetArgs);
+    else
+      resource = new ResourceGetResponse();
 
     //main content
     FormBuilder form = new FormBuilder(frame, 'Resource');
-    InputElement titleInput = form.addInput('Title', typicalControlWidth(), Globals.maxTitleLength, resource.title);
-    TextAreaElement descInput = form.addTextArea('Description', typicalControlWidth(), 90, Globals.maxDescriptionLength, resource.description);
+    InputElement titleInput = form.addInput(
+        'Title', typicalControlWidth(), Globals.maxTitleLength, resource.title);
+    TextAreaElement descInput = form.addTextArea(
+        'Description',
+        typicalControlWidth(),
+        90,
+        Globals.maxDescriptionLength,
+        resource.description);
     var kindInput = new SelectElement();
     for (String kindOption in Globals.allResourceKinds)
-      kindInput.append(new OptionElement() ..value = kindOption ..text = kindOption);
+      kindInput.append(new OptionElement()
+        ..value = kindOption
+        ..text = kindOption);
     kindInput.value = resource.kind;
     form.addAny('Resource kind', kindInput);
-    InputElement urlInput = form.addInput('Web URL', typicalControlWidth(), 1000, resource.url);
+    InputElement urlInput =
+        form.addInput('Web URL', typicalControlWidth(), 1000, resource.url);
 
     //define validation
     bool isValid() {
       String title = trimInput(titleInput);
-      if (title.length == 0) {form.showError('Title required'); return false;}
+      if (title.length == 0) {
+        form.showError('Title required');
+        return false;
+      }
       return true;
     }
 
@@ -51,24 +65,27 @@ class ResourceDialog extends DialogBox {
       String url = trimInput(urlInput);
       if (!url.contains('://')) {
         urlInput.value = 'http://' + url;
-        Messages.timed('Your web URL was corrected; please double check it and try again.');
+        Messages.timed(
+            'Your web URL was corrected; please double check it and try again.');
         return;
       }
 
       //validate and save
       if (!isValid()) return;
       ResourceSaveRequest saveArgs = new ResourceSaveRequest(
-        iid: resourceId,
-        categoryId: newCategoryId, //ignored if this is an update of existing rec
-        title: trimInput(titleInput),
-        description: trimTextArea(descInput),
-        kind: kindInput.value,
-        url: trimInput(urlInput));
+          iid: resourceId,
+          categoryId:
+              newCategoryId, //ignored if this is an update of existing rec
+          title: trimInput(titleInput),
+          description: trimTextArea(descInput),
+          kind: kindInput.value,
+          url: trimInput(urlInput));
       APIResponseBase response = await RpcLib.resourceSave(saveArgs);
       if (response.isOK) {
         hide(true);
         if (isNew)
-          Messages.criticalMessage('The new resource will be reviewed by admins, then posted later.');
+          Messages.criticalMessage(
+              'The new resource will be reviewed by admins, then posted later.');
         else
           Messages.timed('Resource saved.');
       }
@@ -76,6 +93,7 @@ class ResourceDialog extends DialogBox {
 
     bar.addButton('Cancel', (e) {
       hide(false);
+      return null;
     });
   }
 }

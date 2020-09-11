@@ -22,30 +22,43 @@ class ProjectDialog extends DialogBox {
     if (_projectId == 0)
       project = new ProjectGetResponse(leadership: 'D');
     else
-      project = await RpcLib.projectGet(new ProjectGetRequest(projectId: _projectId));
+      project =
+          await RpcLib.projectGet(new ProjectGetRequest(projectId: _projectId));
 
     //main content
     FormBuilder form = new FormBuilder(frame, 'Project');
-    InputElement titleInput = form.addInput('Title', typicalControlWidth(), Globals.maxTitleLength, project.title);
-    TextAreaElement descrInput = form.addTextArea('Description', typicalControlWidth(), 130, Globals.maxDescriptionLength, project.description);
+    InputElement titleInput = form.addInput(
+        'Title', typicalControlWidth(), Globals.maxTitleLength, project.title);
+    TextAreaElement descrInput = form.addTextArea(
+        'Description',
+        typicalControlWidth(),
+        130,
+        Globals.maxDescriptionLength,
+        project.description);
     SelectElement privacyInput = new SelectElement();
     Globals.allProjectPrivacy.forEach((value, text) {
-      privacyInput.append(new OptionElement() ..value = value ..text = text);
+      privacyInput.append(new OptionElement()
+        ..value = value
+        ..text = text);
     });
     privacyInput.value = project.privacy;
     form.addAny('Privacy', privacyInput);
     DivElement leadershipDiv = new DivElement();
-    RadioButtonInputElement radioDemocratic = new RadioButtonInputElement() ..name = 'leadermode'
+    RadioButtonInputElement radioDemocratic = new RadioButtonInputElement()
+      ..name = 'leadermode'
       ..checked = project.leadership == 'D';
-    RadioButtonInputElement radioFixed = new RadioButtonInputElement() ..name = 'leadermode'
+    RadioButtonInputElement radioFixed = new RadioButtonInputElement()
+      ..name = 'leadermode'
       ..checked = project.leadership == 'F';
     leadershipDiv
       ..append(radioDemocratic)
       ..appendText('Democratic - leadership changes over time by vote')
       ..appendHtml('<br/>')
       ..append(radioFixed)
-      ..appendText('Fixed - leadership remains with those who create the project')
-      ..appendHtml('<br/>Note that once a project is democratic, it cannot go back to being fixed.');
+      ..appendText(
+          'Fixed - leadership remains with those who create the project')
+      ..appendHtml(
+          '<br/>Note that once a project is democratic, it cannot go back to being fixed.');
     form.addAny('Leadership', leadershipDiv);
 
     //buttons
@@ -53,23 +66,25 @@ class ProjectDialog extends DialogBox {
     bar.addButton('Save', (e) async {
       String leadershipCode = radioFixed.checked ? 'F' : 'D';
       ProjectSaveRequest req = new ProjectSaveRequest(
-        projectId: _projectId,
-        title: trimInput(titleInput),
-        description: trimTextArea(descrInput),
-        privacy: privacyInput.value,
-        leadership: leadershipCode,
-        categoryId: _categoryId);
+          projectId: _projectId,
+          title: trimInput(titleInput),
+          description: trimTextArea(descrInput),
+          privacy: privacyInput.value,
+          leadership: leadershipCode,
+          categoryId: _categoryId);
 
       APIResponseBase response = await RpcLib.projectSave(req);
       if (response.isOK) {
         hide(true);
-        if (_projectId == 0) Messages.timed('Project will be reviewed for spam, then posted later.');
+        if (_projectId == 0)
+          Messages.timed(
+              'Project will be reviewed for spam, then posted later.');
       }
     });
 
     bar.addButton('Cancel', (e) {
       hide(false);
+      return null;
     });
   }
-
 }

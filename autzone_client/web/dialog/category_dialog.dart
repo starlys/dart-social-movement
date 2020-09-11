@@ -17,8 +17,9 @@ class CategoryDialog extends DialogBox {
   ///create dialog - pass existing id/title if editing existing; else pass reference id/title
   /// if adding a new one in relation to the given cat; _kind is defined in category table;
   ///  pass nulls for the other options
-  CategoryDialog(this._kind, this._existingCatId, this._existingTitle, this._existingDescription,
-    this._referenceCatId, this._referenceTitle) : super() {}
+  CategoryDialog(this._kind, this._existingCatId, this._existingTitle,
+      this._existingDescription, this._referenceCatId, this._referenceTitle)
+      : super() {}
 
   @override
   Future build() async {
@@ -28,17 +29,24 @@ class CategoryDialog extends DialogBox {
 
     //main content
     FormBuilder form = new FormBuilder(frame, 'Category');
-    InputElement titleInput = form.addInput('Category title', typicalControlWidth(), Globals.maxTitleLength, _existingTitle);
-    TextAreaElement descrInput = form.addTextArea('Description', typicalControlWidth(), 90, Globals.maxDescriptionLength, _existingDescription);
+    InputElement titleInput = form.addInput('Category title',
+        typicalControlWidth(), Globals.maxTitleLength, _existingTitle);
+    TextAreaElement descrInput = form.addTextArea(
+        'Description',
+        typicalControlWidth(),
+        90,
+        Globals.maxDescriptionLength,
+        _existingDescription);
     RadioButtonInputElement sameLevelRadio, subLevelRadio;
     if (isNewCat) {
       FormBuilder subform = form.addSubformFrame('Position');
-      sameLevelRadio = new RadioButtonInputElement() ..name = 'catmode';
-      subLevelRadio = new RadioButtonInputElement() ..name = 'catmode'
+      sameLevelRadio = new RadioButtonInputElement()..name = 'catmode';
+      subLevelRadio = new RadioButtonInputElement()
+        ..name = 'catmode'
         ..checked = true;
       subform.parent
         ..append(sameLevelRadio)
-        ..appendText('New category at same level as ${_referenceTitle}' )
+        ..appendText('New category at same level as ${_referenceTitle}')
         ..appendHtml('<br/>')
         ..append(subLevelRadio)
         ..appendText('New category as sub-category of ${_referenceTitle}');
@@ -51,12 +59,12 @@ class CategoryDialog extends DialogBox {
       if (sameLevelRadio != null && sameLevelRadio.checked) referenceMode = 'S';
       if (subLevelRadio != null && subLevelRadio.checked) referenceMode = 'C';
       CategorySaveRequest req = new CategorySaveRequest(
-        catId: _existingCatId,
-        kind: _kind,
-        referenceId: _referenceCatId,
-        referenceMode: referenceMode,
-        title: trimInput(titleInput),
-        description: trimTextArea(descrInput));
+          catId: _existingCatId,
+          kind: _kind,
+          referenceId: _referenceCatId,
+          referenceMode: referenceMode,
+          title: trimInput(titleInput),
+          description: trimTextArea(descrInput));
 
       APIResponseBase response = await RpcLib.categorySave(req);
       if (response.isOK) {
@@ -66,7 +74,7 @@ class CategoryDialog extends DialogBox {
 
     bar.addButton('Cancel', (e) {
       hide(false);
+      return null;
     });
   }
-
 }

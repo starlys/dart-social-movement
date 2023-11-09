@@ -1,5 +1,7 @@
 name: autzone_client
 description: Civil rights social platform - web client
+environment:
+  sdk: '>=2.7.0 <3.0.0'
 dependencies:
   dquery: any
   js: any

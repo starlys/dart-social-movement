@@ -5,7 +5,7 @@ rem client:
 rem compile dart files to js and put them in public_html; also
 rem copies styles and graphics to public_html
 echo building client javascript from dart
-cd \dev\autzone\autzone_client
+cd \dev\dart-social-movement\autzone_client
 call webdev build 
 
 cd ..
